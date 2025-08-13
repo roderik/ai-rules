@@ -72,8 +72,10 @@ confirm_uninstall() {
   print_color "$YELLOW" "This will remove AI Rules configurations from:"
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
     print_color "$CYAN" "  • Claude Code: %USERPROFILE%\\.claude\\"
+    print_color "$CYAN" "  • Codex CLI: %USERPROFILE%\\.codex\\"
   else
     print_color "$CYAN" "  • Claude Code: ~/.claude/"
+    print_color "$CYAN" "  • Codex CLI: ~/.codex/"
   fi
   
   printf "\n"
@@ -219,23 +221,26 @@ USAGE
     confirm_uninstall
   fi
   
+  # Detect OS and set appropriate paths
+  local claude_code_dir
+  local codex_dir
+  if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+    # Windows path
+    claude_code_dir="$USERPROFILE/.claude"
+    codex_dir="$USERPROFILE/.codex"
+    log_info "Detected Windows environment"
+  else
+    # Unix-like path (macOS, Linux)
+    claude_code_dir="$HOME/.claude"
+    codex_dir="$HOME/.codex"
+  fi
+  
   printf "\n"
   print_color "$BOLD" "Starting uninstallation..."
   printf "\n"
   
   # Uninstall from Claude Code
   print_color "$BOLD" "=== Removing Claude Code Configuration ==="
-  
-  # Detect OS and set appropriate path
-  local claude_code_dir
-  if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
-    # Windows path
-    claude_code_dir="$USERPROFILE/.claude"
-    log_info "Detected Windows environment"
-  else
-    # Unix-like path (macOS, Linux)
-    claude_code_dir="$HOME/.claude"
-  fi
   
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Target directory: $claude_code_dir"
@@ -411,6 +416,59 @@ USAGE
   fi
   printf "\n"
   
+  # Uninstall from Codex CLI
+  print_color "$BOLD" "=== Removing Codex CLI Configuration ==="
+  
+  if [ "$dry_run" -eq 1 ]; then
+    log_info "[DRY RUN] Would remove Codex configuration from: $codex_dir"
+    
+    # Show config.toml that would be removed
+    if [ -f "$codex_dir/config.toml" ]; then
+      printf "\n"
+      print_color "$BOLD" "⚙️  config.toml that would be removed:"
+      print_color "$RED" "  - config.toml"
+    fi
+    
+    # Show AGENTS.md that would be removed
+    if [ -f "$codex_dir/AGENTS.md" ]; then
+      printf "\n"
+      print_color "$BOLD" "📄 AGENTS.md file that would be removed:"
+      print_color "$RED" "  - AGENTS.md"
+    fi
+  else
+    # Remove Codex config.toml (if it was installed by us - check manifest)
+    if [ -f "$claude_code_dir/.ai-rules-manifest.json" ]; then
+      # Check if manifest includes Codex files
+      if grep -q "codex_configurations" "$claude_code_dir/.ai-rules-manifest.json" 2>/dev/null; then
+        # Remove config.toml
+        if [ -f "$codex_dir/config.toml" ]; then
+          local backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
+          cp "$codex_dir/config.toml" "$backup"
+          log_info "Backed up existing Codex config to: $backup"
+          rm "$codex_dir/config.toml"
+          log_success "Removed config.toml from ~/.codex/"
+        fi
+        
+        # Remove AGENTS.md
+        if [ -f "$codex_dir/AGENTS.md" ]; then
+          local backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+          cp "$codex_dir/AGENTS.md" "$backup"
+          log_info "Backed up existing AGENTS.md to: $backup"
+          rm "$codex_dir/AGENTS.md"
+          log_success "Removed AGENTS.md from ~/.codex/"
+        fi
+        
+        # Remove directory if empty
+        if [ -d "$codex_dir" ]; then
+          rmdir "$codex_dir" 2>/dev/null || true
+        fi
+      else
+        log_info "No Codex configuration found in manifest, skipping"
+      fi
+    fi
+  fi
+  printf "\n"
+  
   # Success message
   print_color "$BOLD$GREEN" "    ╔════════════════════════════════════════╗"
   print_color "$BOLD$GREEN" "    ║     Uninstallation Complete! ${SUCCESS}       ║"
@@ -429,9 +487,13 @@ USAGE
   # Show backup locations
   print_color "$CYAN" "Backup files created during uninstallation:"
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
-    print_color "$YELLOW" "  Look for *.backup.* files in: %USERPROFILE%\\.claude\\"
+    print_color "$YELLOW" "  Look for *.backup.* files in:"
+    print_color "$YELLOW" "    • %USERPROFILE%\\.claude\\"
+    print_color "$YELLOW" "    • %USERPROFILE%\\.codex\\"
   else
-    print_color "$YELLOW" "  Look for *.backup.* files in: ~/.claude/"
+    print_color "$YELLOW" "  Look for *.backup.* files in:"
+    print_color "$YELLOW" "    • ~/.claude/"
+    print_color "$YELLOW" "    • ~/.codex/"
   fi
   printf "\n"
 }

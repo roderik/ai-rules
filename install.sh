@@ -266,6 +266,7 @@ USAGE
   local repo_root
   repo_root=$(script_dir)
   local src_base="$repo_root/.claude"
+  local codex_base="$repo_root/.codex"
   
   if [ ! -d "$src_base" ]; then
     log_error "Source directory not found: $src_base"
@@ -605,6 +606,150 @@ EOF
   fi
   printf "\n"
   
+  # Install Codex CLI configuration
+  print_color "$BOLD" "=== Installing Codex CLI Configuration ==="
+  
+  # Detect OS and set appropriate path for Codex
+  local codex_dir
+  if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+    # Windows path
+    codex_dir="$USERPROFILE/.codex"
+    log_info "Detected Windows environment for Codex"
+  else
+    # Unix-like path (macOS, Linux)
+    codex_dir="$HOME/.codex"
+  fi
+  
+  if [ "$dry_run" -eq 1 ]; then
+    log_info "[DRY RUN] Would install Codex configuration to: $codex_dir"
+    
+    # Show config.toml that would be installed
+    printf "\n"
+    print_color "$BOLD" "⚙️  config.toml that would be installed to ~/.codex/:"
+    printf "\n"
+    if [ -f "$codex_base/config.toml" ]; then
+      local target_file="$codex_dir/config.toml"
+      if [ -f "$target_file" ]; then
+        # Show diff if file exists
+        print_color "$YELLOW" "  ⚠️  config.toml (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$codex_base/config.toml" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$codex_base/config.toml" 2>/dev/null | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + config.toml (new file)"
+        print_color "$CYAN" "    Preview (first 20 lines):"
+        head -20 "$codex_base/config.toml" | sed 's/^/      /'
+      fi
+    fi
+    
+    # Show AGENTS.md that would be installed
+    printf "\n"
+    print_color "$BOLD" "📄 AGENTS.md file that would be installed to ~/.codex/:"
+    printf "\n"
+    if [ -f "$repo_root/AGENTS.md" ]; then
+      local target_file="$codex_dir/AGENTS.md"
+      if [ -f "$target_file" ]; then
+        # Show diff if file exists
+        print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + AGENTS.md (new file)"
+        print_color "$CYAN" "    Preview (first 10 lines):"
+        head -10 "$repo_root/AGENTS.md" | sed 's/^/      /'
+      fi
+    fi
+  else
+    # Install Codex config.toml
+    if [ -f "$codex_base/config.toml" ]; then
+      mkdir -p "$codex_dir"
+      local backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
+      
+      # Backup existing file if it exists
+      if [ -f "$codex_dir/config.toml" ]; then
+        cp "$codex_dir/config.toml" "$backup"
+        log_info "Backed up existing Codex config to: $backup"
+      fi
+      
+      cp "$codex_base/config.toml" "$codex_dir/config.toml"
+      log_success "Installed config.toml to ~/.codex/"
+    fi
+    
+    # Install AGENTS.md
+    if [ -f "$repo_root/AGENTS.md" ]; then
+      local backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+      
+      # Backup existing file if it exists
+      if [ -f "$codex_dir/AGENTS.md" ]; then
+        cp "$codex_dir/AGENTS.md" "$backup"
+        log_info "Backed up existing AGENTS.md to: $backup"
+      fi
+      
+      cp "$repo_root/AGENTS.md" "$codex_dir/AGENTS.md"
+      log_success "Installed AGENTS.md to ~/.codex/"
+    fi
+    
+    # Update manifest to include Codex files
+    local manifest="$claude_code_dir/.ai-rules-manifest.json"
+    cat > "$manifest" <<EOF
+{
+  "version": "1.0",
+  "installed": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "source": "$repo_root",
+  "configurations": [
+    "settings.json",
+    "agents/",
+    "commands/",
+    "CLAUDE.md"
+  ],
+  "codex_configurations": [
+    "$codex_dir/config.toml",
+    "$codex_dir/AGENTS.md"
+  ]
+}
+EOF
+    log_success "Updated manifest: $manifest"
+  fi
+  
+  printf "\n"
+  
   # Success message
   print_color "$BOLD$GREEN" "    ╔════════════════════════════════════════╗"
   print_color "$BOLD$GREEN" "    ║     ${ROCKET} Installation Complete! ${ROCKET}        ║"
@@ -612,15 +757,17 @@ EOF
   printf "\n"
   
   log_success "AI Rules has been successfully installed!"
-  log_info "Restart Claude Code to apply the new configurations."
+  log_info "Restart Claude Code and Codex CLI to apply the new configurations."
   printf "\n"
   
   # Show what was installed
   print_color "$CYAN" "Installed configuration to:"
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
     print_color "$YELLOW" "  • Claude Code: %USERPROFILE%\\.claude\\"
+    print_color "$YELLOW" "  • Codex CLI: %USERPROFILE%\\.codex\\"
   else
     print_color "$YELLOW" "  • Claude Code: ~/.claude/"
+    print_color "$YELLOW" "  • Codex CLI: ~/.codex/"
   fi
   printf "\n"
   
