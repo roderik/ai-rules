@@ -81,9 +81,9 @@ show_banner() {
   printf "${BLUE}    ██${CYAN}║  ██║██${GREEN}║    ██${YELLOW}║  ██║╚██████${MAGENTA}╔╝███████${RED}╗███████${BLUE}╗███████${CYAN}║${NC}\n"
   printf "${BLUE}    ╚═${CYAN}╝  ╚═╝╚═${GREEN}╝    ╚═${YELLOW}╝  ╚═╝ ╚═════${MAGENTA}╝ ╚══════${RED}╝╚══════${BLUE}╝╚══════${CYAN}╝${NC}\n"
   printf "\n"
-  printf "${BOLD}${MAGENTA}                    ╔═══════════════════════════╗${NC}\n"
-  printf "${BOLD}${CYAN}                    ║      AI Rules Setup       ║${NC}\n"
-  printf "${BOLD}${MAGENTA}                    ╚═══════════════════════════╝${NC}\n"
+  printf "${BOLD}${MAGENTA}╔═══════════════════════════╗${NC}\n"
+  printf "${BOLD}${CYAN}║      AI Rules Setup       ║${NC}\n"
+  printf "${BOLD}${MAGENTA}╚═══════════════════════════╝${NC}\n"
   printf "\n"
 }
 
@@ -1197,9 +1197,9 @@ EOF
   printf "\n"
   
   # Success message
-  print_color "$BOLD$GREEN" "    ╔════════════════════════════════════════╗"
-  print_color "$BOLD$GREEN" "    ║     ${ROCKET} Installation Complete! ${ROCKET}        ║"
-  print_color "$BOLD$GREEN" "    ╚════════════════════════════════════════╝"
+  print_color "$BOLD$GREEN" "╔════════════════════════════════════════╗"
+  print_color "$BOLD$GREEN" "║     ${ROCKET} Installation Complete! ${ROCKET}        ║"
+  print_color "$BOLD$GREEN" "╚════════════════════════════════════════╝"
   printf "\n"
   
   log_success "AI Rules has been successfully installed!"

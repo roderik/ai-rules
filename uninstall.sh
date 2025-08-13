@@ -45,9 +45,9 @@ show_banner() {
   printf "${BLUE}    ██${CYAN}║  ██║██${GREEN}║    ██${YELLOW}║  ██║╚██████${MAGENTA}╔╝███████${RED}╗███████${BLUE}╗███████${CYAN}║${NC}\n"
   printf "${BLUE}    ╚═${CYAN}╝  ╚═╝╚═${GREEN}╝    ╚═${YELLOW}╝  ╚═╝ ╚═════${MAGENTA}╝ ╚══════${RED}╝╚══════${BLUE}╝╚══════${CYAN}╝${NC}\n"
   printf "\n"
-  printf "${BOLD}${RED}                    ╔═══════════════════════════╗${NC}\n"
-  printf "${BOLD}${YELLOW}                    ║   AI Rules Uninstaller    ║${NC}\n"
-  printf "${BOLD}${RED}                    ╚═══════════════════════════╝${NC}\n"
+  printf "${BOLD}${RED}╔═══════════════════════════╗${NC}\n"
+  printf "${BOLD}${YELLOW}║   AI Rules Uninstaller    ║${NC}\n"
+  printf "${BOLD}${RED}╚═══════════════════════════╝${NC}\n"
   printf "\n"
 }
 
@@ -544,9 +544,9 @@ USAGE
   printf "\n"
   
   # Success message
-  print_color "$BOLD$GREEN" "    ╔════════════════════════════════════════╗"
-  print_color "$BOLD$GREEN" "    ║     Uninstallation Complete! ${SUCCESS}       ║"
-  print_color "$BOLD$GREEN" "    ╚════════════════════════════════════════╝"
+  print_color "$BOLD$GREEN" "╔════════════════════════════════════════╗"
+  print_color "$BOLD$GREEN" "║     Uninstallation Complete! ${SUCCESS}       ║"
+  print_color "$BOLD$GREEN" "╚════════════════════════════════════════╝"
   printf "\n"
   
   log_success "AI Rules has been successfully removed!"
