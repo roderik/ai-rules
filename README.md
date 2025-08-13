@@ -5,6 +5,7 @@ Professional Claude Code configuration with enterprise-grade defaults for Solidi
 ## Features
 
 ### 🎯 Smart Configuration
+
 - **Optimized Environment Variables**: Extended timeouts, enhanced output limits, deep thinking tokens
 - **Professional Hooks**: Auto-formatting with Prettier and Forge, security warnings, sensitive file protection
 - **Status Line Integration**: Real-time usage tracking with `ccusage`
@@ -13,12 +14,14 @@ Professional Claude Code configuration with enterprise-grade defaults for Solidi
 - **Custom Commands**: `/review` command for manual code review triggers
 
 ### 🛡️ Security First
+
 - Warns about dangerous commands (`rm -rf`, `sudo`, etc.)
 - Protects sensitive files (`.env`, secrets, SSH configs)
 - Blocks prompts containing passwords or API keys
 - Creates backups before any modifications
 
 ### 🎨 Developer Experience
+
 - Beautiful gradient ASCII art banner
 - Colorful terminal output with emoji indicators
 - Dry-run mode for safe testing
@@ -28,12 +31,14 @@ Professional Claude Code configuration with enterprise-grade defaults for Solidi
 ## Quick Install
 
 ### Basic One-liner
+
 ```bash
 # Default installation
 curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/install.sh | bash
 ```
 
 ### One-liner with Options
+
 ```bash
 # Preview changes without installing (dry run)
 curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/install.sh | bash -s -- --dry-run
@@ -46,6 +51,7 @@ wget -qO- https://raw.githubusercontent.com/roderik/ai-rules/main/install.sh | b
 ```
 
 ### Clone and Install
+
 ```bash
 git clone https://github.com/roderik/ai-rules.git
 cd ai-rules
@@ -72,6 +78,7 @@ Configuration is installed to: `~/.claude/`
 ## What Gets Installed
 
 ### AI Agents
+
 - **code-reviewer**: Automatically reviews code changes for quality, security, and best practices
   - Invoke directly with `@code-reviewer` in Claude Code
   - Runs automatically after code modifications
@@ -79,13 +86,43 @@ Configuration is installed to: `~/.claude/`
   - Validates architecture patterns
   - Suggests improvements
 
-### Custom Commands  
+- **test-runner**: Proactive agent for running quality checks
+  - Invoke directly with `@test-runner` in Claude Code
+  - Runs tests, linting, and formatting
+  - Returns focused error list with file:line:function format
+  - Critical requirement - runs after ANY code change
+  - No exceptions for quality enforcement
+
+- **pr-creator**: PR creation and lifecycle management agent
+  - Invoke directly with `@pr-creator` in Claude Code
+  - Creates pull requests when explicitly requested
+  - Handles branch creation, commits, and pushing
+  - Generates PR title and description from changes
+  - Returns PR URL for review
+
+### Custom Commands
+
 - **/review**: Manual trigger for comprehensive code review
   - Alternative: Use `@code-reviewer` to invoke the agent directly
   - Reviews unstaged, staged, and branch commits
   - Provides detailed feedback
 
+- **/test**: Automated test and fix workflow
+  - Launches test-runner agent to check for issues
+  - Automatically fixes format, lint, and type errors
+  - Iterates until all checks pass
+  - Returns focused error list with file:line format
+
+- **/pr**: Create pull requests with a single command
+  - Handles complete PR workflow automatically
+  - Creates appropriate branch names
+  - Commits uncommitted changes
+  - Generates PR title and description from changes
+  - Supports Linear ticket integration
+  - Returns PR URL for review
+
 ### Environment Variables
+
 ```json
 {
   "ENABLE_BACKGROUND_TASKS": "1",
@@ -106,30 +143,36 @@ Configuration is installed to: `~/.claude/`
 ```
 
 ### Hooks
+
 - **PostToolUse**: Auto-format with Prettier and Forge for Solidity
 - **PreToolUse**: Security warnings for dangerous operations
 - **SessionStart**: Session logging with timestamp
 - **UserPromptSubmit**: Sensitive data filtering
 
 ### Features
+
 - `ccusage` status line for real-time usage tracking
 - Auto-approval for all project MCP servers
 - Co-authorship disabled by default
 
 ### MCP Servers
+
 Pre-configured MCP (Model Context Protocol) servers:
+
 - **memory**: Persistent memory across sessions (`@modelcontextprotocol/server-memory`)
 - **filesystem**: File system access with home directory as root (`@modelcontextprotocol/server-filesystem`)
 
 ## Uninstallation
 
 ### Basic One-liner
+
 ```bash
 # Default uninstall
 curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/uninstall.sh | bash
 ```
 
 ### One-liner with Options
+
 ```bash
 # Preview what will be removed (dry run)
 curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/uninstall.sh | bash -s -- --dry-run
@@ -142,6 +185,7 @@ wget -qO- https://raw.githubusercontent.com/roderik/ai-rules/main/uninstall.sh |
 ```
 
 ### Using Local Script
+
 ```bash
 ./uninstall.sh           # Interactive uninstall
 ./uninstall.sh --dry-run # Preview what will be removed
@@ -149,6 +193,7 @@ wget -qO- https://raw.githubusercontent.com/roderik/ai-rules/main/uninstall.sh |
 ```
 
 The uninstaller:
+
 - Preserves your personal settings
 - Creates timestamped backups
 - Only removes AI Rules specific configurations
@@ -163,21 +208,25 @@ The uninstaller:
 ### Installing Dependencies
 
 **macOS:**
+
 ```bash
 brew install jq git
 ```
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt-get install jq git
 ```
 
 **Fedora/RHEL:**
+
 ```bash
 sudo yum install jq git
 ```
 
 **Arch Linux:**
+
 ```bash
 sudo pacman -S jq git
 ```
@@ -185,18 +234,23 @@ sudo pacman -S jq git
 ## Advanced Usage
 
 ### Custom Installation Directory
+
 ```bash
 export CLAUDE_CONFIG_ROOT="/custom/path"
 ./install.sh
 ```
 
 ### Backup Files
+
 Both installer and uninstaller create timestamped backups:
+
 - `settings.json.backup.YYYYMMDD_HHMMSS`
 - Preserves your existing configurations before changes
 
 ### JSON Merging
+
 The installer intelligently merges configurations:
+
 - Preserves existing user settings
 - Appends new hooks without duplicates
 - Merges environment variables
@@ -205,6 +259,7 @@ The installer intelligently merges configurations:
 ## Troubleshooting
 
 ### Missing Dependencies
+
 ```bash
 # Check for required tools
 command -v jq >/dev/null || echo "jq not installed"
@@ -212,13 +267,16 @@ command -v git >/dev/null || echo "git not installed"
 ```
 
 ### Permission Errors
+
 ```bash
 # Make scripts executable
 chmod +x install.sh uninstall.sh
 ```
 
 ### Forge Not Found
+
 Forge formatting is optional. To enable Solidity formatting:
+
 ```bash
 # Install Foundry
 curl -L https://foundry.paradigm.xyz | bash
@@ -226,7 +284,9 @@ foundryup
 ```
 
 ### Status Line Not Working
+
 Install ccusage for the status line feature:
+
 ```bash
 npm install -g ccusage
 # or
@@ -239,15 +299,19 @@ bun add -g ccusage
 ai-rules/
 ├── .claude/
 │   ├── agents/
-│   │   └── code-reviewer.md  # AI code review agent
+│   │   ├── code-reviewer.md  # AI code review agent
+│   │   ├── test-runner.md    # Quality checks agent
+│   │   └── pr-creator.md     # PR creation agent
 │   ├── commands/
-│   │   └── review.md         # Manual review command
+│   │   ├── review.md         # Manual review command
+│   │   ├── test.md           # Automated test/fix command
+│   │   └── pr.md             # PR creation command
 │   ├── settings/
 │   │   └── settings.json     # Environment variables and features
 │   ├── hooks/
-│   │   └── hooks.json         # Pre/Post tool hooks
+│   │   └── hooks.json        # Pre/Post tool hooks
 │   └── mcp/
-│       └── mcp.json           # MCP server configurations
+│       └── mcp.json          # MCP server configurations
 ├── install.sh                 # Installer script
 ├── uninstall.sh               # Uninstaller script
 └── README.md                  # This file
