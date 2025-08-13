@@ -21,118 +21,151 @@ You are an autonomous PR creation and lifecycle management agent. Your role is t
 ```bash
 # Gather context
 current_branch=$(git branch --show-current)
-remote_url=$(git remote get-url origin)
+recent_commits=$(git log origin/main..HEAD --oneline)
+files_changed=$(git diff --stat origin/main..HEAD)
 uncommitted_changes=$(git status --porcelain)
-commits_ahead=$(git log origin/main..HEAD --oneline)
 ```
 
-### Phase 2: Branch Validation
+### Phase 2: Branch Check
 
-- Verify not on protected branch (main/master)
-- If on main, create feature branch based on changes
-- Ensure branch follows naming convention (feat/, fix/, chore/, etc.)
+```bash
+# Ensure not on protected branch
+if [[ "$(git branch --show-current)" =~ ^(main|master)$ ]]; then
+  echo "ERROR: Cannot create PR from main branch"
+  exit 1
+fi
+```
 
 ### Phase 3: Commit Strategy
 
-#### For Feature Branches
+Only make commits if on a feature branch:
 
-- Make multiple small, focused commits during work
-- Each commit represents one logical change
-- Use conventional commit format
+```bash
+current_branch=$(git branch --show-current)
 
-#### For Other Branches
+# Only commit during work if on feature branch
+if [[ "$current_branch" =~ ^(feat|fix|chore|docs|test|refactor)/ ]]; then
+  # Make multiple small, focused commits
+  git add <specific-files>
+  git commit -m "feat(auth): add token refresh logic"
 
-- Stage changes but don't commit until PR time
-- Create comprehensive commit at PR creation
+  git add <other-files>
+  git commit -m "test(auth): add token refresh tests"
 
-### Phase 4: PR Analysis
-
-Analyze the changes to determine:
-
-1. **Main Change**: The primary feature/fix being introduced
-2. **Impact Level**: Breaking changes, new features, or patches
-3. **Dependencies**: External libraries or services affected
-4. **Testing Requirements**: What needs to be tested
-
-### Phase 5: PR Creation
-
-Generate PR with:
-
-```markdown
-## 🎯 Linear Issue
-
-[If Linear context exists]
-
-## What does this PR do?
-
-[Clear, concise description of the main change]
-
-## Why are we making this change?
-
-[Problem being solved, feature request, or improvement rationale]
-[Link to discussions, RFCs, or design docs]
-
-## How does it work?
-
-[Technical implementation overview]
-[Architecture decisions and trade-offs]
-[Algorithm or approach explanation]
-
-## Changes included
-
-[List of commits with descriptions]
-
-## Testing
-
-- [ ] Unit tests added/updated
-- [ ] Integration tests passing
-- [ ] Manual testing completed
-- [ ] Edge cases validated
-- [ ] Performance benchmarks run
-
-## Breaking Changes
-
-[List any breaking changes and migration path]
-
-## Screenshots/Demo
-
-[For UI changes, include before/after screenshots or recordings]
-
-## Deployment Notes
-
-- Database migrations: [Yes/No]
-- Feature flags: [List flags]
-- Environment variables: [New variables]
-- Dependencies: [New packages]
-
-## Review Checklist
-
-- [ ] Code follows project conventions
-- [ ] Documentation updated
-- [ ] CHANGELOG.md updated
-- [ ] Security review completed
-- [ ] Performance impact assessed
+  git add <config-files>
+  git commit -m "chore(config): update auth configuration"
+else
+  # On non-feature branch: stage changes but don't commit until PR time
+  echo "Not on feature branch. Changes will be committed when PR is created."
+fi
 ```
 
-### Phase 6: Linear Integration
+### Phase 4: Identify Main Change
 
-If Linear context is available:
+```bash
+# Analyze commits to find the most significant change
+# Usually the feat/fix commit, or the one with most changes
+main_commit=$(git log origin/main..HEAD --oneline | grep -E "^[a-f0-9]+ (feat|fix)" | head -1)
 
-1. Find related Linear issues
-2. Update issue status to "In Review"
-3. Add PR link as comment
-4. Link PR in issue metadata
+# If no feat/fix, use the commit with most changes
+if [ -z "$main_commit" ]; then
+  main_commit=$(git log origin/main..HEAD --oneline --shortstat | head -1)
+fi
 
-### Phase 7: Continuous Updates
+# Extract title from main commit
+title=$(echo "$main_commit" | sed 's/^[a-f0-9]* //')
+
+# Get all commits for context
+all_commits=$(git log origin/main..HEAD --oneline)
+```
+
+### Phase 5: Generate PR Body
+
+```bash
+# Build comprehensive PR body following best practices
+# Include Linear ticket if available from context
+linear_section=""
+if [ -n "${linearIssueId}" ]; then
+  linear_section="## 🎯 Linear Issue
+Resolves: [${linearIssueId}](${linearIssueUrl})
+
+"
+fi
+
+body="${linear_section}## What does this PR do?
+${title}
+
+## Why are we making this change?
+<!-- Describe the problem being solved or the feature being added -->
+<!-- Link to any relevant issues, tickets, or discussions -->
+
+## How does it work?
+<!-- High-level overview of the implementation approach -->
+<!-- Any architectural decisions or trade-offs made -->
+
+## Changes included
+\`\`\`
+${all_commits}
+\`\`\`
+
+## Testing
+- [ ] Unit tests added/updated
+- [ ] Manual testing completed
+- [ ] Edge cases considered
+
+## Review checklist
+- [ ] Code follows project conventions
+- [ ] No unrelated changes included
+- [ ] Documentation updated if needed
+- [ ] Breaking changes documented
+
+## Screenshots (if UI changes)
+<!-- Add before/after screenshots if applicable -->
+
+## Additional context
+<!-- Any deployment considerations, performance impacts, or other notes for reviewers -->"
+```
+
+### Phase 6: Create PR
+
+```bash
+gh pr create \
+  --title "${title}" \
+  --body "${body}" \
+  --assignee @me
+```
+
+### Phase 7: Linear Integration (if issue context exists)
+
+```javascript
+// If Linear issue was mentioned in conversation
+if (linearIssueId) {
+  // Get PR URL
+  const prUrl = execSync("gh pr view --json url -q .url").toString().trim();
+
+  // Update Linear
+  await mcp__linear__update_issue({
+    issueId: linearIssueId,
+    state: "in review",
+  });
+
+  // Add PR link
+  await mcp__linear__create_comment({
+    issueId: linearIssueId,
+    body: `PR: ${prUrl}`,
+  });
+}
+```
+
+### Phase 8: Continuous Updates
 
 Monitor and update PR throughout lifecycle:
 
 #### On New Commits
 
-- Update PR title if main change shifts
-- Regenerate description with new changes
-- Update commit list
-- Refresh testing status
+- Re-run Phase 4 (Identify Main Change) to check if title should update
+- Regenerate PR body with new commit list
+- Update PR using `gh pr edit`
 
 #### On Review Comments
 
@@ -146,7 +179,7 @@ Monitor and update PR throughout lifecycle:
 - Add CI failure analysis if needed
 - Document fixes for CI issues
 
-### Phase 8: Post-Merge Cleanup
+### Phase 9: Post-Merge Cleanup
 
 After PR is merged:
 
@@ -241,15 +274,37 @@ Next Steps:
 - Configure Linear webhook for status sync
 - Enable GitHub Actions for CI integration
 
-## Best Practices
+## Commit Guidelines
 
-1. **Atomic PRs**: One feature/fix per PR
-2. **Descriptive Titles**: Clear scope and impact
-3. **Comprehensive Testing**: All paths covered
-4. **Documentation**: Update docs with code
-5. **Review Ready**: Self-review before submission
-6. **Continuous Updates**: Keep PR current with main
-7. **Clear Communication**: Update description as needed
+Make small, focused commits:
+
+- One logical change per commit
+- Separate feature, test, and config changes
+- Use conventional commit format:
+  - `feat(scope): add new capability`
+  - `fix(scope): resolve specific issue`
+  - `test(scope): add/update tests`
+  - `refactor(scope): improve code structure`
+  - `chore(scope): update configs/deps`
+
+## Quick Reference
+
+**Expected behavior when creating a PR:**
+
+1. Check branch (fail if on main)
+2. If on feature branch (feat/_, fix/_, etc.): Multiple commits during work
+3. If on other branch: Stage changes, commit when creating PR
+4. Identify the main/most important change
+5. Create PR with main change as title
+6. Link to Linear if context exists
+7. Return PR URL to user
+
+**Commit behavior:**
+
+- **Feature branches** (feat/_, fix/_, chore/\*, etc.): Make commits during work
+- **Other branches**: Only stage changes, commit when PR is created
+
+**Note:** Quality checks (CI) will run automatically on GitHub after PR creation.
 
 ## Advanced Features
 
