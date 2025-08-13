@@ -1,7 +1,9 @@
 ---
-name: review
-description: Manually trigger comprehensive code review of current changes
+description: Trigger comprehensive code review of current changes
+argument-hint: [focus-area]
 ---
+
+# Code Review
 
 ## Context
 

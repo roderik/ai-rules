@@ -357,6 +357,13 @@ USAGE
       fi
     fi
     
+    # Show CLAUDE.md that would be removed
+    if [ -f "$claude_code_dir/CLAUDE.md" ]; then
+      printf "\n"
+      print_color "$BOLD" "📄 CLAUDE.md file that would be removed:"
+      print_color "$RED" "  - CLAUDE.md"
+    fi
+    
     if [ -f "$claude_code_dir/.ai-rules-manifest.json" ]; then
       print_color "$RED" "\n  • AI Rules manifest file would be removed"
     fi
@@ -388,6 +395,12 @@ USAGE
       fi
       # Remove directory if empty
       rmdir "$claude_code_dir/commands" 2>/dev/null || true
+    fi
+    
+    # Remove CLAUDE.md installed by AI Rules
+    if [ -f "$claude_code_dir/CLAUDE.md" ]; then
+      rm "$claude_code_dir/CLAUDE.md"
+      log_success "Removed CLAUDE.md"
     fi
     
     # Remove manifest

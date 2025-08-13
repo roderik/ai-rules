@@ -482,6 +482,43 @@ USAGE
       done
     fi
     
+    # Show CLAUDE.md that would be installed
+    printf "\n"
+    print_color "$BOLD" "📄 CLAUDE.md file that would be installed to ~/.claude/:"
+    printf "\n"
+    if [ -f "$repo_root/CLAUDE.md" ]; then
+      local target_file="$claude_code_dir/CLAUDE.md"
+      if [ -f "$target_file" ]; then
+        # Show diff if file exists
+        print_color "$YELLOW" "  ⚠️  CLAUDE.md (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/CLAUDE.md" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/CLAUDE.md" 2>/dev/null | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + CLAUDE.md (new file)"
+        print_color "$CYAN" "    Preview (first 10 lines):"
+        head -10 "$repo_root/CLAUDE.md" | sed 's/^/      /'
+      fi
+    fi
+    
     # Clean up temp files
     rm -rf "$temp_dir"
     printf "\n"
@@ -541,6 +578,14 @@ USAGE
       done
     fi
     
+    # Install CLAUDE.md file to global user folder
+    if [ -f "$repo_root/CLAUDE.md" ]; then
+      printf "\n"
+      print_color "$BOLD" "Installing CLAUDE.md..."
+      cp "$repo_root/CLAUDE.md" "$claude_code_dir/CLAUDE.md"
+      log_success "Installed CLAUDE.md to ~/.claude/"
+    fi
+    
     # Create manifest for uninstall
     local manifest="$claude_code_dir/.ai-rules-manifest.json"
     cat > "$manifest" <<EOF
@@ -551,7 +596,8 @@ USAGE
   "configurations": [
     "settings.json",
     "agents/",
-    "commands/"
+    "commands/",
+    "CLAUDE.md"
   ]
 }
 EOF
