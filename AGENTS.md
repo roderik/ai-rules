@@ -21,6 +21,13 @@ Single line responses preferred unless complexity demands more.
 
 ## Code Execution
 
+### Documentation First (CRITICAL)
+
+- MANDATORY: Start ANY code task with context7 and octocode MCPs
+- For libraries: `mcp__context7__resolve-library-id` then `mcp__context7__get-library-docs`
+- For GitHub: `mcp__octocode__githubSearchCode` and `mcp__octocode__packageSearch`
+- NEVER assume syntax - ALWAYS verify with current docs
+
 Check existing patterns before implementing:
 
 - Read neighboring files for conventions
