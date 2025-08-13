@@ -1,0 +1,48 @@
+{
+"mcpServers": {
+    "linear": {
+      "type": "sse",
+      "url": "https://mcp.linear.app/sse"
+    },
+    "context7": {
+      "type": "sse",
+      "url": "https://mcp.context7.com/sse"
+    },
+    "deepwiki": {
+      "type": "sse",
+      "url": "https://mcp.deepwiki.com/sse"
+    },
+    "sentry": {
+      "type": "http",
+      "url": "https://mcp.sentry.dev/mcp"
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "bun",
+      "args": [
+        "x",
+        "-y",
+        "@playwright/mcp@latest"
+      ],
+      "env": {}
+    },
+    "grep": {
+      "type": "http",
+      "url": "https://mcp.grep.app"
+    },
+    "OpenZeppelinSolidityContracts": {
+      "type": "http",
+      "url": "https://mcp.openzeppelin.com/contracts/solidity/mcp"
+    },
+    "octocode": {
+      "type": "stdio",
+      "command": "bun",
+      "args": [
+        "x",
+        "-y",
+        "octocode-mcp@latest"
+      ],
+      "env": {}
+    }
+  }
+}

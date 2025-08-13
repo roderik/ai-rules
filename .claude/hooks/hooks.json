@@ -1,0 +1,45 @@
+{
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Edit|MultiEdit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jq -r '.tool_input.file_path // empty' | while read file_path; do if [[ -f \"$file_path\" ]]; then if [[ \"$file_path\" == *.sol ]]; then if command -v forge >/dev/null 2>&1; then forge fmt \"$file_path\" 2>/dev/null || true; fi; else bunx prettier --write \"$file_path\" --ignore-unknown 2>/dev/null || true; fi; fi; done"
+                    }
+                ]
+            }
+        ],
+        "PreToolUse": [
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jq -r '.tool_input.command // empty' | grep -qE '\\b(rm -rf|sudo|chmod 777|>\\s*/dev/s)' && echo 'Warning: Potentially dangerous command detected' >&2 && exit 0 || exit 0"
+                    }
+                ]
+            },
+            {
+                "matcher": "Write|Edit|MultiEdit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jq -r '.tool_input.file_path // empty' | grep -qE '\\.(env|secrets?|key|pem|crt)$|/\\.(ssh|aws|config)/|node_modules/|dist/|build/' && echo 'Warning: Modifying sensitive or generated file' >&2 && exit 0 || exit 0"
+                    }
+                ]
+            }
+        ],
+        "SessionStart": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "echo \"Session started at $(date). Working directory: $(pwd)\""
+                    }
+                ]
+            }
+        ]
+    }
+}
