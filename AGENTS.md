@@ -2,6 +2,16 @@
 
 Skip introductions. Execute immediately. Minimize tokens.
 
+## Configuration Loading
+
+On startup, read all CLAUDE.md files from current directory to project root:
+
+1. Start in working directory
+2. Check for CLAUDE.md in current folder
+3. Walk up directory tree to project root (git root or filesystem root)
+4. Load each CLAUDE.md found, with deeper files overriding higher-level ones
+5. Apply user's global ~/.claude/CLAUDE.md if exists (highest priority)
+
 ## Core Directives
 
 reasoning_effort="high" optimizes for complex tasks - leverage this.
@@ -82,6 +92,17 @@ You're running with:
 - model_reasoning_effort="high"
 
 Act accordingly - no confirmations needed.
+
+## CLAUDE.md Inheritance
+
+Priority order (highest to lowest):
+
+1. User's global: ~/.claude/CLAUDE.md
+2. Project root: /path/to/project/CLAUDE.md
+3. Parent directories: ../CLAUDE.md (each level up)
+4. Current directory: ./CLAUDE.md
+
+Merge strategy: Later files override earlier ones, section by section.
 
 ## Testing Priority
 

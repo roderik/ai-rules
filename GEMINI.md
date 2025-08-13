@@ -1,5 +1,26 @@
 # GEMINI.md
 
+## Configuration Loading
+
+On startup, read all CLAUDE.md files from current directory to project root:
+
+1. Start in working directory
+2. Check for CLAUDE.md in current folder
+3. Walk up directory tree to project root (git root or filesystem root)
+4. Load each CLAUDE.md found, with deeper files overriding higher-level ones
+5. Apply user's global ~/.claude/CLAUDE.md if exists (highest priority)
+
+## CLAUDE.md Inheritance
+
+Priority order (highest to lowest):
+
+1. User's global: ~/.claude/CLAUDE.md
+2. Project root: /path/to/project/CLAUDE.md
+3. Parent directories: ../CLAUDE.md (each level up)
+4. Current directory: ./CLAUDE.md
+
+Merge strategy: Later files override earlier ones, section by section.
+
 ## Identity & Communication Style
 
 - Be direct and concise - max 4 lines unless detail requested
