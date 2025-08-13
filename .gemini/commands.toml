@@ -1,0 +1,81 @@
+# Gemini Custom Commands Configuration
+
+[pr]
+command = '''gemini "
+## Create Pull Request
+
+Current branch: $(git branch --show-current)
+Recent commits: $(git log origin/main..HEAD --oneline || echo 'No commits ahead of main')
+Uncommitted changes: $(git status --porcelain)
+Remote URL: $(git remote get-url origin)
+
+User request: $1
+
+Please handle the complete PR creation workflow:
+1. Check if there are changes to commit (if uncommitted, add and commit them)
+2. Push changes to remote 
+3. Create pull request using gh pr create
+4. Include comprehensive PR description with:
+   - Summary of changes
+   - Test plan
+   - Any linked issues or tickets
+5. Return the PR URL when complete
+"'''
+description = "Create pull request with comprehensive description"
+
+[review]
+command = '''gemini "
+## Code Review
+
+Current git status: $(git status)
+Current git diff (staged and unstaged): $(git diff HEAD | head -500)
+Current branch: $(git branch --show-current)
+Recent commits: $(git log --oneline -10)
+
+User focus request: $1
+
+Perform a comprehensive code review of all current changes. Review for:
+
+1. **Critical Issues**: Bugs, security vulnerabilities, data loss risks
+2. **Important Issues**: Performance problems, maintainability concerns
+3. **Suggestions**: Code style, minor optimizations
+
+Provide:
+- Review confidence score
+- Categorized findings with severity
+- Specific fix recommendations with code examples
+- Prioritized action items
+
+Focus especially on: ${1:-all aspects}
+"'''
+description = "Comprehensive code review of current changes"
+
+[test]
+command = '''gemini "
+## Run Quality Checks
+
+Run comprehensive quality checks and fix any issues found:
+
+1. Run 'bun run ci' to execute all checks
+2. Parse any errors (format: file:line - issue)
+3. For each error:
+   - Navigate to the file and line
+   - Apply the appropriate fix
+4. Re-run checks after fixes
+5. Repeat until all checks pass
+
+Available commands:
+- bun run test
+- bun run lint
+- bun run typecheck
+- bun run build
+
+Fix approach:
+- Format errors: Apply project formatting rules
+- Lint errors: Fix unused variables, missing returns
+- Test failures: Analyze expectations and fix implementation
+- Type errors: Add/correct type annotations
+
+Keep iterating until clean.
+"'''
+description = "Run tests, linting, and auto-fix issues"
