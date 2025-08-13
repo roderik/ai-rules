@@ -267,6 +267,7 @@ USAGE
   repo_root=$(script_dir)
   local src_base="$repo_root/.claude"
   local codex_base="$repo_root/.codex"
+  local gemini_base="$repo_root/.gemini"
   
   if [ ! -d "$src_base" ]; then
     log_error "Source directory not found: $src_base"
@@ -750,6 +751,210 @@ EOF
   
   printf "\n"
   
+  # Install Gemini CLI configuration
+  print_color "$BOLD" "=== Installing Gemini CLI Configuration ==="
+  
+  # Detect OS and set appropriate path for Gemini
+  local gemini_dir
+  if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+    # Windows path
+    gemini_dir="$USERPROFILE/.gemini"
+    log_info "Detected Windows environment for Gemini"
+  else
+    # Unix-like path (macOS, Linux)
+    gemini_dir="$HOME/.gemini"
+  fi
+  
+  if [ "$dry_run" -eq 1 ]; then
+    log_info "[DRY RUN] Would install Gemini configuration to: $gemini_dir"
+    
+    # Show GEMINI.md that would be installed
+    printf "\n"
+    print_color "$BOLD" "📄 GEMINI.md file that would be installed to ~/.gemini/:"
+    printf "\n"
+    if [ -f "$gemini_base/GEMINI.md" ]; then
+      local target_file="$gemini_dir/GEMINI.md"
+      if [ -f "$target_file" ]; then
+        # Show diff if file exists
+        print_color "$YELLOW" "  ⚠️  GEMINI.md (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$gemini_base/GEMINI.md" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$gemini_base/GEMINI.md" 2>/dev/null | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + GEMINI.md (new file)"
+        print_color "$CYAN" "    Preview (first 10 lines):"
+        head -10 "$gemini_base/GEMINI.md" | sed 's/^/      /'
+      fi
+    fi
+    
+    # Show settings.json that would be installed
+    printf "\n"
+    print_color "$BOLD" "⚙️  settings.json that would be installed to ~/.gemini/:"
+    printf "\n"
+    if [ -f "$gemini_base/settings.json" ]; then
+      local target_file="$gemini_dir/settings.json"
+      if [ -f "$target_file" ]; then
+        # Show diff if file exists
+        print_color "$YELLOW" "  ⚠️  settings.json (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$gemini_base/settings.json" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$gemini_base/settings.json" 2>/dev/null | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + settings.json (new file)"
+        print_color "$CYAN" "    Preview (first 20 lines):"
+        head -20 "$gemini_base/settings.json" | sed 's/^/      /'
+      fi
+    fi
+    
+    # Show commands.toml that would be installed
+    printf "\n"
+    print_color "$BOLD" "📋 commands.toml that would be installed to ~/.gemini/:"
+    printf "\n"
+    if [ -f "$gemini_base/commands.toml" ]; then
+      local target_file="$gemini_dir/commands.toml"
+      if [ -f "$target_file" ]; then
+        # Show diff if file exists
+        print_color "$YELLOW" "  ⚠️  commands.toml (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$gemini_base/commands.toml" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$gemini_base/commands.toml" 2>/dev/null | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + commands.toml (new file)"
+        print_color "$CYAN" "    Preview (first 15 lines):"
+        head -15 "$gemini_base/commands.toml" | sed 's/^/      /'
+      fi
+    fi
+  else
+    # Install Gemini configuration files
+    if [ -d "$gemini_base" ]; then
+      mkdir -p "$gemini_dir"
+      
+      # Install GEMINI.md
+      if [ -f "$gemini_base/GEMINI.md" ]; then
+        local backup="${gemini_dir}/GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
+        
+        # Backup existing file if it exists
+        if [ -f "$gemini_dir/GEMINI.md" ]; then
+          cp "$gemini_dir/GEMINI.md" "$backup"
+          log_info "Backed up existing GEMINI.md to: $backup"
+        fi
+        
+        cp "$gemini_base/GEMINI.md" "$gemini_dir/GEMINI.md"
+        log_success "Installed GEMINI.md to ~/.gemini/"
+      fi
+      
+      # Install settings.json
+      if [ -f "$gemini_base/settings.json" ]; then
+        local backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
+        
+        # Backup existing file if it exists
+        if [ -f "$gemini_dir/settings.json" ]; then
+          cp "$gemini_dir/settings.json" "$backup"
+          log_info "Backed up existing Gemini settings to: $backup"
+        fi
+        
+        cp "$gemini_base/settings.json" "$gemini_dir/settings.json"
+        log_success "Installed settings.json to ~/.gemini/"
+      fi
+      
+      # Install commands.toml
+      if [ -f "$gemini_base/commands.toml" ]; then
+        local backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
+        
+        # Backup existing file if it exists
+        if [ -f "$gemini_dir/commands.toml" ]; then
+          cp "$gemini_dir/commands.toml" "$backup"
+          log_info "Backed up existing commands.toml to: $backup"
+        fi
+        
+        cp "$gemini_base/commands.toml" "$gemini_dir/commands.toml"
+        log_success "Installed commands.toml to ~/.gemini/"
+      fi
+      
+      # Update manifest to include Gemini files
+      local manifest="$claude_code_dir/.ai-rules-manifest.json"
+      cat > "$manifest" <<EOF
+{
+  "version": "1.0",
+  "installed": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "source": "$repo_root",
+  "configurations": [
+    "settings.json",
+    "agents/",
+    "commands/",
+    "CLAUDE.md"
+  ],
+  "codex_configurations": [
+    "$codex_dir/config.toml",
+    "$codex_dir/AGENTS.md"
+  ],
+  "gemini_configurations": [
+    "$gemini_dir/GEMINI.md",
+    "$gemini_dir/settings.json",
+    "$gemini_dir/commands.toml"
+  ]
+}
+EOF
+      log_success "Updated manifest: $manifest"
+    fi
+  fi
+  
+  printf "\n"
+  
   # Success message
   print_color "$BOLD$GREEN" "    ╔════════════════════════════════════════╗"
   print_color "$BOLD$GREEN" "    ║     ${ROCKET} Installation Complete! ${ROCKET}        ║"
@@ -757,7 +962,7 @@ EOF
   printf "\n"
   
   log_success "AI Rules has been successfully installed!"
-  log_info "Restart Claude Code and Codex CLI to apply the new configurations."
+  log_info "Restart Claude Code, Codex CLI, and Gemini CLI to apply the new configurations."
   printf "\n"
   
   # Show what was installed
@@ -765,9 +970,11 @@ EOF
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
     print_color "$YELLOW" "  • Claude Code: %USERPROFILE%\\.claude\\"
     print_color "$YELLOW" "  • Codex CLI: %USERPROFILE%\\.codex\\"
+    print_color "$YELLOW" "  • Gemini CLI: %USERPROFILE%\\.gemini\\"
   else
     print_color "$YELLOW" "  • Claude Code: ~/.claude/"
     print_color "$YELLOW" "  • Codex CLI: ~/.codex/"
+    print_color "$YELLOW" "  • Gemini CLI: ~/.gemini/"
   fi
   printf "\n"
   
