@@ -1,6 +1,7 @@
 ---
-description: Create a pull request with focused commits and Linear integration
-argument-hint: [pr-title]
+description: Trigger autonomous PR creation and lifecycle management
+allowed-tools: Task, Bash, mcp__linear__*
+argument-hint: [pr-title or linear-ticket]
 ---
 
 # Create Pull Request
@@ -8,172 +9,94 @@ argument-hint: [pr-title]
 ## Context
 
 - Current branch: !`git branch --show-current`
-- Recent commits: !`git log origin/main..HEAD --oneline`
-- Files changed: !`git diff --stat origin/main..HEAD`
+- Recent commits: !`git log origin/main..HEAD --oneline || echo "No commits ahead of main"`
+- Uncommitted changes: !`git status --porcelain`
+- Remote URL: !`git remote get-url origin`
 
 ## Your Task
 
-When `/pr $ARGUMENTS` is invoked, execute these steps:
+User request: $ARGUMENTS
 
-### 1. Branch Check
+Trigger the @pr-creator agent to handle the complete PR creation workflow including branch management, commit organization, PR generation, and Linear integration.
 
-```bash
-# Ensure not on protected branch
-if [[ "$(git branch --show-current)" =~ ^(main|master)$ ]]; then
-  echo "ERROR: Cannot create PR from main branch"
-  exit 1
-fi
+When invoking the pr-creator agent using the Task tool:
+
+```
+If "$ARGUMENTS" is not empty:
+  - Parse for Linear ticket IDs (PROJ-123 format)
+  - Use remaining text as PR title override
+  - Pass both to the agent for processing
+
+If "$ARGUMENTS" is empty:
+  - Agent will analyze commits to determine PR title
+  - Agent will search for Linear context in commit messages
 ```
 
-### 2. Commit Strategy
+The pr-creator agent will autonomously:
 
-Only make commits if on a feature branch:
+1. **Environment Analysis**: Gather full repository context
+2. **Branch Validation**: Ensure proper branch setup (not on main/master)
+3. **Commit Strategy**: Organize commits based on branch type
+4. **PR Analysis**: Determine main change and impact level
+5. **PR Creation**: Generate comprehensive PR with what/why/how structure
+6. **Linear Integration**: Link and update related tickets
+7. **Continuous Updates**: Monitor PR lifecycle and update as needed
+8. **Post-Merge Cleanup**: Handle branch deletion and ticket closure
 
-```bash
-current_branch=$(git branch --show-current)
+### Expected Output
 
-# Only commit during work if on feature branch
-if [[ "$current_branch" =~ ^(feat|fix|chore|docs|test|refactor)/ ]]; then
-  # Make multiple small, focused commits
-  git add <specific-files>
-  git commit -m "feat(auth): add token refresh logic"
+The agent will provide:
 
-  git add <other-files>
-  git commit -m "test(auth): add token refresh tests"
+- **PR URL**: Direct link to created pull request
+- **Branch Info**: Current branch and commit summary
+- **Linear Status**: Linked tickets and their updated states
+- **Next Steps**: Actions needed for PR completion
+- **Review Assignment**: Suggested or assigned reviewers
 
-  git add <config-files>
-  git commit -m "chore(config): update auth configuration"
-else
-  # On non-feature branch: stage changes but don't commit until PR time
-  echo "Not on feature branch. Changes will be committed when PR is created."
-fi
-```
+## Lifecycle Management
 
-### 3. Identify Main Change
+The pr-creator agent will continue to:
 
-```bash
-# Analyze commits to find the most significant change
-# Usually the feat/fix commit, or the one with most changes
-main_commit=$(git log origin/main..HEAD --oneline | grep -E "^[a-f0-9]+ (feat|fix)" | head -1)
+### On New Commits
 
-# If no feat/fix, use the commit with most changes
-if [ -z "$main_commit" ]; then
-  main_commit=$(git log origin/main..HEAD --oneline --shortstat | head -1)
-fi
+- Update PR title if primary change shifts
+- Regenerate description with new changes
+- Update testing checklist
 
-# Extract title from main commit
-title=$(echo "$main_commit" | sed 's/^[a-f0-9]* //')
+### On Review Comments
 
-# Get all commits for context
-all_commits=$(git log origin/main..HEAD --oneline)
-```
+- Track requested changes
+- Add "Addresses feedback" section
+- Link fixing commits
 
-### 4. Generate PR Body
+### On CI Status Changes
 
-```bash
-# Build comprehensive PR body following best practices
-# Include Linear ticket if available from context
-linear_section=""
-if [ -n "${linearIssueId}" ]; then
-  linear_section="## 🎯 Linear Issue
-Resolves: [${linearIssueId}](${linearIssueUrl})
+- Update testing status
+- Document CI fixes
+- Suggest resolution steps
 
-"
-fi
+### On Merge
 
-body="${linear_section}## What does this PR do?
-${title}
+- Update Linear to "Done"
+- Clean up branches
+- Document follow-up work
 
-## Why are we making this change?
-<!-- Describe the problem being solved or the feature being added -->
-<!-- Link to any relevant issues, tickets, or discussions -->
+## Output Handling
 
-## How does it work?
-<!-- High-level overview of the implementation approach -->
-<!-- Any architectural decisions or trade-offs made -->
+When the pr-creator agent returns its results:
 
-## Changes included
-\`\`\`
-${all_commits}
-\`\`\`
+1. **Display the formatted PR report** exactly as provided
+2. **Show the PR URL** prominently for user access
+3. **List any warnings** about large PRs or missing tests
+4. **Provide next steps** for the review process
 
-## Testing
-- [ ] Unit tests added/updated
-- [ ] Manual testing completed
-- [ ] Edge cases considered
+## Error Recovery
 
-## Review checklist
-- [ ] Code follows project conventions
-- [ ] No unrelated changes included
-- [ ] Documentation updated if needed
-- [ ] Breaking changes documented
+The agent handles common issues:
 
-## Screenshots (if UI changes)
-<!-- Add before/after screenshots if applicable -->
+- **Rebase conflicts**: Guides through resolution
+- **Large PRs**: Suggests splitting strategies
+- **CI failures**: Analyzes and suggests fixes
+- **Missing reviewers**: Auto-assigns based on CODEOWNERS
 
-## Additional context
-<!-- Any deployment considerations, performance impacts, or other notes for reviewers -->"
-```
-
-### 5. Create PR
-
-```bash
-gh pr create \
-  --title "${title}" \
-  --body "${body}" \
-  --assignee @me
-```
-
-### 6. Linear Integration (if issue context exists)
-
-```javascript
-// If Linear issue was mentioned in conversation
-if (linearIssueId) {
-  // Get PR URL
-  const prUrl = execSync("gh pr view --json url -q .url").toString().trim();
-
-  // Update Linear
-  await mcp__linear__update_issue({
-    issueId: linearIssueId,
-    state: "in review",
-  });
-
-  // Add PR link
-  await mcp__linear__create_comment({
-    issueId: linearIssueId,
-    body: `PR: ${prUrl}`,
-  });
-}
-```
-
-## Commit Guidelines
-
-Make small, focused commits:
-
-- One logical change per commit
-- Separate feature, test, and config changes
-- Use conventional commit format:
-  - `feat(scope): add new capability`
-  - `fix(scope): resolve specific issue`
-  - `test(scope): add/update tests`
-  - `refactor(scope): improve code structure`
-  - `chore(scope): update configs/deps`
-
-## Quick Reference
-
-**Expected behavior when user says "create a PR":**
-
-1. Check branch (fail if on main)
-2. If on feature branch (feat/_, fix/_, etc.): Multiple commits during work
-3. If on other branch: Stage changes, commit when creating PR
-4. Identify the main/most important change
-5. Create PR with main change as title
-6. Link to Linear if context exists
-7. Return PR URL to user
-
-**Commit behavior:**
-
-- **Feature branches** (feat/_, fix/_, chore/\*, etc.): Make commits during work
-- **Other branches**: Only stage changes, commit when PR is created
-
-**Note:** Quality checks (CI) will run automatically on GitHub after PR creation.
+Remember: The pr-creator agent manages the entire PR lifecycle, not just creation. It will continue updating the PR until it's merged.
