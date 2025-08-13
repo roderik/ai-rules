@@ -30,6 +30,13 @@ Merge strategy: Later files override earlier ones, section by section.
 
 ## Coding Standards
 
+### Documentation & Research (CRITICAL)
+
+- MANDATORY: At the start of ANY code task, use context7 and octocode MCPs to fetch latest documentation
+- For libraries/frameworks: Use `mcp__context7__resolve-library-id` then `mcp__context7__get-library-docs`
+- For GitHub repos: Use `mcp__octocode__githubSearchCode` and `mcp__octocode__packageSearch`
+- NEVER assume API syntax - ALWAYS verify with current documentation first
+
 ### General Principles
 
 - Prefer editing existing files over creating new ones
