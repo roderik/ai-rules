@@ -73,9 +73,11 @@ confirm_uninstall() {
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
     print_color "$CYAN" "  • Claude Code: %USERPROFILE%\\.claude\\"
     print_color "$CYAN" "  • Codex CLI: %USERPROFILE%\\.codex\\"
+    print_color "$CYAN" "  • Gemini CLI: %USERPROFILE%\\.gemini\\"
   else
     print_color "$CYAN" "  • Claude Code: ~/.claude/"
     print_color "$CYAN" "  • Codex CLI: ~/.codex/"
+    print_color "$CYAN" "  • Gemini CLI: ~/.gemini/"
   fi
   
   printf "\n"
@@ -224,15 +226,18 @@ USAGE
   # Detect OS and set appropriate paths
   local claude_code_dir
   local codex_dir
+  local gemini_dir
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
     # Windows path
     claude_code_dir="$USERPROFILE/.claude"
     codex_dir="$USERPROFILE/.codex"
+    gemini_dir="$USERPROFILE/.gemini"
     log_info "Detected Windows environment"
   else
     # Unix-like path (macOS, Linux)
     claude_code_dir="$HOME/.claude"
     codex_dir="$HOME/.codex"
+    gemini_dir="$HOME/.gemini"
   fi
   
   printf "\n"
@@ -469,6 +474,75 @@ USAGE
   fi
   printf "\n"
   
+  # Uninstall from Gemini CLI
+  print_color "$BOLD" "=== Removing Gemini CLI Configuration ==="
+  
+  if [ "$dry_run" -eq 1 ]; then
+    log_info "[DRY RUN] Would remove Gemini configuration from: $gemini_dir"
+    
+    # Show GEMINI.md that would be removed
+    if [ -f "$gemini_dir/GEMINI.md" ]; then
+      printf "\n"
+      print_color "$BOLD" "📄 GEMINI.md file that would be removed:"
+      print_color "$RED" "  - GEMINI.md"
+    fi
+    
+    # Show settings.json that would be removed
+    if [ -f "$gemini_dir/settings.json" ]; then
+      printf "\n"
+      print_color "$BOLD" "⚙️  settings.json that would be removed:"
+      print_color "$RED" "  - settings.json"
+    fi
+    
+    # Show commands.toml that would be removed
+    if [ -f "$gemini_dir/commands.toml" ]; then
+      printf "\n"
+      print_color "$BOLD" "📋 commands.toml that would be removed:"
+      print_color "$RED" "  - commands.toml"
+    fi
+  else
+    # Remove Gemini files (if they were installed by us - check manifest)
+    if [ -f "$claude_code_dir/.ai-rules-manifest.json" ]; then
+      # Check if manifest includes Gemini files
+      if grep -q "gemini_configurations" "$claude_code_dir/.ai-rules-manifest.json" 2>/dev/null; then
+        # Remove GEMINI.md
+        if [ -f "$gemini_dir/GEMINI.md" ]; then
+          local backup="${gemini_dir}/GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
+          cp "$gemini_dir/GEMINI.md" "$backup"
+          log_info "Backed up existing GEMINI.md to: $backup"
+          rm "$gemini_dir/GEMINI.md"
+          log_success "Removed GEMINI.md from ~/.gemini/"
+        fi
+        
+        # Remove settings.json
+        if [ -f "$gemini_dir/settings.json" ]; then
+          local backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
+          cp "$gemini_dir/settings.json" "$backup"
+          log_info "Backed up existing Gemini settings to: $backup"
+          rm "$gemini_dir/settings.json"
+          log_success "Removed settings.json from ~/.gemini/"
+        fi
+        
+        # Remove commands.toml
+        if [ -f "$gemini_dir/commands.toml" ]; then
+          local backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
+          cp "$gemini_dir/commands.toml" "$backup"
+          log_info "Backed up existing commands.toml to: $backup"
+          rm "$gemini_dir/commands.toml"
+          log_success "Removed commands.toml from ~/.gemini/"
+        fi
+        
+        # Remove directory if empty
+        if [ -d "$gemini_dir" ]; then
+          rmdir "$gemini_dir" 2>/dev/null || true
+        fi
+      else
+        log_info "No Gemini configuration found in manifest, skipping"
+      fi
+    fi
+  fi
+  printf "\n"
+  
   # Success message
   print_color "$BOLD$GREEN" "    ╔════════════════════════════════════════╗"
   print_color "$BOLD$GREEN" "    ║     Uninstallation Complete! ${SUCCESS}       ║"
@@ -490,10 +564,12 @@ USAGE
     print_color "$YELLOW" "  Look for *.backup.* files in:"
     print_color "$YELLOW" "    • %USERPROFILE%\\.claude\\"
     print_color "$YELLOW" "    • %USERPROFILE%\\.codex\\"
+    print_color "$YELLOW" "    • %USERPROFILE%\\.gemini\\"
   else
     print_color "$YELLOW" "  Look for *.backup.* files in:"
     print_color "$YELLOW" "    • ~/.claude/"
     print_color "$YELLOW" "    • ~/.codex/"
+    print_color "$YELLOW" "    • ~/.gemini/"
   fi
   printf "\n"
 }
