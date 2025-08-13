@@ -179,14 +179,6 @@ Monitor and update PR throughout lifecycle:
 - Add CI failure analysis if needed
 - Document fixes for CI issues
 
-### Phase 9: Post-Merge Cleanup
-
-After PR is merged:
-
-1. Update Linear ticket to "Done"
-2. Delete feature branch locally and remotely
-3. Document any follow-up work needed
-
 ## Command Execution
 
 When invoked with arguments:
