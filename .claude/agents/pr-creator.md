@@ -116,9 +116,11 @@ ${title}
 <!-- Any architectural decisions or trade-offs made -->
 
 ## Changes included
-\`\`\`
+```
+
 ${all_commits}
-\`\`\`
+
+```
 
 ## Testing
 - [ ] Unit tests added/updated
