@@ -1,17 +1,18 @@
 # AI Rules
 
-Professional Claude Code configuration with enterprise-grade defaults for Solidity and TypeScript development.
+Professional AI assistant configurations for Claude Code, Codex CLI, and Gemini CLI with enterprise-grade defaults for Solidity and TypeScript development.
 
 ## Features
 
 ### 🎯 Smart Configuration
 
+- **Multi-AI Support**: Unified configuration for Claude Code, Codex CLI, and Gemini CLI
 - **Optimized Environment Variables**: Extended timeouts, enhanced output limits, deep thinking tokens
 - **Professional Hooks**: Auto-formatting with Prettier and Forge, security warnings, sensitive file protection
 - **Status Line Integration**: Real-time usage tracking with `ccusage`
-- **MCP Server Support**: Auto-approval for project MCP servers
-- **AI Agents**: Automatic code review agent that runs after code changes
-- **Custom Commands**: `/review` command for manual code review triggers
+- **MCP Server Support**: Shared MCP servers across all AI assistants
+- **AI Agents**: Automatic code review, test runner, and PR creator agents
+- **Custom Commands**: Unified `/review`, `/test`, and `/pr` commands across platforms
 
 ### 🛡️ Security First
 
@@ -71,13 +72,17 @@ cd ai-rules
 ./install.sh --force
 ```
 
-## Configuration Location
+## Configuration Locations
 
-Configuration is installed to: `~/.claude/`
+Configurations are installed to:
+
+- **Claude Code**: `~/.claude/`
+- **Codex CLI**: `~/.codex/`
+- **Gemini CLI**: `~/.gemini/`
 
 ## What Gets Installed
 
-### AI Agents
+### AI Agents (Claude Code)
 
 - **code-reviewer**: Automatically reviews code changes for quality, security, and best practices
   - Invoke directly with `@code-reviewer` in Claude Code
@@ -102,18 +107,24 @@ Configuration is installed to: `~/.claude/`
 
 ### Custom Commands
 
+#### Claude Code & Gemini CLI
+
 - **/review**: Manual trigger for comprehensive code review
-  - Alternative: Use `@code-reviewer` to invoke the agent directly
+  - Claude: Use `@code-reviewer` to invoke the agent directly
+  - Gemini: Scripted behavior matching agent functionality
   - Reviews unstaged, staged, and branch commits
   - Provides detailed feedback
 
 - **/test**: Automated test and fix workflow
-  - Launches test-runner agent to check for issues
+  - Claude: Launches test-runner agent to check for issues
+  - Gemini: Scripted test execution and auto-fix
   - Automatically fixes format, lint, and type errors
   - Iterates until all checks pass
   - Returns focused error list with file:line format
 
 - **/pr**: Create pull requests with a single command
+  - Claude: Uses pr-creator agent
+  - Gemini: Scripted PR creation workflow
   - Handles complete PR workflow automatically
   - Creates appropriate branch names
   - Commits uncommitted changes
@@ -155,12 +166,37 @@ Configuration is installed to: `~/.claude/`
 - Auto-approval for all project MCP servers
 - Co-authorship disabled by default
 
+### Multi-AI Collaboration
+
+The configuration supports seamless collaboration between AI assistants:
+
+#### Codex CLI
+
+- **AGENTS.md**: Specialized agent instructions for multi-model collaboration
+- **config.toml**: Model selection and prompt customization
+- **Role**: Complex implementation and code generation specialist
+
+#### Gemini CLI
+
+- **GEMINI.md**: Gemini-specific workflow instructions
+- **settings.json**: Shared MCP servers with Claude
+- **commands.toml**: Unified command structure (`/pr`, `/review`, `/test`)
+- **Role**: Validation, review, and quality assurance specialist
+
 ### MCP Servers
 
-Pre-configured MCP (Model Context Protocol) servers:
+Shared MCP (Model Context Protocol) servers across all AI assistants:
 
-- **memory**: Persistent memory across sessions (`@modelcontextprotocol/server-memory`)
-- **filesystem**: File system access with home directory as root (`@modelcontextprotocol/server-filesystem`)
+#### Shared Across All Platforms
+
+- **linear**: Linear issue tracking integration
+- **context7**: Library documentation and code examples
+- **deepwiki**: GitHub repository documentation
+- **sentry**: Error tracking and monitoring
+- **playwright**: Browser automation and testing
+- **grep**: Code search across GitHub
+- **OpenZeppelinSolidityContracts**: Solidity contract templates
+- **octocode**: GitHub code exploration
 
 ## Uninstallation
 
@@ -297,7 +333,7 @@ bun add -g ccusage
 
 ```
 ai-rules/
-├── .claude/
+├── .claude/                   # Claude Code configuration
 │   ├── agents/
 │   │   ├── code-reviewer.md  # AI code review agent
 │   │   ├── test-runner.md    # Quality checks agent
@@ -312,6 +348,15 @@ ai-rules/
 │   │   └── hooks.json        # Pre/Post tool hooks
 │   └── mcp/
 │       └── mcp.json          # MCP server configurations
+├── .codex/                    # Codex CLI configuration
+│   ├── config.toml           # Codex settings and model config
+│   └── AGENTS.md             # Agent collaboration instructions
+├── .gemini/                   # Gemini CLI configuration
+│   ├── settings.json         # Gemini settings with MCP servers
+│   └── commands.toml         # Custom command definitions
+├── CLAUDE.md                  # Global Claude instructions
+├── AGENTS.md                  # Global agent instructions
+├── GEMINI.md                  # Global Gemini instructions
 ├── install.sh                 # Installer script
 ├── uninstall.sh               # Uninstaller script
 └── README.md                  # This file
