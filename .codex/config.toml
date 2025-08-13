@@ -1,0 +1,22 @@
+# Minimal Codex CLI Configuration
+# Only overrides from defaults
+
+file_opener = "cursor"
+model_reasoning_effort = "high"
+
+# Equivalent to --dangerously-bypass-approvals-and-sandbox
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+# MCP Servers using bun x
+[mcp_servers.context7]
+command = "bun"
+args = ["x", "-y", "@upstash/context7-mcp@latest"]
+
+[mcp_servers.playwright]
+command = "bun"
+args = ["x", "-y", "@playwright/mcp@latest"]
+
+[mcp_servers.octocode]
+command = "bun"
+args = ["x", "-y", "octocode-mcp@latest"]
