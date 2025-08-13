@@ -2,6 +2,16 @@
 
 Professional AI assistant configurations for Claude Code, Codex CLI, and Gemini CLI with enterprise-grade defaults for Solidity and TypeScript development.
 
+## Complete Setup
+
+This repository is part of a comprehensive development environment setup. For the full experience, check out:
+
+- **[Shell Config](https://github.com/roderik/shell-config)** - Shell configuration and dotfiles
+- **[AI Rules](https://github.com/roderik/ai-rules)** - AI assistant configurations (this repo)
+- **[WT](https://github.com/roderik/wt)** - Windows Terminal configuration
+
+**Author**: [@r0derik](https://x.com/r0derik)
+
 ## Features
 
 ### 🎯 Smart Configuration
