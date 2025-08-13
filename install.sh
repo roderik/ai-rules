@@ -557,8 +557,40 @@ USAGE
           log_error "Skipping invalid agent filename: $agent_name"
           continue
         fi
+        local target_file="$claude_code_dir/agents/$agent_name"
+        
+        if [ -f "$target_file" ]; then
+          # Show diff if file exists
+          print_color "$YELLOW" "  ⚠️  $agent_name (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$agent_file" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$agent_file" 2>/dev/null | head -20 | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          # Show preview of new file
+          print_color "$GREEN" "  + $agent_name (new file)"
+          print_color "$CYAN" "    Preview (first 10 lines):"
+          head -10 "$agent_file" | sed 's/^/      /'
+        fi
+        
         log_info "Copying agent: $agent_name to ~/.claude/agents/"
-        cp "$agent_file" "$claude_code_dir/agents/$agent_name"
+        cp "$agent_file" "$target_file"
         log_success "Installed agent: $agent_name"
       done
     fi
@@ -574,8 +606,40 @@ USAGE
           log_error "Skipping invalid command filename: $cmd_name"
           continue
         fi
+        local target_file="$claude_code_dir/commands/$cmd_name"
+        
+        if [ -f "$target_file" ]; then
+          # Show diff if file exists
+          print_color "$YELLOW" "  ⚠️  /$cmd_name (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$cmd_file" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$cmd_file" 2>/dev/null | head -20 | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          # Show preview of new file
+          print_color "$GREEN" "  + /$cmd_name (new file)"
+          print_color "$CYAN" "    Preview (first 10 lines):"
+          head -10 "$cmd_file" | sed 's/^/      /'
+        fi
+        
         log_info "Copying command: $cmd_name to ~/.claude/commands/"
-        cp "$cmd_file" "$claude_code_dir/commands/$cmd_name"
+        cp "$cmd_file" "$target_file"
         log_success "Installed command: /$cmd_name"
       done
     fi
@@ -584,7 +648,39 @@ USAGE
     if [ -f "$repo_root/CLAUDE.md" ]; then
       printf "\n"
       print_color "$BOLD" "Installing CLAUDE.md..."
-      cp "$repo_root/CLAUDE.md" "$claude_code_dir/CLAUDE.md"
+      local target_file="$claude_code_dir/CLAUDE.md"
+      
+      if [ -f "$target_file" ]; then
+        # Show diff if file exists
+        print_color "$YELLOW" "  ⚠️  CLAUDE.md (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/CLAUDE.md" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/CLAUDE.md" 2>/dev/null | head -20 | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + CLAUDE.md (new file)"
+        print_color "$CYAN" "    Preview (first 10 lines):"
+        head -10 "$repo_root/CLAUDE.md" | sed 's/^/      /'
+      fi
+      
+      cp "$repo_root/CLAUDE.md" "$target_file"
       log_success "Installed CLAUDE.md to ~/.claude/"
     fi
     
@@ -702,28 +798,86 @@ EOF
     if [ -f "$codex_base/config.toml" ]; then
       mkdir -p "$codex_dir"
       local backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
+      local target_file="$codex_dir/config.toml"
       
       # Backup existing file if it exists
-      if [ -f "$codex_dir/config.toml" ]; then
-        cp "$codex_dir/config.toml" "$backup"
+      if [ -f "$target_file" ]; then
+        cp "$target_file" "$backup"
         log_info "Backed up existing Codex config to: $backup"
+        
+        # Show diff
+        print_color "$YELLOW" "  ⚠️  config.toml (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$codex_base/config.toml" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$codex_base/config.toml" 2>/dev/null | head -20 | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + config.toml (new file)"
+        print_color "$CYAN" "    Preview (first 20 lines):"
+        head -20 "$codex_base/config.toml" | sed 's/^/      /'
       fi
       
-      cp "$codex_base/config.toml" "$codex_dir/config.toml"
+      cp "$codex_base/config.toml" "$target_file"
       log_success "Installed config.toml to ~/.codex/"
     fi
     
     # Install AGENTS.md
     if [ -f "$repo_root/AGENTS.md" ]; then
       local backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+      local target_file="$codex_dir/AGENTS.md"
       
       # Backup existing file if it exists
-      if [ -f "$codex_dir/AGENTS.md" ]; then
-        cp "$codex_dir/AGENTS.md" "$backup"
+      if [ -f "$target_file" ]; then
+        cp "$target_file" "$backup"
         log_info "Backed up existing AGENTS.md to: $backup"
+        
+        # Show diff
+        print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | head -20 | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + AGENTS.md (new file)"
+        print_color "$CYAN" "    Preview (first 10 lines):"
+        head -10 "$repo_root/AGENTS.md" | sed 's/^/      /'
       fi
       
-      cp "$repo_root/AGENTS.md" "$codex_dir/AGENTS.md"
+      cp "$repo_root/AGENTS.md" "$target_file"
       log_success "Installed AGENTS.md to ~/.codex/"
     fi
     
@@ -772,13 +926,13 @@ EOF
     printf "\n"
     print_color "$BOLD" "📄 GEMINI.md file that would be installed to ~/.gemini/:"
     printf "\n"
-    if [ -f "$gemini_base/GEMINI.md" ]; then
+    if [ -f "$repo_root/GEMINI.md" ]; then
       local target_file="$gemini_dir/GEMINI.md"
       if [ -f "$target_file" ]; then
         # Show diff if file exists
         print_color "$YELLOW" "  ⚠️  GEMINI.md (already exists - showing diff):"
         if command -v delta >/dev/null 2>&1; then
-          diff -u --label "current" --label "new" "$target_file" "$gemini_base/GEMINI.md" 2>/dev/null | \
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/GEMINI.md" 2>/dev/null | \
             delta --no-gitconfig \
                   --paging=never \
                   --line-numbers \
@@ -788,7 +942,7 @@ EOF
                   --diff-so-fancy \
                   --hyperlinks 2>/dev/null || true
         elif command -v diff >/dev/null 2>&1; then
-          diff -u --label "current" --label "new" "$target_file" "$gemini_base/GEMINI.md" 2>/dev/null | while IFS= read -r line; do
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/GEMINI.md" 2>/dev/null | while IFS= read -r line; do
             case "$line" in
               +*) print_color "$GREEN" "    $line" ;;
               -*) print_color "$RED" "    $line" ;;
@@ -801,7 +955,7 @@ EOF
         # Show preview of new file
         print_color "$GREEN" "  + GEMINI.md (new file)"
         print_color "$CYAN" "    Preview (first 10 lines):"
-        head -10 "$gemini_base/GEMINI.md" | sed 's/^/      /'
+        head -10 "$repo_root/GEMINI.md" | sed 's/^/      /'
       fi
     fi
     
@@ -883,45 +1037,132 @@ EOF
     if [ -d "$gemini_base" ]; then
       mkdir -p "$gemini_dir"
       
-      # Install GEMINI.md
-      if [ -f "$gemini_base/GEMINI.md" ]; then
+      # Install GEMINI.md from root
+      if [ -f "$repo_root/GEMINI.md" ]; then
         local backup="${gemini_dir}/GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
+        local target_file="$gemini_dir/GEMINI.md"
         
         # Backup existing file if it exists
-        if [ -f "$gemini_dir/GEMINI.md" ]; then
-          cp "$gemini_dir/GEMINI.md" "$backup"
+        if [ -f "$target_file" ]; then
+          cp "$target_file" "$backup"
           log_info "Backed up existing GEMINI.md to: $backup"
+          
+          # Show diff
+          print_color "$YELLOW" "  ⚠️  GEMINI.md (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$repo_root/GEMINI.md" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$repo_root/GEMINI.md" 2>/dev/null | head -20 | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          # Show preview of new file
+          print_color "$GREEN" "  + GEMINI.md (new file)"
+          print_color "$CYAN" "    Preview (first 10 lines):"
+          head -10 "$repo_root/GEMINI.md" | sed 's/^/      /'
         fi
         
-        cp "$gemini_base/GEMINI.md" "$gemini_dir/GEMINI.md"
+        cp "$repo_root/GEMINI.md" "$target_file"
         log_success "Installed GEMINI.md to ~/.gemini/"
       fi
       
       # Install settings.json
       if [ -f "$gemini_base/settings.json" ]; then
         local backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
+        local target_file="$gemini_dir/settings.json"
         
         # Backup existing file if it exists
-        if [ -f "$gemini_dir/settings.json" ]; then
-          cp "$gemini_dir/settings.json" "$backup"
+        if [ -f "$target_file" ]; then
+          cp "$target_file" "$backup"
           log_info "Backed up existing Gemini settings to: $backup"
+          
+          # Show diff
+          print_color "$YELLOW" "  ⚠️  settings.json (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$gemini_base/settings.json" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$gemini_base/settings.json" 2>/dev/null | head -20 | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          # Show preview of new file
+          print_color "$GREEN" "  + settings.json (new file)"
+          print_color "$CYAN" "    Preview (first 20 lines):"
+          head -20 "$gemini_base/settings.json" | sed 's/^/      /'
         fi
         
-        cp "$gemini_base/settings.json" "$gemini_dir/settings.json"
+        cp "$gemini_base/settings.json" "$target_file"
         log_success "Installed settings.json to ~/.gemini/"
       fi
       
       # Install commands.toml
       if [ -f "$gemini_base/commands.toml" ]; then
         local backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
+        local target_file="$gemini_dir/commands.toml"
         
         # Backup existing file if it exists
-        if [ -f "$gemini_dir/commands.toml" ]; then
-          cp "$gemini_dir/commands.toml" "$backup"
+        if [ -f "$target_file" ]; then
+          cp "$target_file" "$backup"
           log_info "Backed up existing commands.toml to: $backup"
+          
+          # Show diff
+          print_color "$YELLOW" "  ⚠️  commands.toml (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$gemini_base/commands.toml" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$gemini_base/commands.toml" 2>/dev/null | head -20 | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          # Show preview of new file
+          print_color "$GREEN" "  + commands.toml (new file)"
+          print_color "$CYAN" "    Preview (first 15 lines):"
+          head -15 "$gemini_base/commands.toml" | sed 's/^/      /'
         fi
         
-        cp "$gemini_base/commands.toml" "$gemini_dir/commands.toml"
+        cp "$gemini_base/commands.toml" "$target_file"
         log_success "Installed commands.toml to ~/.gemini/"
       fi
       
