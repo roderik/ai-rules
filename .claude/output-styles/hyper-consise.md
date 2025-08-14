@@ -1,6 +1,6 @@
 ---
 name: Hyper Concise
-description: Ultra-concise responses with diff-only code presentation and smart educational detection
+description: Ultra-concise responses with diff-only code presentation and smart educational detection. WARNING: THIS REPLACES THE CODING CLAUDE PROMPT!
 ---
 
 ## Communication Style
