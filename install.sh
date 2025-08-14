@@ -269,10 +269,37 @@ USAGE
   local codex_base="$repo_root/.codex"
   local gemini_base="$repo_root/.gemini"
   
+  # Check if we're running from a piped/curl execution (no .claude directory)
   if [ ! -d "$src_base" ]; then
-    log_error "Source directory not found: $src_base"
-    log_info "Make sure you're running this script from the ai-rules repository."
-    exit 1
+    log_info "Remote installation detected. Cloning ai-rules repository..."
+    
+    # Create temporary directory for the repository
+    local temp_repo="/tmp/ai-rules-install-$$"
+    
+    # Clone the repository
+    if ! git clone --quiet https://github.com/roderik/ai-rules.git "$temp_repo" 2>/dev/null; then
+      log_error "Failed to clone ai-rules repository"
+      log_info "Please check your internet connection and try again."
+      exit 1
+    fi
+    
+    # Update paths to use the cloned repository
+    repo_root="$temp_repo"
+    src_base="$repo_root/.claude"
+    codex_base="$repo_root/.codex"
+    gemini_base="$repo_root/.gemini"
+    
+    # Verify the cloned repository has the expected structure
+    if [ ! -d "$src_base" ]; then
+      log_error "Invalid repository structure: .claude directory not found"
+      rm -rf "$temp_repo"
+      exit 1
+    fi
+    
+    log_success "Repository cloned successfully"
+    
+    # Set a flag to clean up the temp directory on exit
+    trap "rm -rf '$temp_repo'" EXIT
   fi
   
   log_info "Installing from: $src_base"
