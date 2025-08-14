@@ -30,7 +30,8 @@ You are an expert repo-onboarding agent. Analyze the repository, generate concis
 
 ## DETECTION & DISCOVERY
 
-- Read: `README*`, root `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig*.json`, `eslint*`, `prettier*`, CI files.
+- Read: `README*` (root and subdirectories), root `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig*.json`, `eslint*`, `prettier*`, CI files.
+- For monorepos: Also read `README*` files in each package/app directory to understand individual package purposes.
 - Monorepo detection: presence of `workspaces`, `turbo.json`, a `turbo` dep, or multiple `package.json` under `apps/*` / `packages/*`.
 - Note package manager and workspace quirks (e.g., `packageManager` in `package.json`, pnpm filters `-F/--filter`, yarn/pnpm/npm/bun nuances).
 
@@ -48,39 +49,32 @@ Keep sections compact and ordered:
    List only meaningful root-level scripts (`dev`, `build`, `test`, `lint`, `typecheck`, `format`). One line each with purpose. No package scripts.
 
 4. **Structure**
-
    - **Monorepo:** summarize workspace graph (apps, packages, shared libs) in a compact tree or table.
    - _(Optional)_ If `turbo` present, include a tiny dependency graph (consumer → provider) inferred from workspace deps.
    - **Single repo:** top-level dirs with one-liners (e.g., `/src`, `/scripts`, `/config`).
    - Call out package manager and workspace behaviors (e.g., pnpm `--filter`, yarn workspaces constraints).
 
 5. **Best Practices (Cross-Cutting)**
-
    - 6–12 specific bullets derived from detected tools/configs via MCP + web search.
    - No vendor fluff; concrete patterns only. **No versions.**
 
 6. **Coding Standards & Tooling Mirror**
-
    - Extract key ESLint/Prettier/TS rules into 3–6 bullets (imports ordering, `noImplicitAny`, path aliases, module target, formatting).
    - Respect discovered style conventions.
 
 7. **TypeScript Ergonomics (if TS detected)**
-
    - 3 bullets max (e.g., enable/retain strictness, branded types for IDs, schema-first validation with Zod/Valibot and `zodToTs`/inferred types).
 
 8. **Testing Guidance**
-
    - How to run the full test suite.
    - How to run a **single test** (Vitest/Jest/Playwright example, if evident).
    - Where test fixtures/mocks live if discoverable.
 
 9. **CI Gates & Quality**
-
    - List the checks that gate merges (lint, typecheck, unit/integration/e2e) based on CI config found (e.g., GitHub Actions).
    - Briefly note how to run those checks locally.
 
 10. **Security & Secrets**
-
     - How env files are handled (`.env`, `.env.local`, `.env.example`).
     - Secret management in CI (repo/org secrets, no plaintext in repo).
     - Safe patterns for local dev (dotenv loading, secret mounting).
