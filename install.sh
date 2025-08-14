@@ -684,6 +684,14 @@ USAGE
       log_success "Installed CLAUDE.md to ~/.claude/"
     fi
     
+    # Install output-styles
+    if [ -d "$src_base/output-styles" ]; then
+      printf "\n"
+      print_color "$BOLD" "Installing Output Styles..."
+      cp -r "$src_base/output-styles" "$claude_code_dir/"
+      log_success "Installed output-styles to ~/.claude/"
+    fi
+    
     # Create manifest for uninstall
     local manifest="$claude_code_dir/.ai-rules-manifest.json"
     cat > "$manifest" <<EOF
@@ -695,6 +703,7 @@ USAGE
     "settings.json",
     "agents/",
     "commands/",
+    "output-styles/",
     "CLAUDE.md"
   ]
 }

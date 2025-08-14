@@ -374,6 +374,13 @@ USAGE
       print_color "$RED" "  - CLAUDE.md"
     fi
     
+    # Show output-styles that would be removed
+    if [ -d "$claude_code_dir/output-styles" ]; then
+      printf "\n"
+      print_color "$BOLD" "🎨 Output styles that would be removed:"
+      print_color "$RED" "  - output-styles/"
+    fi
+    
     if [ -f "$claude_code_dir/.ai-rules-manifest.json" ]; then
       print_color "$RED" "\n  • AI Rules manifest file would be removed"
     fi
@@ -411,6 +418,12 @@ USAGE
     if [ -f "$claude_code_dir/CLAUDE.md" ]; then
       rm "$claude_code_dir/CLAUDE.md"
       log_success "Removed CLAUDE.md"
+    fi
+    
+    # Remove output-styles installed by AI Rules
+    if [ -d "$claude_code_dir/output-styles" ]; then
+      rm -rf "$claude_code_dir/output-styles"
+      log_success "Removed output-styles directory"
     fi
     
     # Remove manifest
