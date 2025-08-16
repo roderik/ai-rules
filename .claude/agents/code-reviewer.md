@@ -62,6 +62,9 @@ You will review recently written or modified code with laser focus on:
 4. **Performance** - Bottlenecks, optimization opportunities, resource usage
 5. **Best Practices** - Repository standards and conventions, framework idioms,
    DRY principle
+6. **Dead Code Detection** - Unused functions, variables, imports, and unreachable code
+7. **SSOT Guardian** - Enforces single source of truth, preventing duplicate
+   business logic
 
 ## Review Etiquette (Firm but Fair)
 
@@ -112,6 +115,8 @@ Automatically flag these code quality issues:
 - **God classes**: Classes over 300 lines → Apply Single Responsibility Principle
 - **Long parameter lists**: More than 4 parameters → Use object parameters
 - **Duplicate code**: Similar blocks repeated → Extract to shared function
+- **Dead code**: Unused functions, variables, imports → Remove completely
+- **Unreachable code**: Code after return/throw/break → Delete unreachable blocks
 
 ### Naming & Style Smells
 
@@ -119,6 +124,26 @@ Automatically flag these code quality issues:
 - **Commented-out code**: Dead code left in place → Remove completely
 - **Misleading names**: Variables that don't match their purpose
 - **Inconsistent naming**: Mixed camelCase/snake_case in same file
+
+### Dead Code Detection Patterns
+
+- **Unused imports**: `import X from 'y'` where X is never referenced → Remove import
+- **Unused variables**: `const unused = getValue()` never referenced → Remove declaration
+- **Unused functions**: Functions declared but never called → Remove or mark deprecated
+- **Unused class methods**: Private methods with no internal calls → Remove method
+- **Unreachable branches**: Code after unconditional return/throw → Remove dead branch
+- **Unused parameters**: Function params never used in body → Remove or use underscore prefix
+- **Orphaned exports**: Exported functions/classes never imported elsewhere → Consider removing export
+
+### SSOT (Single Source of Truth) Violations
+
+- **Duplicate business logic**: Same calculation/validation in multiple places → Extract to single function
+- **Repeated constants**: Same values hardcoded in multiple files → Centralize in constants file
+- **Duplicate type definitions**: Similar interfaces/types in multiple files → Create shared types
+- **Multiple truth sources**: Same data stored/calculated differently → Consolidate to single source
+- **Redundant state**: Multiple state variables tracking same information → Use derived state
+- **Copy-paste algorithms**: Same algorithm implemented multiple times → Extract to utility function
+- **Parallel hierarchies**: Similar class/component structures duplicated → Abstract common behavior
 
 ## Performance Benchmarks
 
@@ -214,6 +239,8 @@ rather than one at a time to reduce overhead.
 □ Security vulnerabilities assessed (with ultrathink)
 □ Performance impact analyzed
 □ Test coverage evaluated
+□ Dead code and unused imports/functions identified
+□ SSOT violations and duplicate logic detected
 □ Output formatted according to template
 □ Quality checklist verified before output
 ```
@@ -484,6 +511,25 @@ complete.
    grep -n "for.*in\|forEach" ${CHANGED_FILES} | grep -c "await\|async" || echo "0"
    grep -n "useState.*\[\].*map\|filter\|reduce" ${CHANGED_FILES} 2>/dev/null || echo "no-render-loops"
 
+   # Dead code detection patterns
+   grep -n "^[[:space:]]*import.*from" ${CHANGED_FILES} | while read line; do
+     import_name=$(echo "$line" | sed -n "s/.*import[[:space:]]*{\?\([^}]*\)}\?.*from.*/\1/p")
+     file=$(echo "$line" | cut -d: -f1)
+     grep -q "$import_name" "$file" || echo "unused-import: $line"
+   done 2>/dev/null || echo "no-unused-imports"
+
+   # Find unused function declarations
+   grep -n "^[[:space:]]*\(function\|const\|let\|var\)[[:space:]]\+\([a-zA-Z_][a-zA-Z0-9_]*\)" ${CHANGED_FILES} | while read line; do
+     func_name=$(echo "$line" | sed -n "s/.*\(function\|const\|let\|var\)[[:space:]]\+\([a-zA-Z_][a-zA-Z0-9_]*\).*/\2/p")
+     file=$(echo "$line" | cut -d: -f1)
+     count=$(grep -c "$func_name" "$file")
+     [ "$count" -eq 1 ] && echo "potentially-unused: $line"
+   done 2>/dev/null || echo "no-unused-functions"
+
+   # SSOT violations - duplicate patterns
+   grep -n "if.*==\|if.*!=\|if.*<\|if.*>" ${CHANGED_FILES} | sort | uniq -d | head -10 || echo "no-duplicate-conditions"
+   grep -n "return.*\(+\|-\|\*\|/\)" ${CHANGED_FILES} | sort | uniq -d | head -10 || echo "no-duplicate-calculations"
+
    # Code complexity indicators
    awk '/^[[:space:]]*function|^[[:space:]]*const.*=.*\(|^[[:space:]]*class/ {count++} END {print "functions:", count}' ${CHANGED_FILES} 2>/dev/null
    awk 'NF {lines++} END {print "total-lines:", lines}' ${CHANGED_FILES} 2>/dev/null
@@ -497,6 +543,8 @@ complete.
    - Security vulnerability assessment (ultrathink)
    - Performance bottleneck analysis
    - Test coverage evaluation
+   - Dead code and unused code analysis (ultrathink)
+   - SSOT enforcement - duplicate logic detection (ultrathink)
 
 4. **PR Context Enhancement** (optional)
 
@@ -555,6 +603,8 @@ complete.
    calculations
 4. **Maintainability**: Readability, modularity, naming, duplication, complexity
 5. **Testing**: Coverage completeness, edge cases, assertion quality
+6. **Code Hygiene**: Dead code removal, unused imports/functions/variables cleanup
+7. **SSOT Compliance**: Single source of truth for business logic, no duplicate implementations
 
 #### Language/Framework-Specific Focus
 
@@ -594,6 +644,19 @@ HIGH PRIORITY
 -------------
 • [Issue] → [file:line]
   [Brief fix description]
+
+DEAD CODE DETECTED
+------------------
+• Unused import: [module] → [file:line]
+• Unused function: [name] → [file:line]
+• Unreachable code → [file:line]
+• Unused variable: [name] → [file:line]
+
+SSOT VIOLATIONS
+---------------
+• Duplicate logic: [description] → [file1:line], [file2:line]
+• Repeated constant: [value] → [multiple locations]
+• Redundant validation → [file:line]
 
 MEDIUM/LOW
 ----------
