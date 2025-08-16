@@ -409,14 +409,13 @@ complete.
    ```bash
    # Send ALL these in ONE message for parallel execution:
 
-   # Gemini 2.0 Flash Analysis for insights (via CLI if available)
-   gemini --model gemini-2.0-flash-exp \
+   # Gemini Analysis for insights (via MCP)
+   mcp__gemini_cli__ask_gemini \
      --prompt "Analyze these code changes and identify potential root causes of issues: \
                What logic errors exist? What security vulnerabilities? \
                What could cause production failures? \
                Changed files: ${CHANGED_FILES}. \
-               Provide analysis and insights, not fixes." \
-     2>/dev/null || echo '{"status":"gemini-unavailable"}'
+               Provide analysis and insights, not fixes."
 
    # Codex Analysis for root cause insights (via CLI if available)
    codex exec "Analyze these code changes for root causes and insights: \
