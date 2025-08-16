@@ -2,6 +2,10 @@
 description: Run comprehensive quality checks (tests, linting, formatting) and automatically fix any failures found
 ---
 
+## IMPORTANT: Full Delegation to Agent
+
+**This command ONLY delegates to the @test-runner agent. Do NOT perform any testing or analysis yourself.**
+
 You will:
 
 1. Launch the @test-runner agent using Task tool with subagent_type="test-runner"
@@ -13,7 +17,24 @@ You will:
 4. After ALL fixes applied, launch test-runner agent again
 5. Repeat until agent returns "✅ ALL CHECKS PASSED"
 
-## Fix approach by error type:
+## MCP-Enhanced Fix Approach by Error Type:
+
+For EACH error, use MCP tools:
+
+### Test Failures:
+
+1. `mcp__context7__get-library-docs` for correct API usage
+2. `mcp__octocode__githubSearchCode` for similar test patterns
+3. `mcp__gemini_cli__ask_gemini` for logic validation
+4. `mcp__sentry__search_events` for production correlation
+
+### Lint/Type Errors:
+
+1. `mcp__context7__resolve-library-id` for type definitions
+2. `mcp__deepwiki__ask_question` for linting rules
+3. `codex exec "Fix this lint error: [details]"`
+
+## Original Fix Approach:
 
 - **Format errors**: Apply correct indentation/spacing per project rules
 - **Lint errors**: Fix unused variables, missing returns, etc.

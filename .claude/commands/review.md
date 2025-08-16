@@ -5,6 +5,10 @@ argument-hint: [focus-area]
 
 # Code Review
 
+## IMPORTANT: Full Delegation to Agent
+
+**This command ONLY delegates to the @code-reviewer agent. Do NOT perform any analysis yourself.**
+
 ## Context
 
 - Current git status: !`git status`
@@ -18,7 +22,7 @@ User focus request: $ARGUMENTS
 
 Trigger the @code-reviewer agent to perform a comprehensive review of all current changes including unstaged, staged, and branch commits.
 
-When invoking the code-reviewer agent using the Task tool:
+Simply invoke the code-reviewer agent using the Task tool:
 
 ```
 If "$ARGUMENTS" is not empty:
@@ -32,18 +36,18 @@ If "$ARGUMENTS" is empty:
 
 The agent will prioritize reviewing areas related to the user's focus while still performing a comprehensive review.
 
-The code-reviewer agent will autonomously:
+The code-reviewer agent MUST (with mandatory MCP usage):
 
-1. Gather repository and branch context
-2. Identify the base branch and collect all diffs (unstaged, staged, branch commits)
-3. Fetch PR context and comments if a PR exists
-4. Search for linked Linear tickets in commit messages
-5. Fetch latest documentation for referenced libraries (Context7)
-6. Search for best practices and common pitfalls (WebSearch)
-7. Analyze historical context and check for regressions
-8. Perform multi-model collaboration if available (Gemini, GPT-5)
-9. Use ultrathink for complex logic, security, and edge cases
-10. Output comprehensive review with confidence scores
+1. Gather repository context WITH `mcp__octocode__githubViewRepoStructure`
+2. Collect diffs AND search similar with `mcp__octocode__githubSearchCode`
+3. Fetch PR context AND related PRs with `mcp__octocode__githubSearchPullRequests`
+4. Search Linear tickets WITH `mcp__linear__get_issue` (MANDATORY)
+5. Fetch documentation WITH `mcp__context7__get-library-docs` (MANDATORY)
+6. Search best practices WITH `mcp__deepwiki__ask_question` AND WebSearch
+7. Check Sentry for patterns WITH `mcp__sentry__search_events` (MANDATORY)
+8. MANDATORY multi-model: Gemini + Codex validation
+9. Use ultrathink for complex sections
+10. Output MCP-enriched comprehensive review
 
 ### Expected Output
 
