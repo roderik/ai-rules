@@ -1232,10 +1232,73 @@ EOF
   
   printf "\n"
   
+  # Install coreutils for timeout command (macOS)
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    print_color "$BOLD" "=== Installing coreutils for timeout command ==="
+    if [ "$dry_run" -eq 1 ]; then
+      log_info "[DRY RUN] Would install coreutils via homebrew"
+    else
+      if ! command -v gtimeout >/dev/null 2>&1; then
+        if command -v brew >/dev/null 2>&1; then
+          log_info "Installing coreutils for timeout command..."
+          if brew install coreutils 2>/dev/null; then
+            log_success "Successfully installed coreutils"
+            # Create symlink for timeout
+            if ! command -v timeout >/dev/null 2>&1; then
+              if ln -sf /opt/homebrew/bin/gtimeout /opt/homebrew/bin/timeout 2>/dev/null || \
+                 ln -sf /usr/local/bin/gtimeout /usr/local/bin/timeout 2>/dev/null; then
+                log_info "Created timeout symlink"
+              else
+                log_warning "Could not create timeout symlink - use gtimeout instead"
+              fi
+            fi
+          else
+            log_warning "Failed to install coreutils - timeout command unavailable"
+          fi
+        else
+          log_warning "Homebrew not found - cannot install timeout command"
+        fi
+      else
+        log_success "coreutils already installed"
+      fi
+    fi
+    printf "\n"
+  fi
+  
+  # Install claude-code-project-index
+  print_color "$BOLD" "=== Installing Claude Code Project Index ==="
+  log_info "Installing claude-code-project-index..."
+  if [ "$dry_run" -eq 1 ]; then
+    log_info "[DRY RUN] Would install claude-code-project-index"
+  else
+    if curl -fsSL https://raw.githubusercontent.com/ericbuess/claude-code-project-index/main/install.sh | bash; then
+      log_success "Successfully installed claude-code-project-index"
+    else
+      log_warning "Failed to install claude-code-project-index (optional component)"
+    fi
+  fi
+  
+  printf "\n"
+  
+  # Install claude-code-docs
+  print_color "$BOLD" "=== Installing Claude Code Docs ==="
+  log_info "Installing claude-code-docs..."
+  if [ "$dry_run" -eq 1 ]; then
+    log_info "[DRY RUN] Would install claude-code-docs"
+  else
+    if curl -fsSL https://raw.githubusercontent.com/ericbuess/claude-code-docs/main/install.sh | bash; then
+      log_success "Successfully installed claude-code-docs"
+    else
+      log_warning "Failed to install claude-code-docs (optional component)"
+    fi
+  fi
+  
+  printf "\n"
+  
   # Success message
-  print_color "$BOLD$GREEN" "╔════════════════════════════════════════╗"
+  print_color "$BOLD$GREEN" "╔════════════════════════════════════════════╗"
   print_color "$BOLD$GREEN" "║     ${ROCKET} Installation Complete! ${ROCKET}        ║"
-  print_color "$BOLD$GREEN" "╚════════════════════════════════════════╝"
+  print_color "$BOLD$GREEN" "╚════════════════════════════════════════════╝"
   printf "\n"
   
   log_success "AI Rules has been successfully installed!"

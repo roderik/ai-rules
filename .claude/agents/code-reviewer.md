@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: MUST BE USED immediately after ANY code change. PROACTIVE Always invoke automatically after implementation, modifications, or bug fixes. CRITICAL requirement - no exceptions. This agent performs comprehensive code review for quality, security, and best practices.
+description: PROACTIVE agent for quality checks. MUST BE USED after ANY code change. Runs tests, linting, and formatting. Returns focused error list with file:line:function format for main thread to fix. CRITICAL requirement - no exceptions.
 model: opus
 color: red
 ---
@@ -409,21 +409,21 @@ complete.
    ```bash
    # Send ALL these in ONE message for parallel execution:
 
-   # Gemini 2.0 Flash Analysis (via CLI if available)
+   # Gemini 2.0 Flash Analysis for insights (via CLI if available)
    gemini --model gemini-2.0-flash-exp \
-     --prompt "Code Review Analysis: Identify logic errors, security vulnerabilities, \
-               performance issues, and best practice violations. \
+     --prompt "Analyze these code changes and identify potential root causes of issues: \
+               What logic errors exist? What security vulnerabilities? \
+               What could cause production failures? \
                Changed files: ${CHANGED_FILES}. \
-               Focus on critical issues that could cause production failures. \
-               Output format: JSON with severity levels." \
+               Provide analysis and insights, not fixes." \
      2>/dev/null || echo '{"status":"gemini-unavailable"}'
 
-   # Codex Analysis (via CLI if available)
-   codex exec "Perform comprehensive code review. \
-               Analyze for: security vulnerabilities, logic errors, performance bottlenecks, \
-               code quality issues, missing error handling. \
+   # Codex Analysis for root cause insights (via CLI if available)
+   codex exec "Analyze these code changes for root causes and insights: \
+               What patterns could lead to bugs? What security risks exist? \
+               What performance bottlenecks might occur? \
                Context: Recent changes to ${CHANGED_FILES} with ${LINES_CHANGED} lines modified. \
-               Output critical issues first, then suggestions." \
+               Provide analysis and explanations, not implementation." \
      --config model="o1" \
      --config 'sandbox_permissions=["disk-read-access"]' \
      2>/dev/null || echo "codex-unavailable"
