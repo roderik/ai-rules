@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: MUST BE USED immediately after ANY code change. PROACTIVE Always invoke automatically after implementation, modifications, or bug fixes. CRITICAL requirement - no exceptions. This agent performs comprehensive code review for quality, security, and best practices.
+description: PROACTIVE agent for quality checks. MUST BE USED after ANY code change. Runs tests, linting, and formatting. Returns focused error list with file:line:function format for main thread to fix. CRITICAL requirement - no exceptions.
 model: opus
 color: red
 ---
