@@ -1265,21 +1265,6 @@ EOF
     printf "\n"
   fi
 
-  # Install claude-code-project-index
-  print_color "$BOLD" "=== Installing Claude Code Project Index ==="
-  log_info "Installing claude-code-project-index..."
-  if [ "$dry_run" -eq 1 ]; then
-    log_info "[DRY RUN] Would install claude-code-project-index"
-  else
-    if curl -fsSL https://raw.githubusercontent.com/roderik/claude-code-project-index/main/install.sh | bash; then
-      log_success "Successfully installed claude-code-project-index"
-    else
-      log_warning "Failed to install claude-code-project-index (optional component)"
-    fi
-  fi
-
-  printf "\n"
-
   # Install claude-code-docs
   print_color "$BOLD" "=== Installing Claude Code Docs ==="
   log_info "Installing claude-code-docs..."
