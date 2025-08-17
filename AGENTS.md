@@ -12,6 +12,33 @@ On startup, read all CLAUDE.md files from current directory to project root:
 4. Load each CLAUDE.md found, with deeper files overriding higher-level ones
 5. Apply user's global ~/.claude/CLAUDE.md if exists (highest priority)
 
+## Project Awareness & Indexing
+
+### PROJECT_INDEX.json (QUERY WITH jq, DON'T LOAD)
+
+```bash
+ls PROJECT_INDEX.json 2>/dev/null || echo "No index"
+```
+
+If exists, QUERY it:
+
+```bash
+# Function location
+jq -r '.files | to_entries[] | select(.value.functions | has("func_name")) | .key' PROJECT_INDEX.json
+
+# Impact check
+jq -r '.files[].functions.func_name.called_by[]?' PROJECT_INDEX.json
+
+# Directory purpose
+jq -r '.directory_purposes["dir/path"]' PROJECT_INDEX.json
+
+# Dead code
+jq -r '.files[].functions | to_entries[] | select(.value.called_by == null) | .key' PROJECT_INDEX.json
+```
+
+NEVER load full index - saves context.
+ONLY query specific data needed.
+
 ## Core Directives
 
 reasoning_effort="high" optimizes for complex tasks - leverage this.

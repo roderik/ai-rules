@@ -1,5 +1,51 @@
 # CLAUDE.md
 
+## Project Awareness & Indexing
+
+### PROJECT_INDEX.json Usage (QUERY, DON'T LOAD)
+
+- FIRST ACTION: Check if exists: `ls PROJECT_INDEX.json 2>/dev/null`
+- IF EXISTS, NEVER load full file - QUERY it with jq/grep:
+
+#### Finding Functions/Classes:
+
+```bash
+# Find specific function
+jq -r '.files | to_entries[] | select(.value.functions | has("function_name"))' PROJECT_INDEX.json
+
+# Find what calls a function
+jq -r '.files[].functions.function_name.called_by[]?' PROJECT_INDEX.json 2>/dev/null
+
+# Find dead code (functions without callers)
+jq -r '.files | to_entries[] | .value.functions | to_entries[] | select(.value.called_by == null) | .key' PROJECT_INDEX.json
+
+# Check directory purpose
+jq -r '.directory_purposes["src/auth"]' PROJECT_INDEX.json
+```
+
+#### Before Changes:
+
+```bash
+# Check impact of changing a function
+jq -r '.files["path/to/file.py"].functions.function_name.called_by[]?' PROJECT_INDEX.json
+
+# Find all imports of a module
+jq -r '.dependency_graph | to_entries[] | select(.value[] | contains("module_name")) | .key' PROJECT_INDEX.json
+```
+
+#### Adding Code:
+
+```bash
+# Find similar existing functions
+jq -r '.files[].functions | keys[]' PROJECT_INDEX.json | grep -i "pattern"
+
+# Get class structure for consistency
+jq '.files["path/to/file.py"].classes' PROJECT_INDEX.json
+```
+
+- IF NOT PRESENT but project is complex (>50 files): suggest `/index` command
+- ONLY load full index if absolutely necessary for complex architectural analysis
+
 ## Identity & Communication Style
 
 - Be direct and concise - max 4 lines unless detail requested
