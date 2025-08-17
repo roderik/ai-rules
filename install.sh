@@ -26,26 +26,26 @@ ROCKET="🚀"
 validate_path() {
   local path="$1"
   local description="${2:-path}"
-  
+
   # Check for directory traversal attempts
   if [[ "$path" == *".."* ]]; then
     printf "${RED}${ERROR} Invalid %s: Path cannot contain '..' (directory traversal)${NC}\n" "$description" >&2
     return 1
   fi
-  
+
   # Check for absolute paths
   if [[ "$path" == "/"* ]]; then
     printf "${RED}${ERROR} Invalid %s: Path cannot be absolute${NC}\n" "$description" >&2
     return 1
   fi
-  
+
   # Check for path starting with tilde (home directory expansion)
   if [[ "$path" == "~"* ]]; then
     printf "${RED}${ERROR} Invalid %s: Path cannot start with '~'${NC}\n" "$description" >&2
     return 1
   fi
-  
-  
+
+
   # Check for command injection characters in filenames
   # These characters pose significant security risks in shell contexts
   if [[ "$path" == *";"* ]] || [[ "$path" == *"|"* ]] || [[ "$path" == *"&"* ]] || \
@@ -54,7 +54,7 @@ validate_path() {
     printf "${RED}${ERROR} Invalid %s: Path contains potentially dangerous characters${NC}\n" "$description" >&2
     return 1
   fi
-  
+
   return 0
 }
 
@@ -90,17 +90,17 @@ show_banner() {
 # Check for required dependencies
 check_dependencies() {
   local missing_deps=()
-  
+
   for cmd in jq git; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
       missing_deps+=("$cmd")
     fi
   done
-  
+
   if [ ${#missing_deps[@]} -gt 0 ]; then
     log_error "Missing required dependencies: ${missing_deps[*]}"
     log_info "Please install the missing tools and try again."
-    
+
     # Provide installation hints
     if [[ "$OSTYPE" == "darwin"* ]]; then
       log_info "On macOS, you can install with: brew install ${missing_deps[*]}"
@@ -131,16 +131,16 @@ merge_json() {
   local target="$1"
   local source="$2"
   local backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
-  
+
   # Create target directory if needed
   mkdir -p "$(dirname "$target")"
-  
+
   # Backup existing file if it exists
   if [ -f "$target" ]; then
     cp "$target" "$backup"
     log_info "Backed up existing file to: $backup"
   fi
-  
+
   # Merge or create
   if [ -f "$target" ]; then
     # Merge existing with new
@@ -158,13 +158,13 @@ merge_hooks() {
   local target="$1"
   local source="$2"
   local backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
-  
+
   mkdir -p "$(dirname "$target")"
-  
+
   if [ -f "$target" ]; then
     cp "$target" "$backup"
     log_info "Backed up existing hooks to: $backup"
-    
+
     # Merge hooks using Python for better error handling
     python3 -c "
 import json
@@ -210,7 +210,7 @@ for hook_type, hook_value in new_hooks.items():
 with open('${target}.tmp', 'w') as f:
     json.dump(settings, f, indent=2)
 " && mv "${target}.tmp" "$target"
-    
+
     log_success "Merged hooks into: $target"
   else
     cp "$source" "$target"
@@ -222,7 +222,7 @@ with open('${target}.tmp', 'w') as f:
 main() {
   local force_overwrite=0
   local dry_run=0
-  
+
   # Parse arguments
   while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -255,59 +255,59 @@ USAGE
         ;;
     esac
   done
-  
+
   # Show banner
   show_banner
-  
+
   # Check dependencies
   check_dependencies
-  
+
   # Detect source directory
   local repo_root
   repo_root=$(script_dir)
   local src_base="$repo_root/.claude"
   local codex_base="$repo_root/.codex"
   local gemini_base="$repo_root/.gemini"
-  
+
   # Check if we're running from a piped/curl execution (no .claude directory)
   if [ ! -d "$src_base" ]; then
     log_info "Remote installation detected. Cloning ai-rules repository..."
-    
+
     # Create temporary directory for the repository
     local temp_repo="/tmp/ai-rules-install-$$"
-    
+
     # Clone the repository
     if ! git clone --quiet https://github.com/roderik/ai-rules.git "$temp_repo" 2>/dev/null; then
       log_error "Failed to clone ai-rules repository"
       log_info "Please check your internet connection and try again."
       exit 1
     fi
-    
+
     # Update paths to use the cloned repository
     repo_root="$temp_repo"
     src_base="$repo_root/.claude"
     codex_base="$repo_root/.codex"
     gemini_base="$repo_root/.gemini"
-    
+
     # Verify the cloned repository has the expected structure
     if [ ! -d "$src_base" ]; then
       log_error "Invalid repository structure: .claude directory not found"
       rm -rf "$temp_repo"
       exit 1
     fi
-    
+
     log_success "Repository cloned successfully"
-    
+
     # Set a flag to clean up the temp directory on exit
     trap "rm -rf '$temp_repo'" EXIT
   fi
-  
+
   log_info "Installing from: $src_base"
   printf "\n"
-  
+
   # Install Claude Code configuration
   print_color "$BOLD" "=== Installing Claude Code Configuration ==="
-  
+
   # Detect OS and set appropriate path
   local claude_code_dir
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
@@ -318,31 +318,31 @@ USAGE
     # Unix-like path (macOS, Linux)
     claude_code_dir="$HOME/.claude"
   fi
-  
+
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Target directory: $claude_code_dir"
     printf "\n"
-    
+
     # Create temporary files for diff
     local temp_dir=$(mktemp -d)
     local before_file="$temp_dir/before.json"
     local after_file="$temp_dir/after.json"
-    
+
     # Prepare the "before" state
     if [ -f "$claude_code_dir/settings.json" ]; then
       jq -S '.' "$claude_code_dir/settings.json" > "$before_file" 2>/dev/null || echo '{}' > "$before_file"
     else
       echo '{}' > "$before_file"
     fi
-    
+
     # Prepare the "after" state by simulating the merge
     local merged_content=$(cat "$before_file")
-    
+
     # Merge settings
     if [ -f "$src_base/settings/settings.json" ]; then
       merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/settings/settings.json" '.[0] * $new[0]')
     fi
-    
+
     # Merge hooks
     if [ -f "$src_base/hooks/hooks.json" ]; then
       merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/hooks/hooks.json" '
@@ -355,7 +355,7 @@ USAGE
           else
             $existing
           end;
-        
+
         .[0] as $base |
         $new[0].hooks as $new_hooks |
         $base | .hooks = (
@@ -368,19 +368,19 @@ USAGE
         )
       ')
     fi
-    
+
     # Merge MCP servers
     if [ -f "$src_base/mcp/mcp.json" ]; then
       merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/mcp/mcp.json" '.[0] * $new[0]')
     fi
-    
+
     # Write the merged content to after file
     echo "$merged_content" | jq -S '.' > "$after_file"
-    
+
     # Show the diff for settings.json
     print_color "$BOLD" "📝 Changes that would be made to settings.json:"
     printf "\n"
-    
+
     if [ -f "$claude_code_dir/settings.json" ]; then
       # Prefer delta for beautiful diffs, fall back to diff
       if command -v delta >/dev/null 2>&1; then
@@ -418,7 +418,7 @@ USAGE
       print_color "$GREEN" "  Content preview:"
       jq -C '.' "$after_file" 2>/dev/null || jq '.' "$after_file"
     fi
-    
+
     # Show agents that would be installed with diff
     printf "\n"
     print_color "$BOLD" "🤖 Agents that would be installed to ~/.claude/agents/:"
@@ -431,7 +431,7 @@ USAGE
           continue
         fi
         local target_file="$claude_code_dir/agents/$agent_name"
-        
+
         if [ -f "$target_file" ]; then
           # Show diff if file exists
           print_color "$YELLOW" "  ⚠️  $agent_name (already exists - showing diff):"
@@ -464,7 +464,7 @@ USAGE
         fi
       done
     fi
-    
+
     # Show commands that would be installed with diff
     printf "\n"
     print_color "$BOLD" "📋 Commands that would be installed to ~/.claude/commands/:"
@@ -477,7 +477,7 @@ USAGE
           continue
         fi
         local target_file="$claude_code_dir/commands/$cmd_name"
-        
+
         if [ -f "$target_file" ]; then
           # Show diff if file exists
           print_color "$YELLOW" "  ⚠️  /$cmd_name (already exists - showing diff):"
@@ -510,7 +510,7 @@ USAGE
         fi
       done
     fi
-    
+
     # Show CLAUDE.md that would be installed
     printf "\n"
     print_color "$BOLD" "📄 CLAUDE.md file that would be installed to ~/.claude/:"
@@ -547,7 +547,7 @@ USAGE
         head -10 "$repo_root/CLAUDE.md" | sed 's/^/      /'
       fi
     fi
-    
+
     # Clean up temp files
     rm -rf "$temp_dir"
     printf "\n"
@@ -556,23 +556,23 @@ USAGE
     if [ -f "$src_base/settings/settings.json" ]; then
       merge_json "$claude_code_dir/settings.json" "$src_base/settings/settings.json"
     fi
-    
+
     # Merge hooks.json
     if [ -f "$src_base/hooks/hooks.json" ]; then
       merge_hooks "$claude_code_dir/settings.json" "$src_base/hooks/hooks.json"
     fi
-    
+
     # Merge MCP servers into settings.json
     if [ -f "$src_base/mcp/mcp.json" ]; then
       local backup="${claude_code_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
       cp "$claude_code_dir/settings.json" "$backup"
-      
+
       # Merge MCP servers into settings
       jq -s '.[0] * .[1]' "$claude_code_dir/settings.json" "$src_base/mcp/mcp.json" > "${claude_code_dir}/settings.json.tmp" && \
         mv "${claude_code_dir}/settings.json.tmp" "$claude_code_dir/settings.json"
       log_success "Merged MCP servers into settings.json"
     fi
-    
+
     # Install agents
     if [ -d "$src_base/agents" ]; then
       printf "\n"
@@ -585,7 +585,7 @@ USAGE
           continue
         fi
         local target_file="$claude_code_dir/agents/$agent_name"
-        
+
         if [ -f "$target_file" ]; then
           # Show diff if file exists
           print_color "$YELLOW" "  ⚠️  $agent_name (already exists - showing diff):"
@@ -615,13 +615,13 @@ USAGE
           print_color "$CYAN" "    Preview (first 10 lines):"
           head -10 "$agent_file" | sed 's/^/      /'
         fi
-        
+
         log_info "Copying agent: $agent_name to ~/.claude/agents/"
         cp "$agent_file" "$target_file"
         log_success "Installed agent: $agent_name"
       done
     fi
-    
+
     # Install commands
     if [ -d "$src_base/commands" ]; then
       printf "\n"
@@ -634,7 +634,7 @@ USAGE
           continue
         fi
         local target_file="$claude_code_dir/commands/$cmd_name"
-        
+
         if [ -f "$target_file" ]; then
           # Show diff if file exists
           print_color "$YELLOW" "  ⚠️  /$cmd_name (already exists - showing diff):"
@@ -664,19 +664,19 @@ USAGE
           print_color "$CYAN" "    Preview (first 10 lines):"
           head -10 "$cmd_file" | sed 's/^/      /'
         fi
-        
+
         log_info "Copying command: $cmd_name to ~/.claude/commands/"
         cp "$cmd_file" "$target_file"
         log_success "Installed command: /$cmd_name"
       done
     fi
-    
+
     # Install CLAUDE.md file to global user folder
     if [ -f "$repo_root/CLAUDE.md" ]; then
       printf "\n"
       print_color "$BOLD" "Installing CLAUDE.md..."
       local target_file="$claude_code_dir/CLAUDE.md"
-      
+
       if [ -f "$target_file" ]; then
         # Show diff if file exists
         print_color "$YELLOW" "  ⚠️  CLAUDE.md (already exists - showing diff):"
@@ -706,11 +706,11 @@ USAGE
         print_color "$CYAN" "    Preview (first 10 lines):"
         head -10 "$repo_root/CLAUDE.md" | sed 's/^/      /'
       fi
-      
+
       cp "$repo_root/CLAUDE.md" "$target_file"
       log_success "Installed CLAUDE.md to ~/.claude/"
     fi
-    
+
     # Install output-styles
     if [ -d "$src_base/output-styles" ]; then
       printf "\n"
@@ -718,7 +718,7 @@ USAGE
       cp -r "$src_base/output-styles" "$claude_code_dir/"
       log_success "Installed output-styles to ~/.claude/"
     fi
-    
+
     # Create manifest for uninstall
     local manifest="$claude_code_dir/.ai-rules-manifest.json"
     cat > "$manifest" <<EOF
@@ -738,10 +738,10 @@ EOF
     log_success "Created manifest: $manifest"
   fi
   printf "\n"
-  
+
   # Install Codex CLI configuration
   print_color "$BOLD" "=== Installing Codex CLI Configuration ==="
-  
+
   # Detect OS and set appropriate path for Codex
   local codex_dir
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
@@ -752,10 +752,10 @@ EOF
     # Unix-like path (macOS, Linux)
     codex_dir="$HOME/.codex"
   fi
-  
+
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Would install Codex configuration to: $codex_dir"
-    
+
     # Show config.toml that would be installed
     printf "\n"
     print_color "$BOLD" "⚙️  config.toml that would be installed to ~/.codex/:"
@@ -792,7 +792,7 @@ EOF
         head -20 "$codex_base/config.toml" | sed 's/^/      /'
       fi
     fi
-    
+
     # Show AGENTS.md that would be installed
     printf "\n"
     print_color "$BOLD" "📄 AGENTS.md file that would be installed to ~/.codex/:"
@@ -835,12 +835,12 @@ EOF
       mkdir -p "$codex_dir"
       local backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$codex_dir/config.toml"
-      
+
       # Backup existing file if it exists
       if [ -f "$target_file" ]; then
         cp "$target_file" "$backup"
         log_info "Backed up existing Codex config to: $backup"
-        
+
         # Show diff
         print_color "$YELLOW" "  ⚠️  config.toml (already exists - showing diff):"
         if command -v delta >/dev/null 2>&1; then
@@ -869,21 +869,21 @@ EOF
         print_color "$CYAN" "    Preview (first 20 lines):"
         head -20 "$codex_base/config.toml" | sed 's/^/      /'
       fi
-      
+
       cp "$codex_base/config.toml" "$target_file"
       log_success "Installed config.toml to ~/.codex/"
     fi
-    
+
     # Install AGENTS.md
     if [ -f "$repo_root/AGENTS.md" ]; then
       local backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$codex_dir/AGENTS.md"
-      
+
       # Backup existing file if it exists
       if [ -f "$target_file" ]; then
         cp "$target_file" "$backup"
         log_info "Backed up existing AGENTS.md to: $backup"
-        
+
         # Show diff
         print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
         if command -v delta >/dev/null 2>&1; then
@@ -912,11 +912,11 @@ EOF
         print_color "$CYAN" "    Preview (first 10 lines):"
         head -10 "$repo_root/AGENTS.md" | sed 's/^/      /'
       fi
-      
+
       cp "$repo_root/AGENTS.md" "$target_file"
       log_success "Installed AGENTS.md to ~/.codex/"
     fi
-    
+
     # Update manifest to include Codex files
     local manifest="$claude_code_dir/.ai-rules-manifest.json"
     cat > "$manifest" <<EOF
@@ -938,12 +938,12 @@ EOF
 EOF
     log_success "Updated manifest: $manifest"
   fi
-  
+
   printf "\n"
-  
+
   # Install Gemini CLI configuration
   print_color "$BOLD" "=== Installing Gemini CLI Configuration ==="
-  
+
   # Detect OS and set appropriate path for Gemini
   local gemini_dir
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
@@ -954,10 +954,10 @@ EOF
     # Unix-like path (macOS, Linux)
     gemini_dir="$HOME/.gemini"
   fi
-  
+
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Would install Gemini configuration to: $gemini_dir"
-    
+
     # Show GEMINI.md that would be installed
     printf "\n"
     print_color "$BOLD" "📄 GEMINI.md file that would be installed to ~/.gemini/:"
@@ -994,7 +994,7 @@ EOF
         head -10 "$repo_root/GEMINI.md" | sed 's/^/      /'
       fi
     fi
-    
+
     # Show settings.json that would be installed
     printf "\n"
     print_color "$BOLD" "⚙️  settings.json that would be installed to ~/.gemini/:"
@@ -1031,7 +1031,7 @@ EOF
         head -20 "$gemini_base/settings.json" | sed 's/^/      /'
       fi
     fi
-    
+
     # Show commands.toml that would be installed
     printf "\n"
     print_color "$BOLD" "📋 commands.toml that would be installed to ~/.gemini/:"
@@ -1072,17 +1072,17 @@ EOF
     # Install Gemini configuration files
     if [ -d "$gemini_base" ]; then
       mkdir -p "$gemini_dir"
-      
+
       # Install GEMINI.md from root
       if [ -f "$repo_root/GEMINI.md" ]; then
         local backup="${gemini_dir}/GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
         local target_file="$gemini_dir/GEMINI.md"
-        
+
         # Backup existing file if it exists
         if [ -f "$target_file" ]; then
           cp "$target_file" "$backup"
           log_info "Backed up existing GEMINI.md to: $backup"
-          
+
           # Show diff
           print_color "$YELLOW" "  ⚠️  GEMINI.md (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
@@ -1111,21 +1111,21 @@ EOF
           print_color "$CYAN" "    Preview (first 10 lines):"
           head -10 "$repo_root/GEMINI.md" | sed 's/^/      /'
         fi
-        
+
         cp "$repo_root/GEMINI.md" "$target_file"
         log_success "Installed GEMINI.md to ~/.gemini/"
       fi
-      
+
       # Install settings.json
       if [ -f "$gemini_base/settings.json" ]; then
         local backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
         local target_file="$gemini_dir/settings.json"
-        
+
         # Backup existing file if it exists
         if [ -f "$target_file" ]; then
           cp "$target_file" "$backup"
           log_info "Backed up existing Gemini settings to: $backup"
-          
+
           # Show diff
           print_color "$YELLOW" "  ⚠️  settings.json (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
@@ -1154,21 +1154,21 @@ EOF
           print_color "$CYAN" "    Preview (first 20 lines):"
           head -20 "$gemini_base/settings.json" | sed 's/^/      /'
         fi
-        
+
         cp "$gemini_base/settings.json" "$target_file"
         log_success "Installed settings.json to ~/.gemini/"
       fi
-      
+
       # Install commands.toml
       if [ -f "$gemini_base/commands.toml" ]; then
         local backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
         local target_file="$gemini_dir/commands.toml"
-        
+
         # Backup existing file if it exists
         if [ -f "$target_file" ]; then
           cp "$target_file" "$backup"
           log_info "Backed up existing commands.toml to: $backup"
-          
+
           # Show diff
           print_color "$YELLOW" "  ⚠️  commands.toml (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
@@ -1197,11 +1197,11 @@ EOF
           print_color "$CYAN" "    Preview (first 15 lines):"
           head -15 "$gemini_base/commands.toml" | sed 's/^/      /'
         fi
-        
+
         cp "$gemini_base/commands.toml" "$target_file"
         log_success "Installed commands.toml to ~/.gemini/"
       fi
-      
+
       # Update manifest to include Gemini files
       local manifest="$claude_code_dir/.ai-rules-manifest.json"
       cat > "$manifest" <<EOF
@@ -1229,9 +1229,9 @@ EOF
       log_success "Updated manifest: $manifest"
     fi
   fi
-  
+
   printf "\n"
-  
+
   # Install coreutils for timeout command (macOS)
   if [[ "$OSTYPE" == "darwin"* ]]; then
     print_color "$BOLD" "=== Installing coreutils for timeout command ==="
@@ -1264,22 +1264,22 @@ EOF
     fi
     printf "\n"
   fi
-  
+
   # Install claude-code-project-index
   print_color "$BOLD" "=== Installing Claude Code Project Index ==="
   log_info "Installing claude-code-project-index..."
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Would install claude-code-project-index"
   else
-    if curl -fsSL https://raw.githubusercontent.com/ericbuess/claude-code-project-index/main/install.sh | bash; then
+    if curl -fsSL https://raw.githubusercontent.com/roderik/claude-code-project-index/main/install.sh | bash; then
       log_success "Successfully installed claude-code-project-index"
     else
       log_warning "Failed to install claude-code-project-index (optional component)"
     fi
   fi
-  
+
   printf "\n"
-  
+
   # Install claude-code-docs
   print_color "$BOLD" "=== Installing Claude Code Docs ==="
   log_info "Installing claude-code-docs..."
@@ -1292,19 +1292,19 @@ EOF
       log_warning "Failed to install claude-code-docs (optional component)"
     fi
   fi
-  
+
   printf "\n"
-  
+
   # Success message
   print_color "$BOLD$GREEN" "╔════════════════════════════════════════════╗"
   print_color "$BOLD$GREEN" "║     ${ROCKET} Installation Complete! ${ROCKET}        ║"
   print_color "$BOLD$GREEN" "╚════════════════════════════════════════════╝"
   printf "\n"
-  
+
   log_success "AI Rules has been successfully installed!"
   log_info "Restart Claude Code, Codex CLI, and Gemini CLI to apply the new configurations."
   printf "\n"
-  
+
   # Show what was installed
   print_color "$CYAN" "Installed configuration to:"
   if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
@@ -1317,7 +1317,7 @@ EOF
     print_color "$YELLOW" "  • Gemini CLI: ~/.gemini/"
   fi
   printf "\n"
-  
+
   log_info "To uninstall, run: ./uninstall.sh"
 }
 
