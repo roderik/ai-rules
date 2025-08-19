@@ -145,9 +145,61 @@ No sensitive data in commits.
 Remember: You're GPT-5 with high reasoning effort. Leverage parallel operations. Skip ceremony. Execute.
 
 ## Tooling for shell interactions
-Is it about finding FILES? use 'fd'
-Is it about finding TEXT/strings? use 'rg'
-Is it about finding CODE STRUCTURE? use 'ast-grep'
-Is it about SELECTING from multiple results? pipe to 'fzf'
-Is it about interacting with JSON? use 'jq'
-Is it about interacting with YAML or XML? use 'yq'
+
+**CRITICAL**: This system uses MODERN TOOLS ONLY. Traditional commands are ALIASED to modern alternatives.
+**WARNING**: Parameter syntax DIFFERS from traditional tools. ALWAYS use the modern tool syntax.
+
+### MANDATORY Tool Usage:
+
+- Finding FILES? **USE `fd`** (NOT find - even though `find` is aliased to `fd`)
+- Finding TEXT/strings? **USE `rg`** (NOT grep - even though `grep` is aliased to `rg`)
+- Finding CODE STRUCTURE? **USE `ast-grep`**
+- SELECTING from results? **PIPE TO `fzf`**
+- Interacting with JSON? **USE `jq`**
+- Interacting with YAML/XML? **USE `yq`**
+
+## Modern Tool Aliases (IMPORTANT: TRADITIONAL COMMANDS ARE ALIASED)
+
+**⚠️ CRITICAL: The traditional commands below are ALIASED to modern tools. Using `ls` actually runs `eza`, using `cat` runs `bat`, etc.**
+**⚠️ ALWAYS use the modern tool's syntax and parameters, NOT the traditional command's syntax.**
+
+This system has modern alternatives installed and ALIASED:
+
+| Modern Tool | Description                                  | ALIASED FROM (⚠️)  | Additional Info        |
+| ----------- | -------------------------------------------- | ------------------ | ---------------------- |
+| neovim/nvim | Modern Vim with LazyVim configuration        | vim (ALIASED)      | Also aliased as 'n'    |
+| bat         | Syntax highlighting and Git integration      | cat (ALIASED)      | Plain style by default |
+| eza         | Modern listing with icons and git status     | ls, tree (ALIASED) | Multiple ls aliases    |
+| ripgrep/rg  | Ultra-fast text search                       | grep (ALIASED)     | Use rg syntax only!    |
+| fd          | User-friendly file finder                    | find (ALIASED)     | Use fd syntax only!    |
+| fzf         | Fuzzy finder for files and history           | -                  | Integrated with bat    |
+| lazygit     | Terminal UI for git commands                 | -                  | Aliases: lg, lzg       |
+| lazydocker  | Terminal UI for docker management            | -                  | Aliases: ld, lzd       |
+| fnm         | Fast Node.js version manager                 | -                  | Replaces nvm           |
+| git-delta   | Beautiful git diffs with syntax highlighting | -                  | Auto-configured        |
+| hexyl       | Hex viewer with colored output               | hexdump (ALIASED)  | Alias: hex             |
+| procs       | Modern process viewer                        | ps (ALIASED)       | Aliases: pst, psw      |
+| broot       | Interactive tree view with search            | -                  | Has br launcher        |
+| zoxide      | Smarter directory navigation                 | -                  | NOT aliased to cd      |
+| atuin       | Better shell history with sync               | -                  | Auto-initialized       |
+| direnv      | Per-project environment variables            | -                  | Auto-initialized       |
+| chafa       | Terminal graphics viewer                     | -                  | Aliases: img, image    |
+| ast-grep    | Structural code search/replace               | -                  | Aliases: ag, ags, agr  |
+| starship    | Cross-shell prompt                           | -                  | If installed           |
+| tmux        | Terminal multiplexer                         | -                  | Various tm\* aliases   |
+| zellij      | Modern terminal multiplexer                  | -                  | Aliases: zj, zja, zjs  |
+| tilt        | Local Kubernetes development                 | -                  | Aliases: tu, td        |
+| uv          | Python package/project manager               | -                  | Aliases: uvs, uvi, uvr |
+| op          | 1Password CLI                                | -                  | Auto-integrated        |
+| forge/cast  | Foundry blockchain tools                     | -                  | Multiple aliases       |
+
+### ⚠️ CRITICAL REMINDERS:
+
+1. **NEVER use traditional command syntax** - Even though `ls` exists, it's actually `eza`
+2. **ALWAYS use modern tool parameters** - `fd` syntax NOT `find` syntax
+3. **When in doubt, use the modern tool directly** - Use `eza` instead of `ls`, `bat` instead of `cat`
+4. **Examples of CORRECT usage:**
+   - `fd . -t f` (NOT `find . -type f`)
+   - `rg "pattern"` (NOT `grep "pattern"`)
+   - `eza -la` (NOT `ls -la` even though it might work)
+   - `bat file.txt` (NOT `cat file.txt` even though it's aliased)
