@@ -16,6 +16,11 @@
       "type": "http",
       "url": "https://mcp.sentry.dev/mcp"
     },
+    "ultracite": {
+      "type": "stdio",
+      "command": "bun",
+      "args": ["-y", "mcp-remote", "https://www.ultracite.ai/api/mcp/mcp"]
+    },
     "playwright": {
       "type": "stdio",
       "command": "bun",
