@@ -425,19 +425,30 @@ USAGE
     printf "\n"
     if [ -d "$src_base/agents" ]; then
       find "$src_base/agents" -name "*.md" -type f | while read agent_file; do
-        local agent_name=$(basename "$agent_file")
-        if ! validate_path "$agent_name" "agent filename"; then
+        local agent_name=$(basename "$agent_file" .md)
+        if ! validate_path "$agent_name.md" "agent filename"; then
           log_error "Skipping invalid agent filename: $agent_name"
           continue
         fi
-        local target_file="$claude_code_dir/agents/$agent_name"
+        local target_file="$claude_code_dir/agents/${agent_name}.md"
+        local shared_content="$repo_root/.shared/agents/${agent_name}.md"
+
+        # Create temp combined file for preview
+        local temp_file="/tmp/agent_preview_${agent_name}_$$.md"
+        if [ -f "$shared_content" ]; then
+          cat "$agent_file" > "$temp_file"
+          echo "" >> "$temp_file"
+          cat "$shared_content" >> "$temp_file"
+        else
+          cp "$agent_file" "$temp_file"
+        fi
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
-          print_color "$YELLOW" "  ⚠️  $agent_name (already exists - showing diff):"
+          print_color "$YELLOW" "  ⚠️  $agent_name.md (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
             # Use delta with compact display
-            diff -u --label "current" --label "new" "$target_file" "$agent_file" 2>/dev/null | \
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | \
               delta --no-gitconfig \
                     --paging=never \
                     --line-numbers \
@@ -447,7 +458,7 @@ USAGE
                     --diff-so-fancy \
                     --hyperlinks 2>/dev/null || true
           elif command -v diff >/dev/null 2>&1; then
-            diff -u --label "current" --label "new" "$target_file" "$agent_file" 2>/dev/null | while IFS= read -r line; do
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | while IFS= read -r line; do
               case "$line" in
                 +*) print_color "$GREEN" "    $line" ;;
                 -*) print_color "$RED" "    $line" ;;
@@ -458,10 +469,12 @@ USAGE
           fi
         else
           # Show preview of new file
-          print_color "$GREEN" "  + $agent_name (new file)"
+          print_color "$GREEN" "  + $agent_name.md (new file with shared content)"
           print_color "$CYAN" "    Preview (first 10 lines):"
-          head -10 "$agent_file" | sed 's/^/      /'
+          head -10 "$temp_file" | sed 's/^/      /'
         fi
+
+        rm -f "$temp_file"
       done
     fi
 
@@ -573,24 +586,40 @@ USAGE
       log_success "Merged MCP servers into settings.json"
     fi
 
-    # Install agents
+    # Install agents with combined frontmatter and shared content
     if [ -d "$src_base/agents" ]; then
       printf "\n"
       print_color "$BOLD" "Installing AI Agents..."
       mkdir -p "$claude_code_dir/agents"
+
+      # Process each agent
       find "$src_base/agents" -name "*.md" -type f | while read agent_file; do
-        local agent_name=$(basename "$agent_file")
-        if ! validate_path "$agent_name" "agent filename"; then
+        local agent_name=$(basename "$agent_file" .md)
+        if ! validate_path "$agent_name.md" "agent filename"; then
           log_error "Skipping invalid agent filename: $agent_name"
           continue
         fi
-        local target_file="$claude_code_dir/agents/$agent_name"
+        local target_file="$claude_code_dir/agents/${agent_name}.md"
+        local shared_content="$repo_root/.shared/agents/${agent_name}.md"
+
+        # Create combined file in temp location
+        local temp_file="/tmp/agent_${agent_name}_$$.md"
+
+        # Combine frontmatter from .claude/agents and content from .shared/agents
+        if [ -f "$shared_content" ]; then
+          cat "$agent_file" > "$temp_file"
+          echo "" >> "$temp_file"  # Add blank line between frontmatter and content
+          cat "$shared_content" >> "$temp_file"
+        else
+          # If no shared content, just use the frontmatter file
+          cp "$agent_file" "$temp_file"
+        fi
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
-          print_color "$YELLOW" "  ⚠️  $agent_name (already exists - showing diff):"
+          print_color "$YELLOW" "  ⚠️  $agent_name.md (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
-            diff -u --label "current" --label "new" "$target_file" "$agent_file" 2>/dev/null | \
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | \
               delta --no-gitconfig \
                     --paging=never \
                     --line-numbers \
@@ -600,7 +629,7 @@ USAGE
                     --diff-so-fancy \
                     --hyperlinks 2>/dev/null || true
           elif command -v diff >/dev/null 2>&1; then
-            diff -u --label "current" --label "new" "$target_file" "$agent_file" 2>/dev/null | head -20 | while IFS= read -r line; do
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | head -20 | while IFS= read -r line; do
               case "$line" in
                 +*) print_color "$GREEN" "    $line" ;;
                 -*) print_color "$RED" "    $line" ;;
@@ -611,14 +640,14 @@ USAGE
           fi
         else
           # Show preview of new file
-          print_color "$GREEN" "  + $agent_name (new file)"
+          print_color "$GREEN" "  + $agent_name.md (new file)"
           print_color "$CYAN" "    Preview (first 10 lines):"
-          head -10 "$agent_file" | sed 's/^/      /'
+          head -10 "$temp_file" | sed 's/^/      /'
         fi
 
-        log_info "Copying agent: $agent_name to ~/.claude/agents/"
-        cp "$agent_file" "$target_file"
-        log_success "Installed agent: $agent_name"
+        log_info "Installing agent: $agent_name to ~/.claude/agents/"
+        mv "$temp_file" "$target_file"
+        log_success "Installed agent: $agent_name.md"
       done
     fi
 
@@ -1232,6 +1261,280 @@ EOF
 
   printf "\n"
 
+  # Install OpenCode configuration
+  print_color "$BOLD" "=== Installing OpenCode Configuration ==="
+
+  # Detect OS and set appropriate path for OpenCode
+  local opencode_dir
+  if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+    # Windows path
+    opencode_dir="$USERPROFILE/.config/opencode"
+    log_info "Detected Windows environment for OpenCode"
+  else
+    # Unix-like path (macOS, Linux)
+    opencode_dir="$HOME/.config/opencode"
+  fi
+
+  if [ "$dry_run" -eq 1 ]; then
+    log_info "[DRY RUN] Would install OpenCode agents to: $opencode_dir/agent/"
+
+    # Show agents that would be installed
+    printf "\n"
+    print_color "$BOLD" "🤖 OpenCode agents that would be installed:"
+    printf "\n"
+    if [ -d "$repo_root/.opencode/agents" ]; then
+      find "$repo_root/.opencode/agents" -name "*.md" -type f | while read agent_file; do
+        local agent_name=$(basename "$agent_file" .md)
+        local shared_content="$repo_root/.shared/agents/${agent_name}.md"
+        if [ -f "$shared_content" ]; then
+          print_color "$GREEN" "  + $agent_name.md (with shared content)"
+        else
+          print_color "$YELLOW" "  + $agent_name.md (frontmatter only)"
+        fi
+      done
+    fi
+    
+    # Show MCP servers that would be configured
+    printf "\n"
+    print_color "$BOLD" "🔌 MCP servers that would be configured in opencode.json:"
+    printf "\n"
+    if [ -f "$src_base/mcp/mcp.json" ]; then
+      print_color "$CYAN" "  MCP servers from Claude configuration will be converted"
+    fi
+    
+    # Show AGENTS.md that would be installed
+    printf "\n"
+    print_color "$BOLD" "📄 AGENTS.md file that would be installed to ~/.config/opencode/:"
+    printf "\n"
+    if [ -f "$repo_root/AGENTS.md" ]; then
+      print_color "$GREEN" "  + AGENTS.md (configuration documentation)"
+    fi
+  else
+    # Install OpenCode agents with combined frontmatter and shared content
+    if [ -d "$repo_root/.opencode/agents" ]; then
+      printf "\n"
+      print_color "$BOLD" "Installing OpenCode Agents..."
+      mkdir -p "$opencode_dir/agent"
+
+      # Process each agent
+      find "$repo_root/.opencode/agents" -name "*.md" -type f | while read agent_file; do
+        local agent_name=$(basename "$agent_file" .md)
+        if ! validate_path "$agent_name.md" "agent filename"; then
+          log_error "Skipping invalid agent filename: $agent_name"
+          continue
+        fi
+        local target_file="$opencode_dir/agent/${agent_name}.md"
+        local shared_content="$repo_root/.shared/agents/${agent_name}.md"
+
+        # Create combined file in temp location
+        local temp_file="/tmp/opencode_agent_${agent_name}_$$.md"
+
+        # Combine frontmatter from .opencode/agents and content from .shared/agents
+        if [ -f "$shared_content" ]; then
+          cat "$agent_file" > "$temp_file"
+          echo "" >> "$temp_file"  # Add blank line between frontmatter and content
+          cat "$shared_content" >> "$temp_file"
+        else
+          # If no shared content, just use the frontmatter file
+          cp "$agent_file" "$temp_file"
+        fi
+
+        if [ -f "$target_file" ]; then
+          # Show diff if file exists
+          print_color "$YELLOW" "  ⚠️  $agent_name.md (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | head -20 | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          # Show preview of new file
+          print_color "$GREEN" "  + $agent_name.md (new file)"
+          print_color "$CYAN" "    Preview (first 10 lines):"
+          head -10 "$temp_file" | sed 's/^/      /'
+        fi
+
+        log_info "Installing OpenCode agent: $agent_name"
+        mv "$temp_file" "$target_file"
+        log_success "Installed OpenCode agent: $agent_name.md"
+      done
+    fi
+    
+    # Install AGENTS.md for OpenCode
+    if [ -f "$repo_root/AGENTS.md" ]; then
+      printf "\n"
+      print_color "$BOLD" "Installing AGENTS.md for OpenCode..."
+      local backup="${opencode_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+      local target_file="$opencode_dir/AGENTS.md"
+      
+      # Backup existing file if it exists
+      if [ -f "$target_file" ]; then
+        cp "$target_file" "$backup"
+        log_info "Backed up existing AGENTS.md to: $backup"
+        
+        # Show diff
+        print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
+        if command -v delta >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | \
+            delta --no-gitconfig \
+                  --paging=never \
+                  --line-numbers \
+                  --syntax-theme="Dracula" \
+                  --width="${COLUMNS:-120}" \
+                  --max-line-length=512 \
+                  --diff-so-fancy \
+                  --hyperlinks 2>/dev/null || true
+        elif command -v diff >/dev/null 2>&1; then
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | head -20 | while IFS= read -r line; do
+            case "$line" in
+              +*) print_color "$GREEN" "    $line" ;;
+              -*) print_color "$RED" "    $line" ;;
+              @*) print_color "$CYAN" "    $line" ;;
+              *) echo "    $line" ;;
+            esac
+          done
+        fi
+      else
+        # Show preview of new file
+        print_color "$GREEN" "  + AGENTS.md (new file)"
+        print_color "$CYAN" "    Preview (first 10 lines):"
+        head -10 "$repo_root/AGENTS.md" | sed 's/^/      /'
+      fi
+      
+      cp "$repo_root/AGENTS.md" "$target_file"
+      log_success "Installed AGENTS.md to ~/.config/opencode/"
+    fi
+    
+    # Install or update OpenCode MCP configuration
+    printf "\n"
+    print_color "$BOLD" "Installing OpenCode MCP Servers..."
+    
+    local opencode_config="$opencode_dir/opencode.json"
+    
+    # Convert Claude MCP config to OpenCode format using Python
+    if [ -f "$src_base/mcp/mcp.json" ]; then
+      python3 -c "
+import json
+import sys
+
+# Read Claude MCP config
+with open('$src_base/mcp/mcp.json', 'r') as f:
+    claude_config = json.load(f)
+
+# Read existing OpenCode config if it exists
+opencode_config = {}
+try:
+    with open('$opencode_config', 'r') as f:
+        opencode_config = json.load(f)
+except FileNotFoundError:
+    opencode_config = {
+        '\$schema': 'https://opencode.ai/config.json'
+    }
+
+# Initialize MCP section if not present
+if 'mcp' not in opencode_config:
+    opencode_config['mcp'] = {}
+
+# Convert Claude MCP servers to OpenCode format
+for server_name, server_config in claude_config.get('mcpServers', {}).items():
+    opencode_server = {}
+    opencode_server['enabled'] = True
+    
+    if server_config.get('type') == 'stdio':
+        # Convert stdio servers to local type
+        opencode_server['type'] = 'local'
+        command = [server_config.get('command', 'bun')]
+        args = server_config.get('args', [])
+        opencode_server['command'] = command + args
+        if 'env' in server_config and server_config['env']:
+            opencode_server['environment'] = server_config['env']
+    
+    elif server_config.get('type') in ['sse', 'http']:
+        # Convert SSE/HTTP servers to remote type
+        opencode_server['type'] = 'remote'
+        opencode_server['url'] = server_config.get('url', '')
+    
+    elif 'command' in server_config:
+        # Handle servers with just command (like DeepGraph)
+        opencode_server['type'] = 'local'
+        command = [server_config.get('command', 'bun')]
+        args = server_config.get('args', [])
+        opencode_server['command'] = command + args
+        if 'description' in server_config:
+            # Note: OpenCode doesn't have description field, but we keep for reference
+            pass
+    
+    else:
+        # Skip if we can't determine type
+        continue
+    
+    # Use sanitized server name (replace spaces with underscores)
+    sanitized_name = server_name.replace(' ', '_').replace('/', '_')
+    opencode_config['mcp'][sanitized_name] = opencode_server
+
+# Write the updated config
+with open('${opencode_config}.tmp', 'w') as f:
+    json.dump(opencode_config, f, indent=2)
+" && mv "${opencode_config}.tmp" "$opencode_config"
+      
+      log_success "Configured MCP servers in opencode.json"
+      
+      # Show what was configured
+      log_info "MCP servers configured:"
+      jq -r '.mcp | keys[]' "$opencode_config" 2>/dev/null | while read server; do
+        echo "  • $server"
+      done
+    fi
+
+    # Update manifest to include OpenCode files
+    local manifest="$claude_code_dir/.ai-rules-manifest.json"
+    cat > "$manifest" <<EOF
+{
+  "version": "1.0",
+  "installed": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "source": "$repo_root",
+  "configurations": [
+    "settings.json",
+    "agents/",
+    "commands/",
+    "CLAUDE.md"
+  ],
+  "codex_configurations": [
+    "$codex_dir/config.toml",
+    "$codex_dir/AGENTS.md"
+  ],
+  "gemini_configurations": [
+    "$gemini_dir/GEMINI.md",
+    "$gemini_dir/settings.json",
+    "$gemini_dir/commands.toml"
+  ],
+  "opencode_configurations": [
+    "$opencode_dir/agent/",
+    "$opencode_dir/opencode.json",
+    "$opencode_dir/AGENTS.md"
+  ]
+}
+EOF
+    log_success "Updated manifest with OpenCode configuration"
+  fi
+
+  printf "\n"
+
   # Install coreutils for timeout command (macOS)
   if [[ "$OSTYPE" == "darwin"* ]]; then
     print_color "$BOLD" "=== Installing coreutils for timeout command ==="
@@ -1287,7 +1590,7 @@ EOF
   printf "\n"
 
   log_success "AI Rules has been successfully installed!"
-  log_info "Restart Claude Code, Codex CLI, and Gemini CLI to apply the new configurations."
+  log_info "Restart Claude Code, Codex CLI, Gemini CLI, and OpenCode to apply the new configurations."
   printf "\n"
 
   # Show what was installed
@@ -1296,10 +1599,12 @@ EOF
     print_color "$YELLOW" "  • Claude Code: %USERPROFILE%\\.claude\\"
     print_color "$YELLOW" "  • Codex CLI: %USERPROFILE%\\.codex\\"
     print_color "$YELLOW" "  • Gemini CLI: %USERPROFILE%\\.gemini\\"
+    print_color "$YELLOW" "  • OpenCode: %USERPROFILE%\\.config\\opencode\\"
   else
     print_color "$YELLOW" "  • Claude Code: ~/.claude/"
     print_color "$YELLOW" "  • Codex CLI: ~/.codex/"
     print_color "$YELLOW" "  • Gemini CLI: ~/.gemini/"
+    print_color "$YELLOW" "  • OpenCode: ~/.config/opencode/"
   fi
   printf "\n"
 
