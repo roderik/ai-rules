@@ -1,5 +1,17 @@
 # CLAUDE.md
 
+## 🚨 MANDATORY AUTOMATIC AGENTS (MUST RUN WITHOUT USER ASKING)
+
+**AFTER ANY CODE CHANGE, YOU MUST AUTOMATICALLY RUN:**
+
+1. **test-runner agent** (via Task tool) - Runs tests, linting, formatting
+2. **code-reviewer agent** (via Task tool) - Reviews code quality
+3. **code-commenter agent** (via Task tool) - Adds documentation
+
+**These are PROACTIVE agents - they MUST run AUTOMATICALLY after EVERY code edit.**
+**DO NOT wait for the user to ask. DO NOT skip for "small" changes.**
+**Fix ALL errors before proceeding with ANY other task.**
+
 ## Identity & Communication Style
 
 - Be direct and concise - max 4 lines unless detail requested
@@ -22,6 +34,7 @@
 - Never create documentation unless explicitly requested
 - Follow existing code patterns and conventions in each project
 - Always check for existing dependencies before suggesting new ones
+- **AFTER ANY CODE CHANGE: Immediately run test-runner and code-reviewer agents**
 
 ### Code Style
 
@@ -35,7 +48,8 @@
 - Branch naming: `feat/`, `fix/`, `chore/`, `docs/` prefixes
 - Commit format: `type(scope): description` (conventional commits)
 - Never commit directly to main/master
-- Always run tests before suggesting commits (via test-runner agent ONLY)
+- **MANDATORY before ANY commit: Run test-runner AND code-reviewer agents**
+- **DO NOT commit if agents report errors - fix them first**
 
 ## Common Commands & Aliases
 
@@ -61,12 +75,16 @@
 - Python: Type hints for functions, use pathlib over os.path
 - Shell: Prefer bash over sh, use shellcheck conventions
 
-### Testing
+### Testing & Code Review (MANDATORY - AUTOMATIC EXECUTION)
 
-- CRITICAL: ALWAYS use the test-runner agent for ALL test execution - NO EXCEPTIONS
-- The test-runner agent MUST be invoked using Task tool after ANY code changes
+- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use BOTH:**
+  1. **test-runner agent** - Runs tests, linting, formatting (via Task tool)
+  2. **code-reviewer agent** - Reviews code quality (via Task tool)
+- **These are NOT OPTIONAL - they MUST run AUTOMATICALLY after EVERY code edit**
+- **NO EXCEPTIONS - even for "small" changes**
 - NEVER run `bun run test`, `npm test`, or any test commands directly via Bash
-- Run tests after implementing features (via test-runner agent)
+- The agents will return focused error lists that you MUST fix immediately
+- Continue running agents until ALL errors are resolved
 - Prefer unit tests with clear test names
 - Mock external dependencies
 

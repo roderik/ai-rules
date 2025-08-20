@@ -1,5 +1,16 @@
 # GEMINI.md
 
+## 🚨 MANDATORY AUTOMATIC QUALITY CHECKS (MUST RUN WITHOUT USER ASKING)
+
+**AFTER ANY CODE CHANGE, YOU MUST AUTOMATICALLY:**
+
+1. Run `bun run ci` or appropriate test commands
+2. Fix ALL errors and warnings
+3. Re-run until clean
+
+**DO NOT wait for the user to ask. DO NOT skip for "small" changes.**
+**These checks are MANDATORY and AUTOMATIC.**
+
 ## Configuration Loading
 
 On startup, read all CLAUDE.md files from current directory to project root:
@@ -43,6 +54,7 @@ Merge strategy: Later files override earlier ones, section by section.
 - Never create documentation unless explicitly requested
 - Follow existing code patterns and conventions in each project
 - Always check for existing dependencies before suggesting new ones
+- **AFTER ANY CODE CHANGE: Immediately run tests and linting**
 
 ### Code Style
 
@@ -56,7 +68,8 @@ Merge strategy: Later files override earlier ones, section by section.
 - Branch naming: `feat/`, `fix/`, `chore/`, `docs/` prefixes
 - Commit format: `type(scope): description` (conventional commits)
 - Never commit directly to main/master
-- Always run tests before suggesting commits
+- **MANDATORY before ANY commit: Run ALL tests and linting**
+- **DO NOT commit if tests fail or linting errors exist - fix them first**
 
 ## Common Commands & Aliases
 
@@ -82,9 +95,14 @@ Merge strategy: Later files override earlier ones, section by section.
 - Python: Type hints for functions, use pathlib over os.path
 - Shell: Prefer bash over sh, use shellcheck conventions
 
-### Testing
+### Testing & Code Review (MANDATORY - AUTOMATIC EXECUTION)
 
-- Run tests after implementing features
+- **CRITICAL: After ANY code change, you MUST IMMEDIATELY run:**
+  - Quality checks using appropriate testing commands
+  - Code review and linting
+- **These are NOT OPTIONAL - they MUST run AUTOMATICALLY after EVERY code edit**
+- **NO EXCEPTIONS - even for "small" changes**
+- Fix all errors before proceeding
 - Prefer unit tests with clear test names
 - Mock external dependencies
 

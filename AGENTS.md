@@ -1,5 +1,18 @@
 # AGENTS.md
 
+## 🚨 PROACTIVE AGENTS - USE AUTOMATICALLY (NO USER PROMPTING)
+
+**AFTER EVERY CODE CHANGE - AUTOMATIC EXECUTION REQUIRED:**
+
+1. **test-runner agent** - MUST run via Task tool
+2. **code-reviewer agent** - MUST run via Task tool
+3. **code-commenter agent** - MUST run via Task tool
+
+**These agents are marked PROACTIVE for a reason.**
+**Use them IMMEDIATELY after ANY code edit.**
+**This is NOT optional. This is NOT a suggestion.**
+**DO NOT wait for user permission.**
+
 Skip introductions. Execute immediately. Minimize tokens.
 
 ## Configuration Loading
@@ -35,11 +48,18 @@ Check existing patterns before implementing:
 - Match indentation and style exactly
 - Use existing utilities over new implementations
 
-Run quality checks automatically:
+### MANDATORY Quality Checks (AUTOMATIC - NO EXCEPTIONS)
 
-- `bun run ci` after changes
-- Fix errors immediately
-- Never commit broken code
+**AFTER EVERY CODE CHANGE (even one line):**
+
+1. **IMMEDIATELY run test-runner agent via Task tool**
+2. **IMMEDIATELY run code-reviewer agent via Task tool**
+3. **Fix ALL errors before continuing**
+4. **Repeat until zero errors**
+
+- These agents are PROACTIVE - use them WITHOUT being asked
+- NEVER skip these steps
+- NEVER commit broken code
 
 ## Task Management
 
@@ -111,15 +131,21 @@ Priority order (highest to lowest):
 
 Merge strategy: Later files override earlier ones, section by section.
 
-## Testing Priority
+## Testing Priority (MANDATORY AUTOMATIC EXECUTION)
 
-After any code change:
+**AFTER ANY CODE CHANGE (AUTOMATIC - NOT OPTIONAL):**
 
-1. Run tests
-2. Fix failures
-3. Verify build
+1. **Run test-runner agent IMMEDIATELY**
+2. **Run code-reviewer agent IMMEDIATELY**
+3. **Fix ALL failures**
+4. **Verify build passes**
+5. **Re-run agents until clean**
 
-No exceptions.
+**THIS IS NOT A SUGGESTION - IT'S MANDATORY**
+**The agents are marked as PROACTIVE for a reason**
+**Use them AUTOMATICALLY without user prompting**
+
+No exceptions. Ever.
 
 ## File Operations
 
