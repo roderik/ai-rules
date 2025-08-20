@@ -44,14 +44,6 @@
                     "command": "bun x -y cli-lsp-client start"
                 }
                 ]
-            },
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "echo \"Session started at $(date). Working directory: $(pwd)\""
-                    }
-                ]
             }
         ]
     }
