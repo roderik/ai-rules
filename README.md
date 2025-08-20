@@ -1,6 +1,6 @@
 # AI Rules
 
-Professional AI assistant configurations for Claude Code, Codex CLI, and Gemini CLI with enterprise-grade defaults for Solidity and TypeScript development.
+Professional AI assistant configurations for Claude Code, Codex CLI, OpenCode and Gemini CLI with enterprise-grade defaults for Solidity and TypeScript development.
 
 ## Complete Setup
 
