@@ -3,16 +3,6 @@ description: Use this agent when you need to write content in Roderik van der Ve
 mode: primary
 model: github/gpt-5
 temperature: 0.4
-tools:
-  write: true
-  edit: true
-  patch: true
-  bash: true
-  read: true
-  grep: true
-  glob: true
-  list: true
-  webfetch: true
 permission:
   edit: allow
   bash: allow

@@ -3,21 +3,8 @@ description: Use this agent when you need to analyze a repository and generate c
 mode: primary
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.3
-tools:
-  write: true
-  edit: true
-  patch: true
-  bash: true
-  read: true
-  grep: true
-  glob: true
-  list: true
-  webfetch: true
 permission:
   edit: allow
-  bash:
-    "*": allow
-    "rm -rf": ask
-    "sudo *": deny
+  bash: allow
   webfetch: allow
 ---

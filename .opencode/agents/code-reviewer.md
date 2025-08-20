@@ -3,23 +3,8 @@ description: PROACTIVE agent for quality checks. MUST BE USED after ANY code cha
 mode: primary
 model: anthropic/claude-opus-4-1-20250805
 temperature: 0.1
-tools:
-  write: false
-  edit: false
-  patch: false
-  bash: true
-  read: true
-  grep: true
-  glob: true
-  list: true
-  todowrite: true
-  todoread: true
-  webfetch: true
 permission:
-  edit: deny
-  bash:
-    "*": allow
-    "rm -rf": deny
-    "sudo *": deny
+  edit: allow
+  bash: allow
   webfetch: allow
 ---
