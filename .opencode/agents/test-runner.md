@@ -3,8 +3,25 @@ description: PROACTIVE agent for quality checks. MUST BE USED after ANY code cha
 mode: subagent
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.1
+reasoningEffort: medium
+textVerbosity: low
+tools:
+  write: false
+  edit: false
+  patch: false
+  bash: true
+  read: true
+  grep: true
+  glob: true
+  list: true
+  todowrite: true
+  todoread: true
 permission:
-  edit: allow
-  bash: allow
-  webfetch: allow
+  edit: deny
+  bash:
+    "*": allow
+    "rm -rf": deny
+    "sudo *": deny
+    "git push": deny
+  webfetch: deny
 ---

@@ -3,6 +3,18 @@ description: PROACTIVE agent for comprehensive code documentation. MUST BE USED 
 mode: subagent
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.2
+reasoningEffort: medium
+textVerbosity: concise
+tools:
+  write: true
+  edit: true
+  patch: true
+  bash: true
+  read: true
+  grep: true
+  glob: true
+  list: true
+  webfetch: true
 permission:
   edit: allow
   bash: allow
