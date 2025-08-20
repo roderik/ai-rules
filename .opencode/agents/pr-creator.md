@@ -1,10 +1,8 @@
 ---
 description: PR creation and lifecycle management agent - creates pull requests when explicitly requested by user
-mode: subagent
-model: anthropic/claude-3-5-sonnet-20241022
+mode: primary
+model: anthropic/claude-sonnet-4-20250514
 temperature: 0.1
-reasoningEffort: medium
-textVerbosity: concise
 tools:
   write: false
   edit: false
