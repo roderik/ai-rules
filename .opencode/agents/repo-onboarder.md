@@ -3,8 +3,6 @@ description: Use this agent when you need to analyze a repository and generate c
 mode: primary
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.3
-reasoningEffort: high
-textVerbosity: detailed
 tools:
   write: true
   edit: true

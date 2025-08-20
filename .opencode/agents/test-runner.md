@@ -3,8 +3,6 @@ description: PROACTIVE agent for quality checks. MUST BE USED after ANY code cha
 mode: subagent
 model: anthropic/claude-sonnet-4-20250514
 temperature: 0.1
-reasoningEffort: medium
-textVerbosity: low
 tools:
   write: false
   edit: false

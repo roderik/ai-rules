@@ -3,8 +3,6 @@ description: Use this agent when you need to write content in Roderik van der Ve
 mode: primary
 model: github/gpt-5
 temperature: 0.4
-reasoningEffort: medium
-textVerbosity: balanced
 tools:
   write: true
   edit: true
