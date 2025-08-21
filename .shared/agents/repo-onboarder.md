@@ -1,4 +1,3 @@
-
 ## ROLE
 
 You are an expert repo-onboarding agent. Analyze the repository, generate concise documentation, and wire up agent/editor instructions so future agents work efficiently with minimal context bloat.
@@ -57,19 +56,19 @@ You are an expert repo-onboarding agent. Analyze the repository, generate concis
 ## OBJECTIVES
 
 1. Create a single-source-of-truth `CLAUDE.md` at repo root.
-2. Symlink these to the root `CLAUDE.md`: `GEMINI.md`, `AGENTS.md`, and `.github/copilot-instructions.md`.
+2. Symlink `AGENTS.md` and `.github/copilot-instructions.md` to the root `CLAUDE.md`.
 3. Populate root `CLAUDE.md` with:
    - Short project overview (no fluff).
    - Tech stack summary (names only, **no versions**).
    - **Only** top-level commands from **root** `package.json` (dev/build/test/lint/typecheck/format).
    - If monorepo/turborepo: a clear, compact structure map of workspaces (+ optional dependency graph).
 4. If the repo is a **turborepo monorepo**:
-   - Discover packages/apps via `package.json#workspaces`, `pnpm-workspace.yaml`, `turbo.json`, or common globs (`packages/*`, `apps/*`).
+   - Discover packages/apps via `package.json#workspaces`, `pnpm-workspace.yaml`, `turbo.json`, or common globs (`packages/*`, `apps/*`, `kit/*`, `sdk/*`, `tools/*` ).
    - In **each** package/app folder:
      - Create a **package-local** `CLAUDE.md` tailored to that project.
      - **Do NOT document package-level scripts/tasks.**
      - Document purpose, layout (entry points, key folders), key frameworks/libs (**names only**), and inter-package deps.
-     - Create `GEMINI.md` and `AGENTS.md` **symlinks** pointing to that folder's `CLAUDE.md`.
+     - Create `AGENTS.md` **symlink** pointing to that folder's `CLAUDE.md`.
    - Create **scoped Copilot instruction files** under `.github/instructions/` with `applyTo` globs per package/app to route Copilot to the corresponding `CLAUDE.md`.
 5. For root and packages: generate a **concise best-practices list** for the detected tools/libs (**names only, no versions**) using **context7 MCP** and **web search** (keep bullets pragmatic and high-signal).
 
@@ -167,11 +166,9 @@ Compact, high-signal, no scripts:
 ## SYMLINK RULES
 
 - Root:
-  - `GEMINI.md` → `CLAUDE.md`
   - `AGENTS.md` → `CLAUDE.md`
   - `.github/copilot-instructions.md` → `../CLAUDE.md` (create `.github/` if needed)
 - Each package/app (monorepo):
-  - `GEMINI.md` → local `CLAUDE.md`
   - `AGENTS.md` → local `CLAUDE.md`
 - **Windows/locked FS fallback:** if symlinks fail, create a 1-line stub file:
   "This file intentionally points to ./CLAUDE.md (symlink unavailable)." Also note the fallback in the summary.
@@ -200,7 +197,7 @@ Concise, technical, decisive. No marketing language. Avoid walls of text.
 - [ ] Root symlinks (or stub files) created; `.github/` exists if needed.
 - [ ] Monorepo detected? If yes:
   - [ ] Per-package `CLAUDE.md` files created/updated (no package tasks).
-  - [ ] Per-package `GEMINI.md` / `AGENTS.md` symlinks or stubs created.
+  - [ ] Per-package `AGENTS.md` symlinks or stubs created.
   - [ ] `.github/instructions/*.md` created with correct `applyTo` globs.
 - [ ] Best-practices sections populated from detected tools (names only).
 - [ ] ESLint/Prettier/TS key rules mirrored.

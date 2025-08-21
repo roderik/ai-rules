@@ -48,10 +48,11 @@ validate_path() {
 
   # Check for command injection characters in filenames
   # These characters pose significant security risks in shell contexts
+  # shellcheck disable=SC2016
   if [[ "$path" == *";"* ]] || [[ "$path" == *"|"* ]] || [[ "$path" == *"&"* ]] || \
      [[ "$path" == *'`'* ]] || [[ "$path" == *'$('* ]] || [[ "$path" == *">"* ]] || \
      [[ "$path" == *"<"* ]]; then
-    printf "${RED}${ERROR} Invalid %s: Path contains potentially dangerous characters${NC}\n" "$description" >&2
+    printf '%s%s Invalid %s: Path contains potentially dangerous characters%s\n' "$RED" "$ERROR" "$description" "$NC" >&2
     return 1
   fi
 
@@ -62,28 +63,28 @@ validate_path() {
 print_color() {
   local color=$1
   shift
-  printf "${color}%s${NC}\n" "$*"
+  printf '%s%s%s\n' "$color" "$*" "$NC"
 }
 
 # Print status messages
-log_success() { printf "${GREEN}${SUCCESS} %s${NC}\n" "$*"; }
-log_error() { printf "${RED}${ERROR} %s${NC}\n" "$*" >&2; }
-log_warning() { printf "${YELLOW}${WARNING} %s${NC}\n" "$*"; }
-log_info() { printf "${CYAN}${INFO} %s${NC}\n" "$*"; }
+log_success() { printf '%s%s %s%s\n' "$GREEN" "$SUCCESS" "$*" "$NC"; }
+log_error() { printf '%s%s %s%s\n' "$RED" "$ERROR" "$*" "$NC" >&2; }
+log_warning() { printf '%s%s %s%s\n' "$YELLOW" "$WARNING" "$*" "$NC"; }
+log_info() { printf '%s%s %s%s\n' "$CYAN" "$INFO" "$*" "$NC"; }
 
 # Display ASCII art with gradient colors
 show_banner() {
   printf "\n"
-  printf "${BLUE}     █████${CYAN}╗ ██${GREEN}╗    ██████${YELLOW}╗ ██${MAGENTA}╗   ██${RED}╗██${BLUE}╗     ███████${CYAN}╗███████${GREEN}╗${NC}\n"
-  printf "${BLUE}    ██${CYAN}╔══██╗██${GREEN}║    ██${YELLOW}╔══██╗██${MAGENTA}║   ██${RED}║██${BLUE}║     ██${CYAN}╔════╝██${GREEN}╔════╝${NC}\n"
-  printf "${BLUE}    ███████${CYAN}║██${GREEN}║    ██████${YELLOW}╔╝██${MAGENTA}║   ██${RED}║██${BLUE}║     █████${CYAN}╗  ███████${GREEN}╗${NC}\n"
-  printf "${BLUE}    ██${CYAN}╔══██║██${GREEN}║    ██${YELLOW}╔══██╗██${MAGENTA}║   ██${RED}║██${BLUE}║     ██${CYAN}╔══╝  ╚════██${GREEN}║${NC}\n"
-  printf "${BLUE}    ██${CYAN}║  ██║██${GREEN}║    ██${YELLOW}║  ██║╚██████${MAGENTA}╔╝███████${RED}╗███████${BLUE}╗███████${CYAN}║${NC}\n"
-  printf "${BLUE}    ╚═${CYAN}╝  ╚═╝╚═${GREEN}╝    ╚═${YELLOW}╝  ╚═╝ ╚═════${MAGENTA}╝ ╚══════${RED}╝╚══════${BLUE}╝╚══════${CYAN}╝${NC}\n"
+  printf '%s\n' "${BLUE}     █████${CYAN}╗ ██${GREEN}╗    ██████${YELLOW}╗ ██${MAGENTA}╗   ██${RED}╗██${BLUE}╗     ███████${CYAN}╗███████${GREEN}╗${NC}"
+  printf '%s\n' "${BLUE}    ██${CYAN}╔══██╗██${GREEN}║    ██${YELLOW}╔══██╗██${MAGENTA}║   ██${RED}║██${BLUE}║     ██${CYAN}╔════╝██${GREEN}╔════╝${NC}"
+  printf '%s\n' "${BLUE}    ███████${CYAN}║██${GREEN}║    ██████${YELLOW}╔╝██${MAGENTA}║   ██${RED}║██${BLUE}║     █████${CYAN}╗  ███████${GREEN}╗${NC}"
+  printf '%s\n' "${BLUE}    ██${CYAN}╔══██║██${GREEN}║    ██${YELLOW}╔══██╗██${MAGENTA}║   ██${RED}║██${BLUE}║     ██${CYAN}╔══╝  ╚════██${GREEN}║${NC}"
+  printf '%s\n' "${BLUE}    ██${CYAN}║  ██║██${GREEN}║    ██${YELLOW}║  ██║╚██████${MAGENTA}╔╝███████${RED}╗███████${BLUE}╗███████${CYAN}║${NC}"
+  printf '%s\n' "${BLUE}    ╚═${CYAN}╝  ╚═╝╚═${GREEN}╝    ╚═${YELLOW}╝  ╚═╝ ╚═════${MAGENTA}╝ ╚══════${RED}╝╚══════${BLUE}╝╚══════${CYAN}╝${NC}"
   printf "\n"
-  printf "${BOLD}${MAGENTA}╔═══════════════════════════╗${NC}\n"
-  printf "${BOLD}${CYAN}║      AI Rules Setup       ║${NC}\n"
-  printf "${BOLD}${MAGENTA}╚═══════════════════════════╝${NC}\n"
+  printf '%s\n' "${BOLD}${MAGENTA}╔═══════════════════════════╗${NC}"
+  printf '%s\n' "${BOLD}${CYAN}║      AI Rules Setup       ║${NC}"
+  printf '%s\n' "${BOLD}${MAGENTA}╚═══════════════════════════╝${NC}"
   printf "\n"
 }
 
@@ -130,7 +131,8 @@ script_dir() {
 merge_json() {
   local target="$1"
   local source="$2"
-  local backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
+  local backup
+  backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
 
   # Create target directory if needed
   mkdir -p "$(dirname "$target")"
@@ -157,7 +159,8 @@ merge_json() {
 merge_hooks() {
   local target="$1"
   local source="$2"
-  local backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
+  local backup
+  backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
 
   mkdir -p "$(dirname "$target")"
 
@@ -220,14 +223,14 @@ with open('${target}.tmp', 'w') as f:
 
 # Main installation function
 main() {
-  local force_overwrite=0
+  # Force overwrite flag is handled through user prompts
   local dry_run=0
 
   # Parse arguments
   while [ "$#" -gt 0 ]; do
     case "$1" in
       --force)
-        force_overwrite=1
+        # Force overwrite flag (handled via prompts)
         shift
         ;;
       --dry-run)
@@ -299,7 +302,7 @@ USAGE
     log_success "Repository cloned successfully"
 
     # Set a flag to clean up the temp directory on exit
-    trap "rm -rf '$temp_repo'" EXIT
+    trap 'rm -rf "'"$temp_repo"'"' EXIT
   fi
 
   log_info "Installing from: $src_base"
@@ -324,7 +327,8 @@ USAGE
     printf "\n"
 
     # Create temporary files for diff
-    local temp_dir=$(mktemp -d)
+    local temp_dir
+    temp_dir=$(mktemp -d)
     local before_file="$temp_dir/before.json"
     local after_file="$temp_dir/after.json"
 
@@ -336,7 +340,8 @@ USAGE
     fi
 
     # Prepare the "after" state by simulating the merge
-    local merged_content=$(cat "$before_file")
+    local merged_content
+    merged_content=$(cat "$before_file")
 
     # Merge settings
     if [ -f "$src_base/settings/settings.json" ]; then
@@ -424,8 +429,9 @@ USAGE
     print_color "$BOLD" "🤖 Agents that would be installed to ~/.claude/agents/:"
     printf "\n"
     if [ -d "$src_base/agents" ]; then
-      find "$src_base/agents" -name "*.md" -type f | while read agent_file; do
-        local agent_name=$(basename "$agent_file" .md)
+      find "$src_base/agents" -name "*.md" -type f | while read -r agent_file; do
+        local agent_name
+        agent_name=$(basename "$agent_file" .md)
         if ! validate_path "$agent_name.md" "agent filename"; then
           log_error "Skipping invalid agent filename: $agent_name"
           continue
@@ -483,8 +489,9 @@ USAGE
     print_color "$BOLD" "📋 Commands that would be installed to ~/.claude/commands/:"
     printf "\n"
     if [ -d "$src_base/commands" ]; then
-      find "$src_base/commands" -name "*.md" -type f | while read cmd_file; do
-        local cmd_name=$(basename "$cmd_file")
+      find "$src_base/commands" -name "*.md" -type f | while read -r cmd_file; do
+        local cmd_name
+        cmd_name=$(basename "$cmd_file")
         if ! validate_path "$cmd_name" "command filename"; then
           log_error "Skipping invalid command filename: $cmd_name"
           continue
@@ -577,7 +584,8 @@ USAGE
 
     # Merge MCP servers into settings.json
     if [ -f "$src_base/mcp/mcp.json" ]; then
-      local backup="${claude_code_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
+      local backup
+      backup="${claude_code_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
       cp "$claude_code_dir/settings.json" "$backup"
 
       # Merge MCP servers into settings
@@ -593,8 +601,9 @@ USAGE
       mkdir -p "$claude_code_dir/agents"
 
       # Process each agent
-      find "$src_base/agents" -name "*.md" -type f | while read agent_file; do
-        local agent_name=$(basename "$agent_file" .md)
+      find "$src_base/agents" -name "*.md" -type f | while read -r agent_file; do
+        local agent_name
+        agent_name=$(basename "$agent_file" .md)
         if ! validate_path "$agent_name.md" "agent filename"; then
           log_error "Skipping invalid agent filename: $agent_name"
           continue
@@ -656,8 +665,9 @@ USAGE
       printf "\n"
       print_color "$BOLD" "Installing Custom Commands..."
       mkdir -p "$claude_code_dir/commands"
-      find "$src_base/commands" -name "*.md" -type f | while read cmd_file; do
-        local cmd_name=$(basename "$cmd_file")
+      find "$src_base/commands" -name "*.md" -type f | while read -r cmd_file; do
+        local cmd_name
+        cmd_name=$(basename "$cmd_file")
         if ! validate_path "$cmd_name" "command filename"; then
           log_error "Skipping invalid command filename: $cmd_name"
           continue
@@ -862,7 +872,8 @@ EOF
     # Install Codex config.toml
     if [ -f "$codex_base/config.toml" ]; then
       mkdir -p "$codex_dir"
-      local backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
+      local backup
+      backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$codex_dir/config.toml"
 
       # Backup existing file if it exists
@@ -905,7 +916,8 @@ EOF
 
     # Install AGENTS.md
     if [ -f "$repo_root/AGENTS.md" ]; then
-      local backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+      local backup
+      backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$codex_dir/AGENTS.md"
 
       # Backup existing file if it exists
@@ -987,17 +999,17 @@ EOF
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Would install Gemini configuration to: $gemini_dir"
 
-    # Show GEMINI.md that would be installed
+    # Show AGENTS.md that would be installed
     printf "\n"
-    print_color "$BOLD" "📄 GEMINI.md file that would be installed to ~/.gemini/:"
+    print_color "$BOLD" "📄 AGENTS.md file that would be installed to ~/.gemini/:"
     printf "\n"
-    if [ -f "$repo_root/GEMINI.md" ]; then
-      local target_file="$gemini_dir/GEMINI.md"
+    if [ -f "$repo_root/AGENTS.md" ]; then
+      local target_file="$gemini_dir/AGENTS.md"
       if [ -f "$target_file" ]; then
         # Show diff if file exists
-        print_color "$YELLOW" "  ⚠️  GEMINI.md (already exists - showing diff):"
+        print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
         if command -v delta >/dev/null 2>&1; then
-          diff -u --label "current" --label "new" "$target_file" "$repo_root/GEMINI.md" 2>/dev/null | \
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | \
             delta --no-gitconfig \
                   --paging=never \
                   --line-numbers \
@@ -1007,7 +1019,7 @@ EOF
                   --diff-so-fancy \
                   --hyperlinks 2>/dev/null || true
         elif command -v diff >/dev/null 2>&1; then
-          diff -u --label "current" --label "new" "$target_file" "$repo_root/GEMINI.md" 2>/dev/null | while IFS= read -r line; do
+          diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | while IFS= read -r line; do
             case "$line" in
               +*) print_color "$GREEN" "    $line" ;;
               -*) print_color "$RED" "    $line" ;;
@@ -1018,9 +1030,9 @@ EOF
         fi
       else
         # Show preview of new file
-        print_color "$GREEN" "  + GEMINI.md (new file)"
+        print_color "$GREEN" "  + AGENTS.md (new file)"
         print_color "$CYAN" "    Preview (first 10 lines):"
-        head -10 "$repo_root/GEMINI.md" | sed 's/^/      /'
+        head -10 "$repo_root/AGENTS.md" | sed 's/^/      /'
       fi
     fi
 
@@ -1102,20 +1114,21 @@ EOF
     if [ -d "$gemini_base" ]; then
       mkdir -p "$gemini_dir"
 
-      # Install GEMINI.md from root
-      if [ -f "$repo_root/GEMINI.md" ]; then
-        local backup="${gemini_dir}/GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
-        local target_file="$gemini_dir/GEMINI.md"
+      # Install AGENTS.md from root
+      if [ -f "$repo_root/AGENTS.md" ]; then
+        local backup
+        backup="${gemini_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+        local target_file="$gemini_dir/AGENTS.md"
 
         # Backup existing file if it exists
         if [ -f "$target_file" ]; then
           cp "$target_file" "$backup"
-          log_info "Backed up existing GEMINI.md to: $backup"
+          log_info "Backed up existing AGENTS.md to: $backup"
 
           # Show diff
-          print_color "$YELLOW" "  ⚠️  GEMINI.md (already exists - showing diff):"
+          print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
-            diff -u --label "current" --label "new" "$target_file" "$repo_root/GEMINI.md" 2>/dev/null | \
+            diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | \
               delta --no-gitconfig \
                     --paging=never \
                     --line-numbers \
@@ -1125,7 +1138,7 @@ EOF
                     --diff-so-fancy \
                     --hyperlinks 2>/dev/null || true
           elif command -v diff >/dev/null 2>&1; then
-            diff -u --label "current" --label "new" "$target_file" "$repo_root/GEMINI.md" 2>/dev/null | head -20 | while IFS= read -r line; do
+            diff -u --label "current" --label "new" "$target_file" "$repo_root/AGENTS.md" 2>/dev/null | head -20 | while IFS= read -r line; do
               case "$line" in
                 +*) print_color "$GREEN" "    $line" ;;
                 -*) print_color "$RED" "    $line" ;;
@@ -1136,18 +1149,19 @@ EOF
           fi
         else
           # Show preview of new file
-          print_color "$GREEN" "  + GEMINI.md (new file)"
+          print_color "$GREEN" "  + AGENTS.md (new file)"
           print_color "$CYAN" "    Preview (first 10 lines):"
-          head -10 "$repo_root/GEMINI.md" | sed 's/^/      /'
+          head -10 "$repo_root/AGENTS.md" | sed 's/^/      /'
         fi
 
-        cp "$repo_root/GEMINI.md" "$target_file"
-        log_success "Installed GEMINI.md to ~/.gemini/"
+        cp "$repo_root/AGENTS.md" "$target_file"
+        log_success "Installed AGENTS.md to ~/.gemini/"
       fi
 
       # Install settings.json
       if [ -f "$gemini_base/settings.json" ]; then
-        local backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
+        local backup
+        backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
         local target_file="$gemini_dir/settings.json"
 
         # Backup existing file if it exists
@@ -1190,7 +1204,8 @@ EOF
 
       # Install commands.toml
       if [ -f "$gemini_base/commands.toml" ]; then
-        local backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
+        local backup
+        backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
         local target_file="$gemini_dir/commands.toml"
 
         # Backup existing file if it exists
@@ -1249,7 +1264,7 @@ EOF
     "$codex_dir/AGENTS.md"
   ],
   "gemini_configurations": [
-    "$gemini_dir/GEMINI.md",
+    "$gemini_dir/AGENTS.md",
     "$gemini_dir/settings.json",
     "$gemini_dir/commands.toml"
   ]
@@ -1283,8 +1298,9 @@ EOF
     print_color "$BOLD" "🤖 OpenCode agents that would be installed:"
     printf "\n"
     if [ -d "$repo_root/.opencode/agents" ]; then
-      find "$repo_root/.opencode/agents" -name "*.md" -type f | while read agent_file; do
-        local agent_name=$(basename "$agent_file" .md)
+      find "$repo_root/.opencode/agents" -name "*.md" -type f | while read -r agent_file; do
+        local agent_name
+        agent_name=$(basename "$agent_file" .md)
         local shared_content="$repo_root/.shared/agents/${agent_name}.md"
         if [ -f "$shared_content" ]; then
           print_color "$GREEN" "  + $agent_name.md (with shared content)"
@@ -1317,8 +1333,9 @@ EOF
       mkdir -p "$opencode_dir/agent"
 
       # Process each agent
-      find "$repo_root/.opencode/agents" -name "*.md" -type f | while read agent_file; do
-        local agent_name=$(basename "$agent_file" .md)
+      find "$repo_root/.opencode/agents" -name "*.md" -type f | while read -r agent_file; do
+        local agent_name
+        agent_name=$(basename "$agent_file" .md)
         if ! validate_path "$agent_name.md" "agent filename"; then
           log_error "Skipping invalid agent filename: $agent_name"
           continue
@@ -1379,7 +1396,8 @@ EOF
     if [ -f "$repo_root/AGENTS.md" ]; then
       printf "\n"
       print_color "$BOLD" "Installing AGENTS.md for OpenCode..."
-      local backup="${opencode_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+      local backup
+      backup="${opencode_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$opencode_dir/AGENTS.md"
       
       # Backup existing file if it exists
@@ -1450,8 +1468,16 @@ except FileNotFoundError:
 if 'mcp' not in opencode_config:
     opencode_config['mcp'] = {}
 
+# OAuth-based services that don't work in OpenCode without built-in OAuth support
+oauth_services = ['linear', 'sentry', 'ultracite']
+
 # Convert Claude MCP servers to OpenCode format
 for server_name, server_config in claude_config.get('mcpServers', {}).items():
+    # Skip OAuth-based services that won't work in OpenCode
+    if server_name.lower() in oauth_services:
+        print(f'Skipping OAuth-based service: {server_name} (not supported in OpenCode)', file=sys.stderr)
+        continue
+    
     opencode_server = {}
     opencode_server['enabled'] = True
     
@@ -1468,6 +1494,11 @@ for server_name, server_config in claude_config.get('mcpServers', {}).items():
         # Convert SSE/HTTP servers to remote type
         opencode_server['type'] = 'remote'
         opencode_server['url'] = server_config.get('url', '')
+        
+        # Disable OAuth-based SSE endpoints that require authentication
+        if any(oauth_svc in server_config.get('url', '').lower() for oauth_svc in ['linear.app', 'sentry.dev', 'ultracite.ai']):
+            print(f'Skipping OAuth SSE endpoint: {server_name} (requires authentication)', file=sys.stderr)
+            continue
     
     elif 'command' in server_config:
         # Handle servers with just command (like DeepGraph)
@@ -1495,10 +1526,13 @@ with open('${opencode_config}.tmp', 'w') as f:
       log_success "Configured MCP servers in opencode.json"
       
       # Show what was configured
-      log_info "MCP servers configured:"
-      jq -r '.mcp | keys[]' "$opencode_config" 2>/dev/null | while read server; do
+      log_info "MCP servers configured (OAuth-based services excluded):"
+      jq -r '.mcp | keys[]' "$opencode_config" 2>/dev/null | while read -r server; do
         echo "  • $server"
       done
+      
+      log_warning "Note: OAuth-based services (Linear, Sentry, Ultracite) are disabled for OpenCode"
+      log_info "These services require OAuth authentication which OpenCode doesn't support yet"
     fi
 
     # Update manifest to include OpenCode files
@@ -1519,7 +1553,7 @@ with open('${opencode_config}.tmp', 'w') as f:
     "$codex_dir/AGENTS.md"
   ],
   "gemini_configurations": [
-    "$gemini_dir/GEMINI.md",
+    "$gemini_dir/AGENTS.md",
     "$gemini_dir/settings.json",
     "$gemini_dir/commands.toml"
   ],

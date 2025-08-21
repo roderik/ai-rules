@@ -188,7 +188,7 @@ The configuration supports seamless collaboration between AI assistants:
 
 #### Gemini CLI
 
-- **GEMINI.md**: Gemini-specific workflow instructions
+- **AGENTS.md**: Shared agent collaboration instructions
 - **settings.json**: Shared MCP servers with Claude
 - **commands.toml**: Unified command structure (`/pr`, `/review`, `/test`)
 - **Role**: Validation, review, and quality assurance specialist
@@ -366,7 +366,6 @@ ai-rules/
 │   └── commands.toml         # Custom command definitions
 ├── CLAUDE.md                  # Global Claude instructions
 ├── AGENTS.md                  # Global agent instructions
-├── GEMINI.md                  # Global Gemini instructions
 ├── install.sh                 # Installer script
 ├── uninstall.sh               # Uninstaller script
 └── README.md                  # This file

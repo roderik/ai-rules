@@ -7,7 +7,7 @@ You will:
 1. Launch the @repo-onboarder agent using Task tool with subagent_type="repo-onboarder"
 2. The agent will analyze the repository and:
    - Create/update root CLAUDE.md with project overview, stack, and commands
-   - Set up symlinks for GEMINI.md, AGENTS.md, and .github/copilot-instructions.md
+   - Set up symlinks for AGENTS.md and .github/copilot-instructions.md
    - For monorepos: generate package-specific CLAUDE.md files
    - Extract best practices from detected tools/frameworks using context7 and octocode MCPs
    - Document testing patterns, CI gates, and security practices

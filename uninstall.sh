@@ -20,34 +20,34 @@ SUCCESS="✅"
 ERROR="❌"
 WARNING="⚠️"
 INFO="ℹ️"
-TRASH="🗑️"
+# TRASH="🗑️" # Unused emoji - kept for potential future use
 
 # Print colored output
 print_color() {
   local color=$1
   shift
-  printf "${color}%s${NC}\n" "$*"
+  printf '%s%s%s\n' "$color" "$*" "$NC"
 }
 
 # Print status messages
-log_success() { printf "${GREEN}${SUCCESS} %s${NC}\n" "$*"; }
-log_error() { printf "${RED}${ERROR} %s${NC}\n" "$*" >&2; }
-log_warning() { printf "${YELLOW}${WARNING} %s${NC}\n" "$*"; }
-log_info() { printf "${CYAN}${INFO} %s${NC}\n" "$*"; }
+log_success() { printf '%s%s %s%s\n' "$GREEN" "$SUCCESS" "$*" "$NC"; }
+log_error() { printf '%s%s %s%s\n' "$RED" "$ERROR" "$*" "$NC" >&2; }
+log_warning() { printf '%s%s %s%s\n' "$YELLOW" "$WARNING" "$*" "$NC"; }
+log_info() { printf '%s%s %s%s\n' "$CYAN" "$INFO" "$*" "$NC"; }
 
 # Display uninstall banner
 show_banner() {
   printf "\n"
-  printf "${BLUE}     █████${CYAN}╗ ██${GREEN}╗    ██████${YELLOW}╗ ██${MAGENTA}╗   ██${RED}╗██${BLUE}╗     ███████${CYAN}╗███████${GREEN}╗${NC}\n"
-  printf "${BLUE}    ██${CYAN}╔══██╗██${GREEN}║    ██${YELLOW}╔══██╗██${MAGENTA}║   ██${RED}║██${BLUE}║     ██${CYAN}╔════╝██${GREEN}╔════╝${NC}\n"
-  printf "${BLUE}    ███████${CYAN}║██${GREEN}║    ██████${YELLOW}╔╝██${MAGENTA}║   ██${RED}║██${BLUE}║     █████${CYAN}╗  ███████${GREEN}╗${NC}\n"
-  printf "${BLUE}    ██${CYAN}╔══██║██${GREEN}║    ██${YELLOW}╔══██╗██${MAGENTA}║   ██${RED}║██${BLUE}║     ██${CYAN}╔══╝  ╚════██${GREEN}║${NC}\n"
-  printf "${BLUE}    ██${CYAN}║  ██║██${GREEN}║    ██${YELLOW}║  ██║╚██████${MAGENTA}╔╝███████${RED}╗███████${BLUE}╗███████${CYAN}║${NC}\n"
-  printf "${BLUE}    ╚═${CYAN}╝  ╚═╝╚═${GREEN}╝    ╚═${YELLOW}╝  ╚═╝ ╚═════${MAGENTA}╝ ╚══════${RED}╝╚══════${BLUE}╝╚══════${CYAN}╝${NC}\n"
+  printf '%s\n' "${BLUE}     █████${CYAN}╗ ██${GREEN}╗    ██████${YELLOW}╗ ██${MAGENTA}╗   ██${RED}╗██${BLUE}╗     ███████${CYAN}╗███████${GREEN}╗${NC}"
+  printf '%s\n' "${BLUE}    ██${CYAN}╔══██╗██${GREEN}║    ██${YELLOW}╔══██╗██${MAGENTA}║   ██${RED}║██${BLUE}║     ██${CYAN}╔════╝██${GREEN}╔════╝${NC}"
+  printf '%s\n' "${BLUE}    ███████${CYAN}║██${GREEN}║    ██████${YELLOW}╔╝██${MAGENTA}║   ██${RED}║██${BLUE}║     █████${CYAN}╗  ███████${GREEN}╗${NC}"
+  printf '%s\n' "${BLUE}    ██${CYAN}╔══██║██${GREEN}║    ██${YELLOW}╔══██╗██${MAGENTA}║   ██${RED}║██${BLUE}║     ██${CYAN}╔══╝  ╚════██${GREEN}║${NC}"
+  printf '%s\n' "${BLUE}    ██${CYAN}║  ██║██${GREEN}║    ██${YELLOW}║  ██║╚██████${MAGENTA}╔╝███████${RED}╗███████${BLUE}╗███████${CYAN}║${NC}"
+  printf '%s\n' "${BLUE}    ╚═${CYAN}╝  ╚═╝╚═${GREEN}╝    ╚═${YELLOW}╝  ╚═╝ ╚═════${MAGENTA}╝ ╚══════${RED}╝╚══════${BLUE}╝╚══════${CYAN}╝${NC}"
   printf "\n"
-  printf "${BOLD}${RED}╔═══════════════════════════╗${NC}\n"
-  printf "${BOLD}${YELLOW}║   AI Rules Uninstaller    ║${NC}\n"
-  printf "${BOLD}${RED}╚═══════════════════════════╝${NC}\n"
+  printf '%s\n' "${BOLD}${RED}╔═══════════════════════════╗${NC}"
+  printf '%s\n' "${BOLD}${YELLOW}║   AI Rules Uninstaller    ║${NC}"
+  printf '%s\n' "${BOLD}${RED}╚═══════════════════════════╝${NC}"
   printf "\n"
 }
 
@@ -102,7 +102,8 @@ remove_ai_rules_config() {
     return 0
   fi
   
-  local backup="${file}.backup.$(date +%Y%m%d_%H%M%S)"
+  local backup
+  backup="${file}.backup.$(date +%Y%m%d_%H%M%S)"
   cp "$file" "$backup"
   log_info "Backed up: $backup"
   
@@ -161,7 +162,8 @@ remove_ai_rules_config() {
   
   # If file is now empty or just {}, remove it
   if [ -f "$file" ]; then
-    local content=$(jq -c . "$file" 2>/dev/null || echo "")
+    local content
+    content=$(jq -c . "$file" 2>/dev/null || echo "")
     if [ "$content" = "{}" ] || [ "$content" = "[]" ] || [ -z "$content" ]; then
       rm "$file"
       log_info "Removed empty file: $file"
@@ -253,7 +255,8 @@ USAGE
     
     if [ -f "$claude_code_dir/settings.json" ]; then
       # Create temporary files for diff
-      local temp_dir=$(mktemp -d)
+      local temp_dir
+      temp_dir=$(mktemp -d)
       local before_file="$temp_dir/before.json"
       local after_file="$temp_dir/after.json"
       
@@ -460,7 +463,8 @@ USAGE
       if grep -q "codex_configurations" "$claude_code_dir/.ai-rules-manifest.json" 2>/dev/null; then
         # Remove config.toml
         if [ -f "$codex_dir/config.toml" ]; then
-          local backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
+          local backup
+          backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
           cp "$codex_dir/config.toml" "$backup"
           log_info "Backed up existing Codex config to: $backup"
           rm "$codex_dir/config.toml"
@@ -469,7 +473,8 @@ USAGE
         
         # Remove AGENTS.md
         if [ -f "$codex_dir/AGENTS.md" ]; then
-          local backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+          local backup
+          backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
           cp "$codex_dir/AGENTS.md" "$backup"
           log_info "Backed up existing AGENTS.md to: $backup"
           rm "$codex_dir/AGENTS.md"
@@ -493,11 +498,11 @@ USAGE
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Would remove Gemini configuration from: $gemini_dir"
     
-    # Show GEMINI.md that would be removed
-    if [ -f "$gemini_dir/GEMINI.md" ]; then
+    # Show AGENTS.md that would be removed
+    if [ -f "$gemini_dir/AGENTS.md" ]; then
       printf "\n"
-      print_color "$BOLD" "📄 GEMINI.md file that would be removed:"
-      print_color "$RED" "  - GEMINI.md"
+      print_color "$BOLD" "📄 AGENTS.md file that would be removed:"
+      print_color "$RED" "  - AGENTS.md"
     fi
     
     # Show settings.json that would be removed
@@ -518,18 +523,20 @@ USAGE
     if [ -f "$claude_code_dir/.ai-rules-manifest.json" ]; then
       # Check if manifest includes Gemini files
       if grep -q "gemini_configurations" "$claude_code_dir/.ai-rules-manifest.json" 2>/dev/null; then
-        # Remove GEMINI.md
-        if [ -f "$gemini_dir/GEMINI.md" ]; then
-          local backup="${gemini_dir}/GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
-          cp "$gemini_dir/GEMINI.md" "$backup"
-          log_info "Backed up existing GEMINI.md to: $backup"
-          rm "$gemini_dir/GEMINI.md"
-          log_success "Removed GEMINI.md from ~/.gemini/"
+        # Remove AGENTS.md
+        if [ -f "$gemini_dir/AGENTS.md" ]; then
+          local backup
+          backup="${gemini_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
+          cp "$gemini_dir/AGENTS.md" "$backup"
+          log_info "Backed up existing AGENTS.md to: $backup"
+          rm "$gemini_dir/AGENTS.md"
+          log_success "Removed AGENTS.md from ~/.gemini/"
         fi
         
         # Remove settings.json
         if [ -f "$gemini_dir/settings.json" ]; then
-          local backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
+          local backup
+          backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
           cp "$gemini_dir/settings.json" "$backup"
           log_info "Backed up existing Gemini settings to: $backup"
           rm "$gemini_dir/settings.json"
@@ -538,7 +545,8 @@ USAGE
         
         # Remove commands.toml
         if [ -f "$gemini_dir/commands.toml" ]; then
-          local backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
+          local backup
+          backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
           cp "$gemini_dir/commands.toml" "$backup"
           log_info "Backed up existing commands.toml to: $backup"
           rm "$gemini_dir/commands.toml"
