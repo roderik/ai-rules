@@ -333,8 +333,8 @@ USAGE
     local after_file="$temp_dir/after.json"
 
     # Prepare the "before" state
-    if [ -f "$claude_code_dir/settings.json" ]; then
-      jq -S '.' "$claude_code_dir/settings.json" > "$before_file" 2>/dev/null || echo '{}' > "$before_file"
+    if [ -f "$HOME/.claude.json" ]; then
+      jq -S '.' "$HOME/.claude.json" > "$before_file" 2>/dev/null || echo '{}' > "$before_file"
     else
       echo '{}' > "$before_file"
     fi
@@ -382,11 +382,11 @@ USAGE
     # Write the merged content to after file
     echo "$merged_content" | jq -S '.' > "$after_file"
 
-    # Show the diff for settings.json
-    print_color "$BOLD" "📝 Changes that would be made to settings.json:"
+    # Show the diff for ~/.claude.json
+    print_color "$BOLD" "📝 Changes that would be made to ~/.claude.json:"
     printf "\n"
 
-    if [ -f "$claude_code_dir/settings.json" ]; then
+    if [ -f "$HOME/.claude.json" ]; then
       # Prefer delta for beautiful diffs, fall back to diff
       if command -v delta >/dev/null 2>&1; then
         # Use delta with compact options for better readability
@@ -572,26 +572,26 @@ USAGE
     rm -rf "$temp_dir"
     printf "\n"
   else
-    # Merge settings.json
+    # Merge settings.json into ~/.claude.json
     if [ -f "$src_base/settings/settings.json" ]; then
-      merge_json "$claude_code_dir/settings.json" "$src_base/settings/settings.json"
+      merge_json "$HOME/.claude.json" "$src_base/settings/settings.json"
     fi
 
-    # Merge hooks.json
+    # Merge hooks.json into ~/.claude.json
     if [ -f "$src_base/hooks/hooks.json" ]; then
-      merge_hooks "$claude_code_dir/settings.json" "$src_base/hooks/hooks.json"
+      merge_hooks "$HOME/.claude.json" "$src_base/hooks/hooks.json"
     fi
 
-    # Merge MCP servers into settings.json
+    # Merge MCP servers into ~/.claude.json
     if [ -f "$src_base/mcp/mcp.json" ]; then
       local backup
-      backup="${claude_code_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
-      cp "$claude_code_dir/settings.json" "$backup"
+      backup="$HOME/.claude.json.backup.$(date +%Y%m%d_%H%M%S)"
+      cp "$HOME/.claude.json" "$backup"
 
       # Merge MCP servers into settings
-      jq -s '.[0] * .[1]' "$claude_code_dir/settings.json" "$src_base/mcp/mcp.json" > "${claude_code_dir}/settings.json.tmp" && \
-        mv "${claude_code_dir}/settings.json.tmp" "$claude_code_dir/settings.json"
-      log_success "Merged MCP servers into settings.json"
+      jq -s '.[0] * .[1]' "$HOME/.claude.json" "$src_base/mcp/mcp.json" > "$HOME/.claude.json.tmp" && \
+        mv "$HOME/.claude.json.tmp" "$HOME/.claude.json"
+      log_success "Merged MCP servers into ~/.claude.json"
     fi
 
     # Install agents with combined frontmatter and shared content

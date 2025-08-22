@@ -25,14 +25,14 @@ For EACH error, use MCP tools:
 
 1. `mcp__context7__get-library-docs` for correct API usage
 2. `mcp__octocode__githubSearchCode` for similar test patterns
-3. `mcp__gemini_cli__ask_gemini` for logic validation
+3. `mcp__gemini-cli__ask-gemini --model gemini-2.5-pro` for logic validation
 4. `mcp__sentry__search_events` for production correlation
 
 ### Lint/Type Errors:
 
 1. `mcp__context7__resolve-library-id` for type definitions
 2. `mcp__deepwiki__ask_question` for linting rules
-3. `codex exec "Fix this lint error: [details]"`
+3. `mcp__codex-cli__codex "Analyze this lint error and explain the root cause: [details]"`
 
 ## Original Fix Approach:
 

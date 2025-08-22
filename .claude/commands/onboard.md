@@ -2,6 +2,19 @@
 description: Analyze repository structure and generate comprehensive AI agent documentation (CLAUDE.md) for efficient AI-assisted development
 ---
 
+## SETUP BEFORE START
+
+**CRITICAL**: You MUST ensure the serena MCP server is enabled before doing anything else!
+
+
+Check the mcp servers loaded for "serena" and if it is not enabled for this project run the following and then exit.
+
+```
+claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
+```
+
+## ONBOARDING
+
 You will:
 
 1. Launch the @repo-onboarder agent using Task tool with subagent_type="repo-onboarder"

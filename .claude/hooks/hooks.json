@@ -27,22 +27,7 @@
                     {
                         "type": "command",
                         "command": "jq -r '.tool_input.file_path // empty' | grep -qE '\\.(env|secrets?|key|pem|crt)$|/\\.(ssh|aws|config)/|node_modules/|dist/|build/' && echo 'Warning: Modifying sensitive or generated file' >&2 && exit 0 || exit 0"
-                    },
-                    {
-                        "type": "command",
-                        "command": "bun x -y cli-lsp-client claude-code-hook"
                     }
-                ]
-            }
-        ],
-        "SessionStart": [
-            {
-                "matcher": "startup|resume",
-                "hooks": [
-                {
-                    "type": "command",
-                    "command": "bun x -y cli-lsp-client start"
-                }
                 ]
             }
         ]

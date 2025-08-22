@@ -8,32 +8,11 @@
       "type": "sse",
       "url": "https://mcp.context7.com/sse"
     },
-    "deepwiki": {
-      "type": "sse",
-      "url": "https://mcp.deepwiki.com/sse"
-    },
-    "sentry": {
-      "type": "http",
-      "url": "https://mcp.sentry.dev/mcp"
-    },
-    "ultracite": {
-      "type": "stdio",
-      "command": "bun",
-      "args": ["-y", "mcp-remote", "https://www.ultracite.ai/api/mcp/mcp"]
-    },
     "playwright": {
       "type": "stdio",
       "command": "bun",
       "args": ["x", "-y", "@playwright/mcp@latest"],
       "env": {}
-    },
-    "grep": {
-      "type": "http",
-      "url": "https://mcp.grep.app"
-    },
-    "OpenZeppelinSolidityContracts": {
-      "type": "http",
-      "url": "https://mcp.openzeppelin.com/contracts/solidity/mcp"
     },
     "octocode": {
       "type": "stdio",
@@ -41,15 +20,17 @@
       "args": ["x", "-y", "octocode-mcp@latest"],
       "env": {}
     },
-    "DeepGraph TypeScript MCP": {
-      "description": "Comprehensive TypeScript code analysis with type mapping, interface relationships, and module dependency tracking.",
+    "gemini-cli": {
+      "type": "stdio",
       "command": "bun",
-      "args": ["x", "-y", "mcp-code-graph@latest", "microsoft/TypeScript"]
+      "args": ["x", "-y", "gemini-mcp-tool@latest"],
+      "env": {}
     },
-    "DeepGraph React MCP": {
-      "description": "Analyze React component hierarchies, state flows, and dependencies. Visualize your React application architecture.",
+    "codex-cli": {
+      "type": "stdio",
       "command": "bun",
-      "args": ["x", "-y", "mcp-code-graph@latest", "facebook/react"]
+      "args": ["x", "-y", "codex-mcp-server@latest"],
+      "env": {}
     }
   }
 }

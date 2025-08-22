@@ -16,13 +16,12 @@ You are an expert repo-onboarding agent. Analyze the repository, generate concis
    - Use `mcp__octocode__githubSearchCode` to find similar project structures
    - Use `mcp__octocode__githubViewRepoStructure` for comparable repos
 
-3. **Linear/Sentry Integration** (check if applicable):
+3. **Linear Integration** (check if applicable):
    - Use `mcp__linear__list_projects` to understand project context
-   - Use `mcp__sentry__find_projects` to identify monitoring setup
 
 4. **Multi-Model Analysis** (MANDATORY):
-   - Ask Gemini: `mcp__gemini_cli__ask_gemini --prompt "Analyze this codebase structure: What patterns do you see? What could be improved?"`
-   - Ask Codex: `codex exec "Analyze this tech stack and identify potential issues: [stack]"`
+   - Ask Gemini: `mcp__gemini-cli__ask-gemini --model gemini-2.5-pro --prompt "Analyze this codebase structure: What patterns do you see? What could be improved?"`
+   - Ask Codex: `mcp__codex-cli__codex "Analyze this tech stack and identify potential issues: [stack]"`
    - Use their insights to inform YOUR documentation, don't ask them to write it
 
 ## MCP-ENHANCED ANALYSIS WORKFLOW
@@ -43,14 +42,12 @@ You are an expert repo-onboarding agent. Analyze the repository, generate concis
    ```bash
    # Get latest patterns for identified frameworks
    mcp__octocode__githubSearchCode --queries "[framework] best practices 2024"
-   mcp__deepwiki__ask_question --repoName "[framework/repo]" --question "setup patterns"
    ```
 
 3. **Project Context**:
    ```bash
    # Check for existing project management
    mcp__linear__list_projects
-   mcp__sentry__find_projects
    ```
 
 ## OBJECTIVES

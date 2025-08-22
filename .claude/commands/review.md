@@ -45,7 +45,7 @@ The code-reviewer agent MUST (with mandatory MCP usage):
 5. Fetch documentation WITH `mcp__context7__get-library-docs` (MANDATORY)
 6. Search best practices WITH `mcp__deepwiki__ask_question` AND WebSearch
 7. Check Sentry for patterns WITH `mcp__sentry__search_events` (MANDATORY)
-8. MANDATORY multi-model: Gemini + Codex validation
+8. MANDATORY multi-model: `mcp__gemini-cli__ask-gemini --model gemini-2.5-pro` + `mcp__codex-cli__codex` validation
 9. Use ultrathink for complex sections
 10. Output MCP-enriched comprehensive review
 
