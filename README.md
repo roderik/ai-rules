@@ -207,6 +207,14 @@ Shared MCP (Model Context Protocol) servers across all AI assistants:
 - **grep**: Code search across GitHub
 - **OpenZeppelinSolidityContracts**: Solidity contract templates
 - **octocode**: GitHub code exploration
+- **serena**: Advanced codebase analysis and semantic symbol operations
+  - `mcp__serena__find_symbol`: Global symbol search with semantic matching
+  - `mcp__serena__get_symbols_overview`: File structure analysis
+  - `mcp__serena__search_for_pattern`: Pattern-based code search
+  - `mcp__serena__find_referencing_symbols`: Reference tracking
+  - `mcp__serena__replace_symbol_body`: Semantic code replacement
+  - `mcp__serena__list_dir`: Intelligent directory listing
+  - `mcp__serena__write_memory`: Project knowledge management
 
 ## Uninstallation
 
@@ -337,6 +345,21 @@ Install ccusage for the status line feature:
 npm install -g ccusage
 # or
 bun add -g ccusage
+```
+
+### MCP Server Issues
+
+For Serena MCP server setup and debugging:
+
+```bash
+# Check if serena is properly configured
+mcp__serena__check_onboarding_performed
+
+# Initialize project with serena
+mcp__serena__activate_project /path/to/project
+
+# Verify serena can access project files
+mcp__serena__list_dir . --recursive=false
 ```
 
 ## Project Structure

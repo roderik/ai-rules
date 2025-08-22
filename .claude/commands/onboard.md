@@ -11,7 +11,11 @@ Check the mcp servers loaded for "serena" and if it is not enabled for this proj
 
 ```
 claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
+uvx --from git+https://github.com/oraios/serena serena project index
 ```
+
+Then use the serena MCP server to run the onboarding tool.
+
 
 ## ONBOARDING
 
