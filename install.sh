@@ -491,19 +491,30 @@ USAGE
     if [ -d "$src_base/commands" ]; then
       find "$src_base/commands" -name "*.md" -type f | while read -r cmd_file; do
         local cmd_name
-        cmd_name=$(basename "$cmd_file")
-        if ! validate_path "$cmd_name" "command filename"; then
+        cmd_name=$(basename "$cmd_file" .md)
+        if ! validate_path "$cmd_name.md" "command filename"; then
           log_error "Skipping invalid command filename: $cmd_name"
           continue
         fi
-        local target_file="$claude_code_dir/commands/$cmd_name"
+        local target_file="$claude_code_dir/commands/${cmd_name}.md"
+        local shared_content="$repo_root/.shared/commands/${cmd_name}.md"
+
+        # Create temp combined file for preview
+        local temp_file="/tmp/command_preview_${cmd_name}_$$.md"
+        if [ -f "$shared_content" ]; then
+          cat "$cmd_file" > "$temp_file"
+          echo "" >> "$temp_file"
+          cat "$shared_content" >> "$temp_file"
+        else
+          cp "$cmd_file" "$temp_file"
+        fi
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
-          print_color "$YELLOW" "  ⚠️  /$cmd_name (already exists - showing diff):"
+          print_color "$YELLOW" "  ⚠️  /${cmd_name}.md (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
             # Use delta with compact display
-            diff -u --label "current" --label "new" "$target_file" "$cmd_file" 2>/dev/null | \
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | \
               delta --no-gitconfig \
                     --paging=never \
                     --line-numbers \
@@ -513,7 +524,7 @@ USAGE
                     --diff-so-fancy \
                     --hyperlinks 2>/dev/null || true
           elif command -v diff >/dev/null 2>&1; then
-            diff -u --label "current" --label "new" "$target_file" "$cmd_file" 2>/dev/null | while IFS= read -r line; do
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | while IFS= read -r line; do
               case "$line" in
                 +*) print_color "$GREEN" "    $line" ;;
                 -*) print_color "$RED" "    $line" ;;
@@ -524,10 +535,12 @@ USAGE
           fi
         else
           # Show preview of new file
-          print_color "$GREEN" "  + /$cmd_name (new file)"
+          print_color "$GREEN" "  + /${cmd_name}.md (new file with shared content)"
           print_color "$CYAN" "    Preview (first 10 lines):"
-          head -10 "$cmd_file" | sed 's/^/      /'
+          head -10 "$temp_file" | sed 's/^/      /'
         fi
+
+        rm -f "$temp_file"
       done
     fi
 
@@ -660,25 +673,39 @@ USAGE
       done
     fi
 
-    # Install commands
+    # Install commands with combined frontmatter and shared content
     if [ -d "$src_base/commands" ]; then
       printf "\n"
       print_color "$BOLD" "Installing Custom Commands..."
       mkdir -p "$claude_code_dir/commands"
       find "$src_base/commands" -name "*.md" -type f | while read -r cmd_file; do
         local cmd_name
-        cmd_name=$(basename "$cmd_file")
-        if ! validate_path "$cmd_name" "command filename"; then
+        cmd_name=$(basename "$cmd_file" .md)
+        if ! validate_path "$cmd_name.md" "command filename"; then
           log_error "Skipping invalid command filename: $cmd_name"
           continue
         fi
-        local target_file="$claude_code_dir/commands/$cmd_name"
+        local target_file="$claude_code_dir/commands/${cmd_name}.md"
+        local shared_content="$repo_root/.shared/commands/${cmd_name}.md"
+
+        # Create combined file in temp location
+        local temp_file="/tmp/command_${cmd_name}_$$.md"
+
+        # Combine frontmatter from .claude/commands and content from .shared/commands
+        if [ -f "$shared_content" ]; then
+          cat "$cmd_file" > "$temp_file"
+          echo "" >> "$temp_file"  # Add blank line between frontmatter and content
+          cat "$shared_content" >> "$temp_file"
+        else
+          # If no shared content, just use the frontmatter file
+          cp "$cmd_file" "$temp_file"
+        fi
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
-          print_color "$YELLOW" "  ⚠️  /$cmd_name (already exists - showing diff):"
+          print_color "$YELLOW" "  ⚠️  /${cmd_name}.md (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
-            diff -u --label "current" --label "new" "$target_file" "$cmd_file" 2>/dev/null | \
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | \
               delta --no-gitconfig \
                     --paging=never \
                     --line-numbers \
@@ -688,7 +715,7 @@ USAGE
                     --diff-so-fancy \
                     --hyperlinks 2>/dev/null || true
           elif command -v diff >/dev/null 2>&1; then
-            diff -u --label "current" --label "new" "$target_file" "$cmd_file" 2>/dev/null | head -20 | while IFS= read -r line; do
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | head -20 | while IFS= read -r line; do
               case "$line" in
                 +*) print_color "$GREEN" "    $line" ;;
                 -*) print_color "$RED" "    $line" ;;
@@ -699,14 +726,14 @@ USAGE
           fi
         else
           # Show preview of new file
-          print_color "$GREEN" "  + /$cmd_name (new file)"
+          print_color "$GREEN" "  + /${cmd_name}.md (new file)"
           print_color "$CYAN" "    Preview (first 10 lines):"
-          head -10 "$cmd_file" | sed 's/^/      /'
+          head -10 "$temp_file" | sed 's/^/      /'
         fi
 
-        log_info "Copying command: $cmd_name to ~/.claude/commands/"
-        cp "$cmd_file" "$target_file"
-        log_success "Installed command: /$cmd_name"
+        log_info "Installing command: $cmd_name to ~/.claude/commands/"
+        mv "$temp_file" "$target_file"
+        log_success "Installed command: /${cmd_name}.md"
       done
     fi
 
@@ -1310,6 +1337,23 @@ EOF
       done
     fi
     
+    # Show commands that would be installed
+    printf "\n"
+    print_color "$BOLD" "📋 OpenCode commands that would be installed:"
+    printf "\n"
+    if [ -d "$repo_root/.opencode/commands" ]; then
+      find "$repo_root/.opencode/commands" -name "*.md" -type f | while read -r cmd_file; do
+        local cmd_name
+        cmd_name=$(basename "$cmd_file" .md)
+        local shared_content="$repo_root/.shared/commands/${cmd_name}.md"
+        if [ -f "$shared_content" ]; then
+          print_color "$GREEN" "  + $cmd_name.md (with shared content)"
+        else
+          print_color "$YELLOW" "  + $cmd_name.md (frontmatter only)"
+        fi
+      done
+    fi
+    
     # Show MCP servers that would be configured
     printf "\n"
     print_color "$BOLD" "🔌 MCP servers that would be configured in opencode.json:"
@@ -1389,6 +1433,72 @@ EOF
         log_info "Installing OpenCode agent: $agent_name"
         mv "$temp_file" "$target_file"
         log_success "Installed OpenCode agent: $agent_name.md"
+      done
+    fi
+    
+    # Install OpenCode commands with combined frontmatter and shared content
+    if [ -d "$repo_root/.opencode/commands" ]; then
+      printf "\n"
+      print_color "$BOLD" "Installing OpenCode Commands..."
+      mkdir -p "$opencode_dir/command"
+
+      # Process each command
+      find "$repo_root/.opencode/commands" -name "*.md" -type f | while read -r cmd_file; do
+        local cmd_name
+        cmd_name=$(basename "$cmd_file" .md)
+        if ! validate_path "$cmd_name.md" "command filename"; then
+          log_error "Skipping invalid command filename: $cmd_name"
+          continue
+        fi
+        local target_file="$opencode_dir/command/${cmd_name}.md"
+        local shared_content="$repo_root/.shared/commands/${cmd_name}.md"
+
+        # Create combined file in temp location
+        local temp_file="/tmp/opencode_command_${cmd_name}_$$.md"
+
+        # Combine frontmatter from .opencode/commands and content from .shared/commands
+        if [ -f "$shared_content" ]; then
+          cat "$cmd_file" > "$temp_file"
+          echo "" >> "$temp_file"  # Add blank line between frontmatter and content
+          cat "$shared_content" >> "$temp_file"
+        else
+          # If no shared content, just use the frontmatter file
+          cp "$cmd_file" "$temp_file"
+        fi
+
+        if [ -f "$target_file" ]; then
+          # Show diff if file exists
+          print_color "$YELLOW" "  ⚠️  $cmd_name.md (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_file" "$temp_file" 2>/dev/null | head -20 | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          # Show preview of new file
+          print_color "$GREEN" "  + $cmd_name.md (new file)"
+          print_color "$CYAN" "    Preview (first 10 lines):"
+          head -10 "$temp_file" | sed 's/^/      /'
+        fi
+
+        log_info "Installing OpenCode command: $cmd_name"
+        mv "$temp_file" "$target_file"
+        log_success "Installed OpenCode command: $cmd_name.md"
       done
     fi
     
@@ -1559,6 +1669,7 @@ with open('${opencode_config}.tmp', 'w') as f:
   ],
   "opencode_configurations": [
     "$opencode_dir/agent/",
+    "$opencode_dir/command/",
     "$opencode_dir/opencode.json",
     "$opencode_dir/AGENTS.md"
   ]

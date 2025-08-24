@@ -130,13 +130,9 @@
 
 ### MANDATORY Tool Usage:
 
-- Finding FILES? **USE `mcp__serena__find_file`** or `fd` (NOT find - even though `find` is aliased to `fd`)
-- Finding TEXT/strings? **USE `mcp__serena__search_for_pattern`** or `rg` (NOT grep - even though `grep` is aliased to `rg`)
-- Finding CODE STRUCTURE? **USE `mcp__serena__find_symbol`** or `ast-grep`
-- ANALYZING file structure? **USE `mcp__serena__get_symbols_overview`**
-- TRACKING references? **USE `mcp__serena__find_referencing_symbols`**
-- SEMANTIC code editing? **USE `mcp__serena__replace_symbol_body`**
-- PROJECT knowledge? **USE `mcp__serena__write_memory`** and **`mcp__serena__read_memory`**
+- Finding FILES? **USE `fd`** (NOT find - even though `find` is aliased to `fd`)
+- Finding TEXT/strings? **USE `rg`** (NOT grep - even though `grep` is aliased to `rg`)
+- Finding CODE STRUCTURE? **USE `ast-grep`**
 - SELECTING from results? **PIPE TO `fzf`**
 - Interacting with JSON? **USE `jq`**
 - Interacting with YAML/XML? **USE `yq`**
@@ -148,34 +144,33 @@
 
 This system has modern alternatives installed and ALIASED:
 
-| Modern Tool | Description                                  | ALIASED FROM (⚠️)  | Additional Info          |
-| ----------- | -------------------------------------------- | ------------------ | ------------------------ |
-| neovim/nvim | Modern Vim with LazyVim configuration        | vim (ALIASED)      | Also aliased as 'n'      |
-| bat         | Syntax highlighting and Git integration      | cat (ALIASED)      | Plain style by default   |
-| eza         | Modern listing with icons and git status     | ls, tree (ALIASED) | Multiple ls aliases      |
-| ripgrep/rg  | Ultra-fast text search                       | grep (ALIASED)     | Use rg syntax only!      |
-| fd          | User-friendly file finder                    | find (ALIASED)     | Use fd syntax only!      |
-| fzf         | Fuzzy finder for files and history           | -                  | Integrated with bat      |
-| lazygit     | Terminal UI for git commands                 | -                  | Aliases: lg, lzg         |
-| lazydocker  | Terminal UI for docker management            | -                  | Aliases: ld, lzd         |
-| fnm         | Fast Node.js version manager                 | -                  | Replaces nvm             |
-| git-delta   | Beautiful git diffs with syntax highlighting | -                  | Auto-configured          |
-| hexyl       | Hex viewer with colored output               | hexdump (ALIASED)  | Alias: hex               |
-| procs       | Modern process viewer                        | ps (ALIASED)       | Aliases: pst, psw        |
-| broot       | Interactive tree view with search            | -                  | Has br launcher          |
-| zoxide      | Smarter directory navigation                 | -                  | NOT aliased to cd        |
-| atuin       | Better shell history with sync               | -                  | Auto-initialized         |
-| direnv      | Per-project environment variables            | -                  | Auto-initialized         |
-| chafa       | Terminal graphics viewer                     | -                  | Aliases: img, image      |
-| ast-grep    | Structural code search/replace               | -                  | Aliases: ag, ags, agr    |
-| serena      | Semantic codebase analysis MCP server        | -                  | Use mcp**serena** prefix |
-| starship    | Cross-shell prompt                           | -                  | If installed             |
-| tmux        | Terminal multiplexer                         | -                  | Various tm\* aliases     |
-| zellij      | Modern terminal multiplexer                  | -                  | Aliases: zj, zja, zjs    |
-| tilt        | Local Kubernetes development                 | -                  | Aliases: tu, td          |
-| uv          | Python package/project manager               | -                  | Aliases: uvs, uvi, uvr   |
-| op          | 1Password CLI                                | -                  | Auto-integrated          |
-| forge/cast  | Foundry blockchain tools                     | -                  | Multiple aliases         |
+| Modern Tool | Description                                  | ALIASED FROM (⚠️)  | Additional Info        |
+| ----------- | -------------------------------------------- | ------------------ | ---------------------- |
+| neovim/nvim | Modern Vim with LazyVim configuration        | vim (ALIASED)      | Also aliased as 'n'    |
+| bat         | Syntax highlighting and Git integration      | cat (ALIASED)      | Plain style by default |
+| eza         | Modern listing with icons and git status     | ls, tree (ALIASED) | Multiple ls aliases    |
+| ripgrep/rg  | Ultra-fast text search                       | grep (ALIASED)     | Use rg syntax only!    |
+| fd          | User-friendly file finder                    | find (ALIASED)     | Use fd syntax only!    |
+| fzf         | Fuzzy finder for files and history           | -                  | Integrated with bat    |
+| lazygit     | Terminal UI for git commands                 | -                  | Aliases: lg, lzg       |
+| lazydocker  | Terminal UI for docker management            | -                  | Aliases: ld, lzd       |
+| fnm         | Fast Node.js version manager                 | -                  | Replaces nvm           |
+| git-delta   | Beautiful git diffs with syntax highlighting | -                  | Auto-configured        |
+| hexyl       | Hex viewer with colored output               | hexdump (ALIASED)  | Alias: hex             |
+| procs       | Modern process viewer                        | ps (ALIASED)       | Aliases: pst, psw      |
+| broot       | Interactive tree view with search            | -                  | Has br launcher        |
+| zoxide      | Smarter directory navigation                 | -                  | NOT aliased to cd      |
+| atuin       | Better shell history with sync               | -                  | Auto-initialized       |
+| direnv      | Per-project environment variables            | -                  | Auto-initialized       |
+| chafa       | Terminal graphics viewer                     | -                  | Aliases: img, image    |
+| ast-grep    | Structural code search/replace               | -                  | Aliases: ag, ags, agr  |
+| starship    | Cross-shell prompt                           | -                  | If installed           |
+| tmux        | Terminal multiplexer                         | -                  | Various tm\* aliases   |
+| zellij      | Modern terminal multiplexer                  | -                  | Aliases: zj, zja, zjs  |
+| tilt        | Local Kubernetes development                 | -                  | Aliases: tu, td        |
+| uv          | Python package/project manager               | -                  | Aliases: uvs, uvi, uvr |
+| op          | 1Password CLI                                | -                  | Auto-integrated        |
+| forge/cast  | Foundry blockchain tools                     | -                  | Multiple aliases       |
 
 ### ⚠️ CRITICAL REMINDERS:
 

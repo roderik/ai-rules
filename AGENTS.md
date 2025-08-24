@@ -130,12 +130,9 @@
 
 ### MANDATORY Tool Usage:
 
-- Finding FILES? **USE `mcp__serena__find_file`** or `fd` (NOT find - even though `find` is aliased to `fd`)
-- Finding TEXT/strings? **USE `mcp__serena__search_for_pattern`** or `rg` (NOT grep - even though `grep` is aliased to `rg`)
-- Finding CODE STRUCTURE? **USE `mcp__serena__find_symbol`** or `ast-grep`
-- ANALYZING file structure? **USE `mcp__serena__get_symbols_overview`**
-- TRACKING references? **USE `mcp__serena__find_referencing_symbols`**
-- SEMANTIC code editing? **USE `mcp__serena__replace_symbol_body`**
+- Finding FILES? **USE `fd`** (NOT find - even though `find` is aliased to `fd`)
+- Finding TEXT/strings? **USE `rg`** (NOT grep - even though `grep` is aliased to `rg`)
+- Finding CODE STRUCTURE? **USE `ast-grep`**
 - SELECTING from results? **PIPE TO `fzf`**
 - Interacting with JSON? **USE `jq`**
 - Interacting with YAML/XML? **USE `yq`**
@@ -147,34 +144,33 @@
 
 This system has modern alternatives installed and ALIASED:
 
-| Modern Tool | Description                                  | ALIASED FROM (⚠️)  | Additional Info          |
-| ----------- | -------------------------------------------- | ------------------ | ------------------------ |
-| neovim/nvim | Modern Vim with LazyVim configuration        | vim (ALIASED)      | Also aliased as 'n'      |
-| bat         | Syntax highlighting and Git integration      | cat (ALIASED)      | Plain style by default   |
-| eza         | Modern listing with icons and git status     | ls, tree (ALIASED) | Multiple ls aliases      |
-| ripgrep/rg  | Ultra-fast text search                       | grep (ALIASED)     | Use rg syntax only!      |
-| fd          | User-friendly file finder                    | find (ALIASED)     | Use fd syntax only!      |
-| fzf         | Fuzzy finder for files and history           | -                  | Integrated with bat      |
-| lazygit     | Terminal UI for git commands                 | -                  | Aliases: lg, lzg         |
-| lazydocker  | Terminal UI for docker management            | -                  | Aliases: ld, lzd         |
-| fnm         | Fast Node.js version manager                 | -                  | Replaces nvm             |
-| git-delta   | Beautiful git diffs with syntax highlighting | -                  | Auto-configured          |
-| hexyl       | Hex viewer with colored output               | hexdump (ALIASED)  | Alias: hex               |
-| procs       | Modern process viewer                        | ps (ALIASED)       | Aliases: pst, psw        |
-| broot       | Interactive tree view with search            | -                  | Has br launcher          |
-| zoxide      | Smarter directory navigation                 | -                  | NOT aliased to cd        |
-| atuin       | Better shell history with sync               | -                  | Auto-initialized         |
-| direnv      | Per-project environment variables            | -                  | Auto-initialized         |
-| chafa       | Terminal graphics viewer                     | -                  | Aliases: img, image      |
-| ast-grep    | Structural code search/replace               | -                  | Aliases: ag, ags, agr    |
-| serena      | Semantic codebase analysis MCP server        | -                  | Use mcp**serena** prefix |
-| starship    | Cross-shell prompt                           | -                  | If installed             |
-| tmux        | Terminal multiplexer                         | -                  | Various tm\* aliases     |
-| zellij      | Modern terminal multiplexer                  | -                  | Aliases: zj, zja, zjs    |
-| tilt        | Local Kubernetes development                 | -                  | Aliases: tu, td          |
-| uv          | Python package/project manager               | -                  | Aliases: uvs, uvi, uvr   |
-| op          | 1Password CLI                                | -                  | Auto-integrated          |
-| forge/cast  | Foundry blockchain tools                     | -                  | Multiple aliases         |
+| Modern Tool | Description                                  | ALIASED FROM (⚠️)  | Additional Info        |
+| ----------- | -------------------------------------------- | ------------------ | ---------------------- |
+| neovim/nvim | Modern Vim with LazyVim configuration        | vim (ALIASED)      | Also aliased as 'n'    |
+| bat         | Syntax highlighting and Git integration      | cat (ALIASED)      | Plain style by default |
+| eza         | Modern listing with icons and git status     | ls, tree (ALIASED) | Multiple ls aliases    |
+| ripgrep/rg  | Ultra-fast text search                       | grep (ALIASED)     | Use rg syntax only!    |
+| fd          | User-friendly file finder                    | find (ALIASED)     | Use fd syntax only!    |
+| fzf         | Fuzzy finder for files and history           | -                  | Integrated with bat    |
+| lazygit     | Terminal UI for git commands                 | -                  | Aliases: lg, lzg       |
+| lazydocker  | Terminal UI for docker management            | -                  | Aliases: ld, lzd       |
+| fnm         | Fast Node.js version manager                 | -                  | Replaces nvm           |
+| git-delta   | Beautiful git diffs with syntax highlighting | -                  | Auto-configured        |
+| hexyl       | Hex viewer with colored output               | hexdump (ALIASED)  | Alias: hex             |
+| procs       | Modern process viewer                        | ps (ALIASED)       | Aliases: pst, psw      |
+| broot       | Interactive tree view with search            | -                  | Has br launcher        |
+| zoxide      | Smarter directory navigation                 | -                  | NOT aliased to cd      |
+| atuin       | Better shell history with sync               | -                  | Auto-initialized       |
+| direnv      | Per-project environment variables            | -                  | Auto-initialized       |
+| chafa       | Terminal graphics viewer                     | -                  | Aliases: img, image    |
+| ast-grep    | Structural code search/replace               | -                  | Aliases: ag, ags, agr  |
+| starship    | Cross-shell prompt                           | -                  | If installed           |
+| tmux        | Terminal multiplexer                         | -                  | Various tm\* aliases   |
+| zellij      | Modern terminal multiplexer                  | -                  | Aliases: zj, zja, zjs  |
+| tilt        | Local Kubernetes development                 | -                  | Aliases: tu, td        |
+| uv          | Python package/project manager               | -                  | Aliases: uvs, uvi, uvr |
+| op          | 1Password CLI                                | -                  | Auto-integrated        |
+| forge/cast  | Foundry blockchain tools                     | -                  | Multiple aliases       |
 
 ### ⚠️ CRITICAL REMINDERS:
 
@@ -186,69 +182,6 @@ This system has modern alternatives installed and ALIASED:
    - `rg "pattern"` (NOT `grep "pattern"`)
    - `eza -la` (NOT `ls -la` even though it might work)
    - `bat file.txt` (NOT `cat file.txt` even though it's aliased)
-
-## Serena MCP Server Tools (CRITICAL for CODE ANALYSIS)
-
-**MANDATORY for any codebase work - these tools provide semantic understanding beyond traditional file operations.**
-
-### Project Setup & Memory Management
-
-```bash
-# Initialize project and check onboarding status
-mcp__serena__check_onboarding_performed
-mcp__serena__activate_project /path/to/project
-
-# Create project knowledge base
-mcp__serena__write_memory "project_architecture" "Key components and patterns found in codebase..."
-mcp__serena__list_memories
-mcp__serena__read_memory "project_architecture"
-```
-
-### Intelligent Code Discovery
-
-```bash
-# Find symbols by name/pattern (semantic search)
-mcp__serena__find_symbol "ComponentName" --relative_path="src/"
-mcp__serena__find_symbol "useState" --substring_matching=true
-
-# Get file structure overview before diving deep
-mcp__serena__get_symbols_overview "src/components/App.tsx"
-
-# Search for patterns across codebase
-mcp__serena__search_for_pattern "useEffect.*cleanup" --restrict_search_to_code_files=true
-```
-
-### Code Analysis & Refactoring
-
-```bash
-# Find all references to a symbol
-mcp__serena__find_referencing_symbols "handleClick" --relative_path="src/Button.tsx"
-
-# Replace symbol implementation semantically
-mcp__serena__replace_symbol_body "calculateTotal" --relative_path="utils.ts" --body="..."
-
-# Insert code before/after symbols
-mcp__serena__insert_after_symbol "Component" --relative_path="App.tsx" --body="new code"
-mcp__serena__insert_before_symbol "export" --relative_path="index.ts" --body="import statement"
-```
-
-### Intelligent File Operations
-
-```bash
-# List directories with smart filtering
-mcp__serena__list_dir "src" --recursive=true
-mcp__serena__find_file "*.test.ts" --relative_path="src"
-```
-
-### When to Use Serena vs Traditional Tools
-
-| Task                           | Use Serena                              | Use Traditional        |
-| ------------------------------ | --------------------------------------- | ---------------------- |
-| Find class/function definition | `mcp__serena__find_symbol`              | `rg` for basic text    |
-| Understand file structure      | `mcp__serena__get_symbols_overview`     | `bat` for content      |
-| Track symbol usage             | `mcp__serena__find_referencing_symbols` | `rg` for simple search |
-| Refactor code semantically     | `mcp__serena__replace_symbol_body`      | `sed`/manual edit      |
-| Project knowledge              | `mcp__serena__write_memory`             | Manual notes           |
 
 ## Coding guidelines (REQUIRED and CRITICAL)
 
