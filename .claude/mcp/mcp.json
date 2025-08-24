@@ -5,8 +5,10 @@
       "url": "https://mcp.linear.app/sse"
     },
     "context7": {
-      "type": "sse",
-      "url": "https://mcp.context7.com/sse"
+      "type": "stdio",
+      "command": "bun",
+      "args": ["x", "-y", "@upstash/context7-mcp@latest"],
+      "env": {}
     },
     "playwright": {
       "type": "stdio",
