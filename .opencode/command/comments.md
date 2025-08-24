@@ -1,15 +1,13 @@
 ---
 description: Add comprehensive documentation comments to code focusing on why-first explanations
-argument-hint: [file-pattern]
-allowed-tools: Read, Edit, Bash
+agent: code-commenter
 ---
 
 ## Changed Files
-- Recent changes: !`git diff --name-only HEAD~1..HEAD`
-- Current status: !`git status --porcelain`
+Recent changes: !`git diff --name-only HEAD~1..HEAD`
+Current status: !`git status --porcelain`
 
 ## Documentation Task
-Use the code-commenter subagent to add comprehensive comments:
 
 1. Focus on recently changed files (or files matching: $ARGUMENTS)
 2. Add TSDoc comments to functions explaining the WHY behind decisions

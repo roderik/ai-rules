@@ -1,28 +1,21 @@
 ---
 description: Create a comprehensive pull request with proper title, description, and quality checks
-argument-hint: [title]
-allowed-tools: Bash, Read
+agent: pr-creator
 ---
 
 ## Current Branch Status
-- Branch: !`git branch --show-current`
-- Commits since main: !`git log main..HEAD --oneline`
-- Changed files: !`git diff main..HEAD --stat`
+Branch: !`git branch --show-current`
+Commits since main: !`git log main..HEAD --oneline`
+Changed files: !`git diff main..HEAD --stat`
 
 ## Pull Request Creation Task
 
-First, use the test-runner subagent to ensure quality:
 1. Run all tests and fix any failures
 2. Run linting and fix issues
 3. Ensure code formatting is correct
 
-Then use the code-reviewer subagent to:
-1. Review all changes for quality issues
-2. Check security considerations
-3. Verify best practices are followed
-
 Finally, create the pull request with:
-- Title: $ARGUMENTS
+- Title: $ARGUMENTS or the main change of this pr.
 - Comprehensive description including:
   - What changes were made and why
   - Any breaking changes or migration notes

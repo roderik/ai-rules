@@ -271,6 +271,7 @@ USAGE
   local src_base="$repo_root/.claude"
   local codex_base="$repo_root/.codex"
   local gemini_base="$repo_root/.gemini"
+  local opencode_base="$repo_root/.opencode"
 
   # Check if we're running from a piped/curl execution (no .claude directory)
   if [ ! -d "$src_base" ]; then
@@ -291,6 +292,7 @@ USAGE
     src_base="$repo_root/.claude"
     codex_base="$repo_root/.codex"
     gemini_base="$repo_root/.gemini"
+    opencode_base="$repo_root/.opencode"
 
     # Verify the cloned repository has the expected structure
     if [ ! -d "$src_base" ]; then
@@ -344,40 +346,12 @@ USAGE
     merged_content=$(cat "$before_file")
 
     # Merge settings
-    if [ -f "$src_base/settings/settings.json" ]; then
-      merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/settings/settings.json" '.[0] * $new[0]')
+    if [ -f "$src_base/settings.json" ]; then
+      merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/settings.json" '.[0] * $new[0]')
     fi
 
-    # Merge hooks
-    if [ -f "$src_base/hooks/hooks.json" ]; then
-      merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/hooks/hooks.json" '
-        def merge_hook_arrays:
-          . as [$existing, $new] |
-          if ($existing | type) == "array" and ($new | type) == "array" then
-            $existing + $new
-          elif $new then
-            $new
-          else
-            $existing
-          end;
-
-        .[0] as $base |
-        $new[0].hooks as $new_hooks |
-        $base | .hooks = (
-          .hooks // {} |
-          . as $existing_hooks |
-          $new_hooks | to_entries | reduce .[] as $item (
-            $existing_hooks;
-            .[$item.key] = ([$existing_hooks[$item.key] // [], $item.value] | merge_hook_arrays)
-          )
-        )
-      ')
-    fi
-
-    # Merge MCP servers
-    if [ -f "$src_base/mcp/mcp.json" ]; then
-      merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/mcp/mcp.json" '.[0] * $new[0]')
-    fi
+    # Note: hooks and MCP servers are now part of settings.json
+    # No separate merging needed as they're handled in the settings merge above
 
     # Write the merged content to after file
     echo "$merged_content" | jq -S '.' > "$after_file"
@@ -437,17 +411,9 @@ USAGE
           continue
         fi
         local target_file="$claude_code_dir/agents/${agent_name}.md"
-        local shared_content="$repo_root/.shared/agents/${agent_name}.md"
-
-        # Create temp combined file for preview
+        # Just copy the agent file directly (no shared content)
         local temp_file="/tmp/agent_preview_${agent_name}_$$.md"
-        if [ -f "$shared_content" ]; then
-          cat "$agent_file" > "$temp_file"
-          echo "" >> "$temp_file"
-          cat "$shared_content" >> "$temp_file"
-        else
-          cp "$agent_file" "$temp_file"
-        fi
+        cp "$agent_file" "$temp_file"
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
@@ -497,17 +463,9 @@ USAGE
           continue
         fi
         local target_file="$claude_code_dir/commands/${cmd_name}.md"
-        local shared_content="$repo_root/.shared/commands/${cmd_name}.md"
-
-        # Create temp combined file for preview
+        # Just copy the command file directly (no shared content)
         local temp_file="/tmp/command_preview_${cmd_name}_$$.md"
-        if [ -f "$shared_content" ]; then
-          cat "$cmd_file" > "$temp_file"
-          echo "" >> "$temp_file"
-          cat "$shared_content" >> "$temp_file"
-        else
-          cp "$cmd_file" "$temp_file"
-        fi
+        cp "$cmd_file" "$temp_file"
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
@@ -585,29 +543,12 @@ USAGE
     rm -rf "$temp_dir"
     printf "\n"
   else
-    # Merge settings.json into ~/.claude.json
-    if [ -f "$src_base/settings/settings.json" ]; then
-      merge_json "$HOME/.claude.json" "$src_base/settings/settings.json"
+    # Merge settings.json into ~/.claude.json (includes hooks and MCP servers)
+    if [ -f "$src_base/settings.json" ]; then
+      merge_json "$HOME/.claude.json" "$src_base/settings.json"
     fi
 
-    # Merge hooks.json into ~/.claude.json
-    if [ -f "$src_base/hooks/hooks.json" ]; then
-      merge_hooks "$HOME/.claude.json" "$src_base/hooks/hooks.json"
-    fi
-
-    # Merge MCP servers into ~/.claude.json
-    if [ -f "$src_base/mcp/mcp.json" ]; then
-      local backup
-      backup="$HOME/.claude.json.backup.$(date +%Y%m%d_%H%M%S)"
-      cp "$HOME/.claude.json" "$backup"
-
-      # Merge MCP servers into settings
-      jq -s '.[0] * .[1]' "$HOME/.claude.json" "$src_base/mcp/mcp.json" > "$HOME/.claude.json.tmp" && \
-        mv "$HOME/.claude.json.tmp" "$HOME/.claude.json"
-      log_success "Merged MCP servers into ~/.claude.json"
-    fi
-
-    # Install agents with combined frontmatter and shared content
+    # Install agents (overwrite markdown as-is, no shared content, no backups)
     if [ -d "$src_base/agents" ]; then
       printf "\n"
       print_color "$BOLD" "Installing AI Agents..."
@@ -622,20 +563,9 @@ USAGE
           continue
         fi
         local target_file="$claude_code_dir/agents/${agent_name}.md"
-        local shared_content="$repo_root/.shared/agents/${agent_name}.md"
-
-        # Create combined file in temp location
+        # Just copy the agent file directly (no shared content)
         local temp_file="/tmp/agent_${agent_name}_$$.md"
-
-        # Combine frontmatter from .claude/agents and content from .shared/agents
-        if [ -f "$shared_content" ]; then
-          cat "$agent_file" > "$temp_file"
-          echo "" >> "$temp_file"  # Add blank line between frontmatter and content
-          cat "$shared_content" >> "$temp_file"
-        else
-          # If no shared content, just use the frontmatter file
-          cp "$agent_file" "$temp_file"
-        fi
+        cp "$agent_file" "$temp_file"
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
@@ -673,7 +603,7 @@ USAGE
       done
     fi
 
-    # Install commands with combined frontmatter and shared content
+    # Install commands (overwrite markdown as-is, no shared content, no backups)
     if [ -d "$src_base/commands" ]; then
       printf "\n"
       print_color "$BOLD" "Installing Custom Commands..."
@@ -686,20 +616,9 @@ USAGE
           continue
         fi
         local target_file="$claude_code_dir/commands/${cmd_name}.md"
-        local shared_content="$repo_root/.shared/commands/${cmd_name}.md"
-
-        # Create combined file in temp location
+        # Just copy the command file directly (no shared content)
         local temp_file="/tmp/command_${cmd_name}_$$.md"
-
-        # Combine frontmatter from .claude/commands and content from .shared/commands
-        if [ -f "$shared_content" ]; then
-          cat "$cmd_file" > "$temp_file"
-          echo "" >> "$temp_file"  # Add blank line between frontmatter and content
-          cat "$shared_content" >> "$temp_file"
-        else
-          # If no shared content, just use the frontmatter file
-          cp "$cmd_file" "$temp_file"
-        fi
+        cp "$cmd_file" "$temp_file"
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
@@ -777,13 +696,7 @@ USAGE
       log_success "Installed CLAUDE.md to ~/.claude/"
     fi
 
-    # Install output-styles
-    if [ -d "$src_base/output-styles" ]; then
-      printf "\n"
-      print_color "$BOLD" "Installing Output Styles..."
-      cp -r "$src_base/output-styles" "$claude_code_dir/"
-      log_success "Installed output-styles to ~/.claude/"
-    fi
+    # Note: output-styles are no longer part of the installation
 
     # Create manifest for uninstall
     local manifest="$claude_code_dir/.ai-rules-manifest.json"
@@ -796,7 +709,6 @@ USAGE
     "settings.json",
     "agents/",
     "commands/",
-    "output-styles/",
     "CLAUDE.md"
   ]
 }
@@ -1324,16 +1236,11 @@ EOF
     printf "\n"
     print_color "$BOLD" "🤖 OpenCode agents that would be installed:"
     printf "\n"
-    if [ -d "$repo_root/.opencode/agents" ]; then
-      find "$repo_root/.opencode/agents" -name "*.md" -type f | while read -r agent_file; do
+    if [ -d "$opencode_base/agent" ]; then
+      find "$opencode_base/agent" -name "*.md" -type f | while read -r agent_file; do
         local agent_name
         agent_name=$(basename "$agent_file" .md)
-        local shared_content="$repo_root/.shared/agents/${agent_name}.md"
-        if [ -f "$shared_content" ]; then
-          print_color "$GREEN" "  + $agent_name.md (with shared content)"
-        else
-          print_color "$YELLOW" "  + $agent_name.md (frontmatter only)"
-        fi
+        print_color "$GREEN" "  + $agent_name.md"
       done
     fi
     
@@ -1341,16 +1248,11 @@ EOF
     printf "\n"
     print_color "$BOLD" "📋 OpenCode commands that would be installed:"
     printf "\n"
-    if [ -d "$repo_root/.opencode/commands" ]; then
-      find "$repo_root/.opencode/commands" -name "*.md" -type f | while read -r cmd_file; do
+    if [ -d "$opencode_base/command" ]; then
+      find "$opencode_base/command" -name "*.md" -type f | while read -r cmd_file; do
         local cmd_name
         cmd_name=$(basename "$cmd_file" .md)
-        local shared_content="$repo_root/.shared/commands/${cmd_name}.md"
-        if [ -f "$shared_content" ]; then
-          print_color "$GREEN" "  + $cmd_name.md (with shared content)"
-        else
-          print_color "$YELLOW" "  + $cmd_name.md (frontmatter only)"
-        fi
+        print_color "$GREEN" "  + $cmd_name.md"
       done
     fi
     
@@ -1358,8 +1260,8 @@ EOF
     printf "\n"
     print_color "$BOLD" "🔌 MCP servers that would be configured in opencode.json:"
     printf "\n"
-    if [ -f "$src_base/mcp/mcp.json" ]; then
-      print_color "$CYAN" "  MCP servers from Claude configuration will be converted"
+    if [ -f "$opencode_base/opencode.json" ]; then
+      print_color "$CYAN" "  MCP servers from OpenCode configuration will be applied"
     fi
     
     # Show AGENTS.md that would be installed
@@ -1370,14 +1272,14 @@ EOF
       print_color "$GREEN" "  + AGENTS.md (configuration documentation)"
     fi
   else
-    # Install OpenCode agents with combined frontmatter and shared content
-    if [ -d "$repo_root/.opencode/agents" ]; then
+    # Install OpenCode agents
+    if [ -d "$opencode_base/agent" ]; then
       printf "\n"
       print_color "$BOLD" "Installing OpenCode Agents..."
       mkdir -p "$opencode_dir/agent"
 
       # Process each agent
-      find "$repo_root/.opencode/agents" -name "*.md" -type f | while read -r agent_file; do
+      find "$opencode_base/agent" -name "*.md" -type f | while read -r agent_file; do
         local agent_name
         agent_name=$(basename "$agent_file" .md)
         if ! validate_path "$agent_name.md" "agent filename"; then
@@ -1385,20 +1287,9 @@ EOF
           continue
         fi
         local target_file="$opencode_dir/agent/${agent_name}.md"
-        local shared_content="$repo_root/.shared/agents/${agent_name}.md"
-
-        # Create combined file in temp location
+        # Just copy the agent file directly
         local temp_file="/tmp/opencode_agent_${agent_name}_$$.md"
-
-        # Combine frontmatter from .opencode/agents and content from .shared/agents
-        if [ -f "$shared_content" ]; then
-          cat "$agent_file" > "$temp_file"
-          echo "" >> "$temp_file"  # Add blank line between frontmatter and content
-          cat "$shared_content" >> "$temp_file"
-        else
-          # If no shared content, just use the frontmatter file
-          cp "$agent_file" "$temp_file"
-        fi
+        cp "$agent_file" "$temp_file"
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
@@ -1436,14 +1327,14 @@ EOF
       done
     fi
     
-    # Install OpenCode commands with combined frontmatter and shared content
-    if [ -d "$repo_root/.opencode/commands" ]; then
+    # Install OpenCode commands
+    if [ -d "$opencode_base/command" ]; then
       printf "\n"
       print_color "$BOLD" "Installing OpenCode Commands..."
       mkdir -p "$opencode_dir/command"
 
       # Process each command
-      find "$repo_root/.opencode/commands" -name "*.md" -type f | while read -r cmd_file; do
+      find "$opencode_base/command" -name "*.md" -type f | while read -r cmd_file; do
         local cmd_name
         cmd_name=$(basename "$cmd_file" .md)
         if ! validate_path "$cmd_name.md" "command filename"; then
@@ -1451,20 +1342,9 @@ EOF
           continue
         fi
         local target_file="$opencode_dir/command/${cmd_name}.md"
-        local shared_content="$repo_root/.shared/commands/${cmd_name}.md"
-
-        # Create combined file in temp location
+        # Just copy the command file directly
         local temp_file="/tmp/opencode_command_${cmd_name}_$$.md"
-
-        # Combine frontmatter from .opencode/commands and content from .shared/commands
-        if [ -f "$shared_content" ]; then
-          cat "$cmd_file" > "$temp_file"
-          echo "" >> "$temp_file"  # Add blank line between frontmatter and content
-          cat "$shared_content" >> "$temp_file"
-        else
-          # If no shared content, just use the frontmatter file
-          cp "$cmd_file" "$temp_file"
-        fi
+        cp "$cmd_file" "$temp_file"
 
         if [ -f "$target_file" ]; then
           # Show diff if file exists
@@ -1548,101 +1428,36 @@ EOF
       log_success "Installed AGENTS.md to ~/.config/opencode/"
     fi
     
-    # Install or update OpenCode MCP configuration
+    # Install or update OpenCode configuration
     printf "\n"
-    print_color "$BOLD" "Installing OpenCode MCP Servers..."
+    print_color "$BOLD" "Installing OpenCode Configuration..."
     
     local opencode_config="$opencode_dir/opencode.json"
     
-    # Convert Claude MCP config to OpenCode format using Python
-    if [ -f "$src_base/mcp/mcp.json" ]; then
-      python3 -c "
-import json
-import sys
-
-# Read Claude MCP config
-with open('$src_base/mcp/mcp.json', 'r') as f:
-    claude_config = json.load(f)
-
-# Read existing OpenCode config if it exists
-opencode_config = {}
-try:
-    with open('$opencode_config', 'r') as f:
-        opencode_config = json.load(f)
-except FileNotFoundError:
-    opencode_config = {
-        '\$schema': 'https://opencode.ai/config.json'
-    }
-
-# Initialize MCP section if not present
-if 'mcp' not in opencode_config:
-    opencode_config['mcp'] = {}
-
-# OAuth-based services that don't work in OpenCode without built-in OAuth support
-oauth_services = ['linear', 'sentry', 'ultracite']
-
-# Convert Claude MCP servers to OpenCode format
-for server_name, server_config in claude_config.get('mcpServers', {}).items():
-    # Skip OAuth-based services that won't work in OpenCode
-    if server_name.lower() in oauth_services:
-        print(f'Skipping OAuth-based service: {server_name} (not supported in OpenCode)', file=sys.stderr)
-        continue
-    
-    opencode_server = {}
-    opencode_server['enabled'] = True
-    
-    if server_config.get('type') == 'stdio':
-        # Convert stdio servers to local type
-        opencode_server['type'] = 'local'
-        command = [server_config.get('command', 'bun')]
-        args = server_config.get('args', [])
-        opencode_server['command'] = command + args
-        if 'env' in server_config and server_config['env']:
-            opencode_server['environment'] = server_config['env']
-    
-    elif server_config.get('type') in ['sse', 'http']:
-        # Convert SSE/HTTP servers to remote type
-        opencode_server['type'] = 'remote'
-        opencode_server['url'] = server_config.get('url', '')
+    # Merge OpenCode config using jq
+    if [ -f "$opencode_base/opencode.json" ]; then
+      if [ -f "$opencode_config" ]; then
+        # Backup existing config
+        local backup
+        backup="${opencode_config}.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$opencode_config" "$backup"
+        log_info "Backed up existing OpenCode config to: $backup"
         
-        # Disable OAuth-based SSE endpoints that require authentication
-        if any(oauth_svc in server_config.get('url', '').lower() for oauth_svc in ['linear.app', 'sentry.dev', 'ultracite.ai']):
-            print(f'Skipping OAuth SSE endpoint: {server_name} (requires authentication)', file=sys.stderr)
-            continue
-    
-    elif 'command' in server_config:
-        # Handle servers with just command (like DeepGraph)
-        opencode_server['type'] = 'local'
-        command = [server_config.get('command', 'bun')]
-        args = server_config.get('args', [])
-        opencode_server['command'] = command + args
-        if 'description' in server_config:
-            # Note: OpenCode doesn't have description field, but we keep for reference
-            pass
-    
-    else:
-        # Skip if we can't determine type
-        continue
-    
-    # Use sanitized server name (replace spaces with underscores)
-    sanitized_name = server_name.replace(' ', '_').replace('/', '_')
-    opencode_config['mcp'][sanitized_name] = opencode_server
-
-# Write the updated config
-with open('${opencode_config}.tmp', 'w') as f:
-    json.dump(opencode_config, f, indent=2)
-" && mv "${opencode_config}.tmp" "$opencode_config"
-      
-      log_success "Configured MCP servers in opencode.json"
+        # Merge configurations
+        jq -s '.[0] * .[1]' "$opencode_config" "$opencode_base/opencode.json" > "${opencode_config}.tmp" && \
+          mv "${opencode_config}.tmp" "$opencode_config"
+        log_success "Merged OpenCode configuration"
+      else
+        # Copy new config
+        cp "$opencode_base/opencode.json" "$opencode_config"
+        log_success "Installed OpenCode configuration"
+      fi
       
       # Show what was configured
-      log_info "MCP servers configured (OAuth-based services excluded):"
+      log_info "MCP servers configured:"
       jq -r '.mcp | keys[]' "$opencode_config" 2>/dev/null | while read -r server; do
         echo "  • $server"
       done
-      
-      log_warning "Note: OAuth-based services (Linear, Sentry, Ultracite) are disabled for OpenCode"
-      log_info "These services require OAuth authentication which OpenCode doesn't support yet"
     fi
 
     # Update manifest to include OpenCode files

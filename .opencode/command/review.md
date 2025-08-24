@@ -1,15 +1,13 @@
 ---
 description: Comprehensive code review with security, performance, and best practices analysis
-argument-hint: [focus-area]
-allowed-tools: Bash, Read
+agent: code-reviewer
 ---
 
 ## Current Changes
-- Git diff: !`git diff --stat`
-- Recent commits: !`git log --oneline -5`
+Git diff: !`git diff --stat`
+Recent commits: !`git log --oneline -5`
 
 ## Review Task
-Use the code-reviewer subagent to perform a comprehensive review:
 
 1. Analyze all changed files for code quality issues
 2. Check for security vulnerabilities and potential risks
