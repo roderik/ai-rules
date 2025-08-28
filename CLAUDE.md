@@ -4,13 +4,14 @@
 
 **AFTER ANY CODE CHANGE, YOU MUST AUTOMATICALLY RUN:**
 
-1. **test-runner agent** (via Task tool) - Runs tests, linting, formatting
-2. **code-reviewer agent** (via Task tool) - Reviews code quality
-3. **code-commenter agent** (via Task tool) - Adds documentation
+1. **test-runner agent** (via Task tool) - Uses IDE diagnostics + runs tests, linting, formatting
+2. **code-reviewer agent** (via Task tool) - Leverages LSP for code quality analysis
+3. **code-commenter agent** (via Task tool) - Uses IDE symbol analysis for smart documentation
 
 **These are PROACTIVE agents - they MUST run AUTOMATICALLY after EVERY code edit.**
 **DO NOT wait for the user to ask. DO NOT skip for "small" changes.**
 **Fix ALL errors before proceeding with ANY other task.**
+**CRITICAL: These agents now use IDE/LSP capabilities for deeper analysis.**
 
 ## Identity & Communication Style
 
@@ -20,6 +21,21 @@
 - Never use emojis unless explicitly requested
 
 ## Coding Standards
+
+### IDE-First Development (WHEN CONNECTED TO CURSOR/VS CODE)
+
+**PRIORITY ORDER for code analysis:**
+
+1. **IDE Diagnostics**: `mcp__ide__getDiagnostics` - immediate LSP feedback
+2. **IDE Symbol Navigation**: Use ide-navigator agent for exploration
+3. **Traditional Tools**: Only after IDE tools (grep, find, etc.)
+
+**Key IDE Usage Patterns:**
+
+- Before ANY file edit: Check IDE diagnostics for that file
+- Before running tests: Get all workspace diagnostics first
+- For navigation: Use IDE symbol search over text search
+- For refactoring: Use IDE to find all references first
 
 ### Documentation & Research (CRITICAL)
 
@@ -63,22 +79,40 @@
 
 ## Tool Preferences
 
+### IDE Integration (PRIORITIZE WHEN CONNECTED)
+
+**When IDE is connected (Cursor/VS Code), ALWAYS use these MCP tools first:**
+
+- **`mcp__ide__getDiagnostics`**: Get real-time errors/warnings before running tests
+- **`mcp__ide__executeCode`**: Run code analysis in Jupyter notebooks
+- **ide-navigator agent**: For code exploration and symbol navigation
+
+**Benefits of IDE-First Approach:**
+
+- Instant feedback from Language Server Protocol (LSP)
+- Type errors caught without compilation
+- Dead code and unused imports detected immediately
+- Symbol relationships understood automatically
+
 ### Language-Specific
 
 - JavaScript/TypeScript: Prefer modern ES6+ syntax, async/await over promises
 - Python: Type hints for functions, use pathlib over os.path
 - Shell: Prefer bash over sh, use shellcheck conventions
 
-### Testing & Code Review (MANDATORY - AUTOMATIC EXECUTION)
+### Testing & Code Review (MANDATORY - IDE-ENHANCED AUTOMATIC EXECUTION)
 
-- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use BOTH:**
-  1. **test-runner agent** - Runs tests, linting, formatting (via Task tool)
-  2. **code-reviewer agent** - Reviews code quality (via Task tool)
+- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use ALL THREE:**
+  1. **test-runner agent** - IDE diagnostics FIRST, then tests/linting/formatting (via Task tool)
+  2. **code-reviewer agent** - LSP-powered code quality analysis (via Task tool)
+  3. **code-commenter agent** - Symbol-aware documentation (via Task tool)
+- **IDE FIRST PRINCIPLE: Always check `mcp__ide__getDiagnostics` before running tests**
 - **These are NOT OPTIONAL - they MUST run AUTOMATICALLY after EVERY code edit**
 - **NO EXCEPTIONS - even for "small" changes**
 - NEVER run `bun run test`, `npm test`, or any test commands directly via Bash
 - The agents will return focused error lists that you MUST fix immediately
 - Continue running agents until ALL errors are resolved
+- IDE diagnostics often catch errors faster than running full test suites
 - Prefer unit tests with clear test names
 - Mock external dependencies
 
