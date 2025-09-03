@@ -145,9 +145,16 @@ merge_json() {
 
   # Merge or create
   if [ -f "$target" ]; then
-    # Merge existing with new
-    jq -s '.[0] * .[1]' "$target" "$source" > "${target}.tmp" && mv "${target}.tmp" "$target"
-    log_success "Merged into: $target"
+    # Merge existing with new, but fully override MCP-related configs
+    jq -s '
+      .[0] as $old | .[1] as $new |
+      ($old * $new)
+      | (if ($new | has("mcpServers")) then .mcpServers = $new.mcpServers else . end)
+      | (if ($new | has("mcp"))        then .mcp        = $new.mcp        else . end)
+      | (if ($new | has("enableAllProjectMcpServers"))
+           then .enableAllProjectMcpServers = $new.enableAllProjectMcpServers else . end)
+    ' "$target" "$source" > "${target}.tmp" && mv "${target}.tmp" "$target"
+    log_success "Updated (MCP overridden) into: $target"
   else
     # Copy new file
     cp "$source" "$target"
@@ -345,9 +352,16 @@ USAGE
     local merged_content
     merged_content=$(cat "$before_file")
 
-    # Merge settings
+    # Merge settings but override MCP-related configs entirely
     if [ -f "$src_base/settings.json" ]; then
-      merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/settings.json" '.[0] * $new[0]')
+      merged_content=$(echo "$merged_content" | jq -s --slurpfile new "$src_base/settings.json" '
+        .[0] as $old | $new[0] as $new |
+        ($old * $new)
+        | (if ($new | has("mcpServers")) then .mcpServers = $new.mcpServers else . end)
+        | (if ($new | has("mcp"))        then .mcp        = $new.mcp        else . end)
+        | (if ($new | has("enableAllProjectMcpServers"))
+             then .enableAllProjectMcpServers = $new.enableAllProjectMcpServers else . end)
+      ')
     fi
 
     # Note: hooks and MCP servers are now part of settings.json
@@ -1434,7 +1448,7 @@ EOF
     
     local opencode_config="$opencode_dir/opencode.json"
     
-    # Merge OpenCode config using jq
+    # Merge OpenCode config using jq (override MCP definitions)
     if [ -f "$opencode_base/opencode.json" ]; then
       if [ -f "$opencode_config" ]; then
         # Backup existing config
@@ -1443,10 +1457,14 @@ EOF
         cp "$opencode_config" "$backup"
         log_info "Backed up existing OpenCode config to: $backup"
         
-        # Merge configurations
-        jq -s '.[0] * .[1]' "$opencode_config" "$opencode_base/opencode.json" > "${opencode_config}.tmp" && \
+        # Merge configurations but fully replace `.mcp` block when present
+        jq -s '
+          .[0] as $old | .[1] as $new |
+          ($old * $new)
+          | (if ($new | has("mcp")) then .mcp = $new.mcp else . end)
+        ' "$opencode_config" "$opencode_base/opencode.json" > "${opencode_config}.tmp" && \
           mv "${opencode_config}.tmp" "$opencode_config"
-        log_success "Merged OpenCode configuration"
+        log_success "Updated OpenCode configuration (MCP overridden)"
       else
         # Copy new config
         cp "$opencode_base/opencode.json" "$opencode_config"

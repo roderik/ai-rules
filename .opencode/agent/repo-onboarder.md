@@ -30,9 +30,10 @@ Use all configured MCP servers relevant to repository characterization. If a ser
    - Use `mcp__linear__list_projects` to understand project context
 
 4. **Multi-Model Analysis** (MANDATORY):
-   - Ask Gemini: `mcp__gemini-cli__ask-gemini --model gemini-2.5-pro --prompt "Analyze this codebase structure: What patterns do you see? What could be improved?"`
-   - Ask Codex: `mcp__codex-cli__codex "Analyze this tech stack and identify potential issues: [stack]"`
-   - Use their insights to inform YOUR documentation, don't ask them to write it
+   - Gemini: `gemini -m gemini-2.5-pro -p "Analyze this codebase structure: What patterns do you see? What could be improved?"`
+   - Codex (GPT-5, high reasoning): `codex -m gpt-5 -c reasoning.level="high" "Analyze this tech stack and identify potential issues: [stack]"`
+   - `claude --model opus --print "Summarize risks and propose next actions for onboarding."`
+   - Use their insights to inform YOUR documentation; they provide analysis only.
 
 ## MCP-ENHANCED ANALYSIS WORKFLOW
 

@@ -24,16 +24,6 @@
       "type": "local",
       "command": ["bun", "x", "-y", "octocode-mcp@latest"],
       "enabled": true
-    },
-    "gemini-cli": {
-      "type": "local",
-      "command": ["bun", "x", "-y", "gemini-mcp-tool@latest"],
-      "enabled": true
-    },
-    "codex-cli": {
-      "type": "local",
-      "command": ["bun", "x", "-y", "codex-mcp-server@latest"],
-      "enabled": true
     }
   }
 }

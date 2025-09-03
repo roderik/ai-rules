@@ -30,28 +30,10 @@
           "args": ["x", "-y", "@upstash/context7-mcp@latest"],
           "env": {}
         },
-        "playwright": {
-          "type": "stdio",
-          "command": "bun",
-          "args": ["x", "-y", "@playwright/mcp@latest"],
-          "env": {}
-        },
         "octocode": {
           "type": "stdio",
           "command": "bun",
           "args": ["x", "-y", "octocode-mcp@latest"],
-          "env": {}
-        },
-        "gemini-cli": {
-          "type": "stdio",
-          "command": "bun",
-          "args": ["x", "-y", "gemini-mcp-tool@latest"],
-          "env": {}
-        },
-        "codex-cli": {
-          "type": "stdio",
-          "command": "bun",
-          "args": ["x", "-y", "codex-mcp-server@latest"],
           "env": {}
         }
       },

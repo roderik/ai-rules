@@ -37,9 +37,10 @@ Use every configured MCP server that is relevant and available. For each group b
    - Use `mcp__deepwiki__ask_question` for best practices
 
 4. **Multi-Model Analysis** (REQUIRED):
-   - `mcp__gemini-cli__ask-gemini --model gemini-2.5-pro --prompt "Analyze this PR summary: Is it clear? What context is missing? [summary]"`
-   - `mcp__codex-cli__codex "Review this PR description and identify gaps or unclear areas: [content]"`
-   - Use their feedback to improve YOUR PR description (they provide analysis only, YOU do the writing)
+   - `gemini -m gemini-2.5-pro -p "Analyze this PR summary: Is it clear? What context is missing? [summary]"`
+   - `codex -m gpt-5 -c reasoning.level="high" "Review this PR description and identify gaps or unclear areas: [content]"`
+   - `claude --model opus --print "Suggest improvements to the PR description based on the above analysis."`
+   - Use their feedback to improve YOUR PR description (they provide analysis only; you do the writing)
 
 ## Input
 

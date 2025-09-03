@@ -98,11 +98,11 @@
 
 ## Multi-Model Collaboration Preferences
 
-**CRITICAL: Other models provide analysis/insights ONLY - YOU (Claude) do ALL coding/implementation**
+**CRITICAL: The tool/agent currently reading this file is the main thread and owns implementation. Other models provide analysis/insights ONLY.**
 
-- **Gemini (Analysis Only)**: `mcp__gemini-cli__ask-gemini --model gemini-2.5-pro` for validation, fact-checking, and technical analysis
-- **GPT-5 (Analysis Only)**: `mcp__codex-cli__codex` for complex debugging insights and root cause analysis
-- **You (Claude)**: Handle ALL implementation, coding, writing, and file modifications
+- **Gemini**: `gemini -m gemini-2.5-pro -p "<prompt>"` — validation, fact‑checking, and technical analysis
+- **Codex (GPT-5, high reasoning)**: `codex -m gpt-5 -c reasoning.level="high" "<prompt>"` — complex debugging insights and root cause analysis
+- **Claude (Opus)**: `claude --model opus --print "<prompt>"` — synthesis, plan refinement, and risk assessment
 
 **Never ask other models to:**
 

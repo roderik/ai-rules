@@ -26,15 +26,16 @@ Use every configured MCP server opportunistically. For each referenced server: i
 - Use only when generating X/LinkedIn content requiring Typefully drafts.
 
 - `mcp__zapier__typefully_create_draft` or schedule variants if available; otherwise state unavailability and output raw content.
-### 3. Additional MCP servers (context7, octocode, gemini-cli, codex-cli) may be used if configured; enumerate usage with justification; skip with explicit note if absent.
+### 3. Additional MCP servers (context7, octocode) and external CLIs (gemini, codex, claude) may be used if configured; enumerate usage with justification; skip with explicit note if absent.
 ### 4. Local repo context: optionally inspect files with read/grep/glob; summarize only what's needed.
 ### 5. Multi-model analysis: OPTIONAL. Only invoke if factual risk high; otherwise skip and state reason.
 
 ### 3. **Multi-Model Analysis** (REQUIRED for final drafts):
 
-- **Gemini**: `mcp__gemini-cli__ask-gemini --model gemini-2.5-pro --prompt "Fact-check this content and identify any inaccuracies: [content]"`
-- **Codex**: `mcp__codex-cli__codex "Analyze technical claims for accuracy and completeness: [claims]"`
-- Use their feedback to refine YOUR content (they provide analysis only, YOU do the writing)
+- **Gemini**: `gemini -m gemini-2.5-pro -p "Fact-check this content and identify any inaccuracies: [content]"`
+- **Codex**: `codex -m gpt-5 -c reasoning.level="high" "Analyze technical claims for accuracy and completeness: [claims]"`
+- `claude --model opus --print "Based on analyses, list concrete content edits and sources to add."`
+- Use their feedback to refine YOUR content (they provide analysis only; you do the writing)
 
 ### 4. **Publishing & Distribution** (when applicable):
 

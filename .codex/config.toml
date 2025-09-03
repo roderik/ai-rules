@@ -13,10 +13,6 @@ sandbox_mode = "danger-full-access"
 command = "bun"
 args = ["x", "-y", "@upstash/context7-mcp@latest"]
 
-[mcp_servers.playwright]
-command = "bun"
-args = ["x", "-y", "@playwright/mcp@latest"]
-
 [mcp_servers.octocode]
 command = "bun"
 args = ["x", "-y", "octocode-mcp@latest"]

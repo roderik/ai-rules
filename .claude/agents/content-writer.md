@@ -29,9 +29,10 @@ You MUST extensively use ALL available MCP servers before and during content cre
 
 ### 3. **Multi-Model Analysis** (REQUIRED for final drafts):
 
-- **Gemini**: `mcp__gemini-cli__ask-gemini --model gemini-2.5-pro --prompt "Fact-check this content and identify any inaccuracies: [content]"`
-- **Codex**: `mcp__codex-cli__codex "Analyze technical claims for accuracy and completeness: [claims]"`
-- Use their feedback to refine YOUR content (they provide analysis only, YOU do the writing)
+- **Gemini**: `gemini -m gemini-2.5-pro -p "Fact-check this content and identify any inaccuracies: [content]"`
+- **Codex**: `codex -m gpt-5 -c reasoning.level="high" "Analyze technical claims for accuracy and completeness: [claims]"`
+- `claude --model opus --print "Based on analyses, list concrete content edits and sources to add."`
+- Use their feedback to refine YOUR content (they provide analysis only; you do the writing)
 
 ### 4. **Publishing & Distribution** (when applicable):
 
