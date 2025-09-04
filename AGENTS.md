@@ -144,33 +144,17 @@
 
 This system has modern alternatives installed and ALIASED:
 
-| Modern Tool | Description                                  | ALIASED FROM (⚠️)  | Additional Info        |
-| ----------- | -------------------------------------------- | ------------------ | ---------------------- |
-| neovim/nvim | Modern Vim with LazyVim configuration        | vim (ALIASED)      | Also aliased as 'n'    |
-| bat         | Syntax highlighting and Git integration      | cat (ALIASED)      | Plain style by default |
-| eza         | Modern listing with icons and git status     | ls, tree (ALIASED) | Multiple ls aliases    |
-| ripgrep/rg  | Ultra-fast text search                       | grep (ALIASED)     | Use rg syntax only!    |
-| fd          | User-friendly file finder                    | find (ALIASED)     | Use fd syntax only!    |
-| fzf         | Fuzzy finder for files and history           | -                  | Integrated with bat    |
-| lazygit     | Terminal UI for git commands                 | -                  | Aliases: lg, lzg       |
-| lazydocker  | Terminal UI for docker management            | -                  | Aliases: ld, lzd       |
-| fnm         | Fast Node.js version manager                 | -                  | Replaces nvm           |
-| git-delta   | Beautiful git diffs with syntax highlighting | -                  | Auto-configured        |
-| hexyl       | Hex viewer with colored output               | hexdump (ALIASED)  | Alias: hex             |
-| procs       | Modern process viewer                        | ps (ALIASED)       | Aliases: pst, psw      |
-| broot       | Interactive tree view with search            | -                  | Has br launcher        |
-| zoxide      | Smarter directory navigation                 | -                  | NOT aliased to cd      |
-| atuin       | Better shell history with sync               | -                  | Auto-initialized       |
-| direnv      | Per-project environment variables            | -                  | Auto-initialized       |
-| chafa       | Terminal graphics viewer                     | -                  | Aliases: img, image    |
-| ast-grep    | Structural code search/replace               | -                  | Aliases: ag, ags, agr  |
-| starship    | Cross-shell prompt                           | -                  | If installed           |
-| tmux        | Terminal multiplexer                         | -                  | Various tm\* aliases   |
-| zellij      | Modern terminal multiplexer                  | -                  | Aliases: zj, zja, zjs  |
-| tilt        | Local Kubernetes development                 | -                  | Aliases: tu, td        |
-| uv          | Python package/project manager               | -                  | Aliases: uvs, uvi, uvr |
-| op          | 1Password CLI                                | -                  | Auto-integrated        |
-| forge/cast  | Foundry blockchain tools                     | -                  | Multiple aliases       |
+- `bat` — Use instead of `cat` for file viewing with syntax highlighting and Git context. For machine‑readable output, prefer `bat --style=plain <file>`.
+- `eza` — Use instead of `ls`/`tree` for listings. Common: `eza -la`; tree view: `eza -T`.
+- `rg` (ripgrep) — Use instead of `grep` for text search. Examples: `rg "pattern" -n`, add `-i` for case‑insensitive, scope with `--glob`.
+- `fd` — Use instead of `find` to locate files/dirs. Examples: `fd <pattern> -t f` (files), `fd <pattern> -t d` (dirs).
+- `git-delta` — Already configured for Git; run `git diff` to see styled, syntax‑aware diffs.
+- `hexyl` (alias: `hex`) — View files in hexadecimal: `hexyl <file>`.
+- `procs` — Use instead of `ps` to inspect processes. Examples: `procs`, `procs -A`. Aliases: `pst`, `psw`.
+- `tmux` — Terminal multiplexer for sessions/panes. `tm*` aliases are available.
+- `uv` — Python project and package manager. Use for envs and installs. Aliases: `uvs`, `uvi`, `uvr`.
+- `forge`/`cast` — Foundry tools for EVM development. Use when working with Ethereum smart contracts.
+- You run in an environment where `ast-grep` is available; whenever a search requires syntax-aware or structural matching, default to `ast-grep --lang rust -p '<pattern>'` (or set `--lang` appropriately) and avoid falling back to text-only tools like `rg` or `grep` unless I explicitly request a plain-text search.
 
 ### ⚠️ CRITICAL REMINDERS:
 
@@ -182,10 +166,6 @@ This system has modern alternatives installed and ALIASED:
    - `rg "pattern"` (NOT `grep "pattern"`)
    - `eza -la` (NOT `ls -la` even though it might work)
    - `bat file.txt` (NOT `cat file.txt` even though it's aliased)
-
-## Coding guidelines (REQUIRED and CRITICAL)
-
-Copy-pasteable **LLM ruleset extensions**. Clear, prescriptive, and phrased in the positive. Designed for generation _and_ review. Keep using the “What the assistant produces” and “Checklist” sections from the base ruleset; these modules plug right in.
 
 ---
 
