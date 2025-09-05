@@ -1,12 +1,20 @@
 # Minimal Codex CLI Configuration
 # Only overrides from defaults
 
-file_opener = "cursor"
+file_opener = "zed"
+model = "gpt-5"
 model_reasoning_effort = "high"
 
 # Equivalent to --dangerously-bypass-approvals-and-sandbox
+full-auto = true
+bypass-approvals = true
+trusted-workspace = true
+bypass-sandbox = true
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
+
+[tools]
+web_search = true
 
 # MCP Servers using bun x
 [mcp_servers.context7]
