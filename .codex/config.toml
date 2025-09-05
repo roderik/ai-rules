@@ -1,7 +1,7 @@
 # Minimal Codex CLI Configuration
 # Only overrides from defaults
 
-file_opener = "zed"
+file_opener = "none"
 model = "gpt-5"
 model_reasoning_effort = "high"
 
