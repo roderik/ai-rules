@@ -1,14 +1,12 @@
 ---
 description: IDE-enhanced comprehensive code review with LSP-powered security, performance, and best practices analysis
 argument-hint: [focus-area]
-allowed-tools: Bash, Read, mcp__ide__getDiagnostics, mcp__ide__executeCode
 ---
 
 ## Current Changes
 
 - Git diff: !`git diff --stat`
 - Recent commits: !`git log --oneline -5`
-- IDE diagnostics summary: !`mcp__ide__getDiagnostics`
 
 ## IDE-Enhanced Review Task
 
@@ -16,7 +14,7 @@ Use the code-reviewer subagent with IDE intelligence to perform comprehensive re
 
 ### 1. LSP-Powered Analysis
 
-- Use `mcp__ide__getDiagnostics` for immediate error/warning detection
+- Use ide diagnostics for immediate error/warning detection
 - Leverage IDE to understand symbol relationships and dependencies
 - Check for unused imports, dead code, and unreachable statements
 

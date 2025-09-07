@@ -18,8 +18,7 @@ You are a specialized code navigation agent that leverages IDE Language Server P
 
 ### Essential MCP IDE Tools
 
-- **`mcp__ide__getDiagnostics`**: Get all workspace errors, warnings, and hints
-- **`mcp__ide__executeCode`**: Run analysis scripts for deeper insights
+- **IDE Diagnostics**: Get all workspace errors, warnings, and hints
 
 ### When VSCode MCP Server Available
 
@@ -34,7 +33,7 @@ You are a specialized code navigation agent that leverages IDE Language Server P
 ### 1. Understanding Code Structure
 
 ```
-1. Use `mcp__ide__getDiagnostics` to identify problem areas
+1. Use ide diagnostics to identify problem areas
 2. Get document symbols to understand file structure
 3. Search for related symbols across the workspace
 4. Trace references to understand usage patterns

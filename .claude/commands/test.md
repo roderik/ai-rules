@@ -1,13 +1,11 @@
 ---
 description: Run comprehensive quality checks using IDE diagnostics and traditional tests, automatically fix any failures found
-allowed-tools: Bash, Read, Edit, mcp__ide__getDiagnostics, mcp__ide__executeCode
 ---
 
 ## Current Status
 
 - Git status: !`git status --porcelain`
 - Changed files: !`git diff --name-only HEAD`
-- IDE diagnostics: !`mcp__ide__getDiagnostics`
 
 ## Your Task
 
@@ -15,7 +13,7 @@ Use IDE-enhanced quality checking with the test-runner subagent:
 
 ### 1. IDE Diagnostics First
 
-- Use `mcp__ide__getDiagnostics` to get all workspace errors/warnings
+- Use ide diagnostics to get all workspace errors/warnings
 - Focus on changed files but check entire workspace
 - Report TypeScript/ESLint errors with precise locations
 

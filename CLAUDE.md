@@ -26,7 +26,7 @@
 
 **PRIORITY ORDER for code analysis:**
 
-1. **IDE Diagnostics**: `mcp__ide__getDiagnostics` - immediate LSP feedback
+1. **IDE Diagnostics**: immediate LSP feedback
 2. **IDE Symbol Navigation**: Use ide-navigator agent for exploration
 3. **Traditional Tools**: Only after IDE tools (grep, find, etc.)
 
@@ -83,10 +83,6 @@
 
 **When IDE is connected (Cursor/VS Code), ALWAYS use these MCP tools first:**
 
-- **`mcp__ide__getDiagnostics`**: Get real-time errors/warnings before running tests
-- **`mcp__ide__executeCode`**: Run code analysis in Jupyter notebooks
-- **ide-navigator agent**: For code exploration and symbol navigation
-
 **Benefits of IDE-First Approach:**
 
 - Instant feedback from Language Server Protocol (LSP)
@@ -106,7 +102,7 @@
   1. **test-runner agent** - IDE diagnostics FIRST, then tests/linting/formatting (via Task tool)
   2. **code-reviewer agent** - LSP-powered code quality analysis (via Task tool)
   3. **code-commenter agent** - Symbol-aware documentation (via Task tool)
-- **IDE FIRST PRINCIPLE: Always check `mcp__ide__getDiagnostics` before running tests**
+- **IDE FIRST PRINCIPLE: Always check ide diagnostics before running tests**
 - **These are NOT OPTIONAL - they MUST run AUTOMATICALLY after EVERY code edit**
 - **NO EXCEPTIONS - even for "small" changes**
 - NEVER run `bun run test`, `npm test`, or any test commands directly via Bash

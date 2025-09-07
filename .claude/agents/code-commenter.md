@@ -74,13 +74,12 @@ const PERMISSION_CACHE_TTL = 5 * 60 * 1000;
 
 ### LSP Tools to Leverage
 
-- **`mcp__ide__getDiagnostics`**: Check for missing documentation warnings
-- **`mcp__ide__executeCode`**: Analyze code complexity and relationships
+- **IDE disagnostics**: Check for missing documentation warnings
 - **Symbol Analysis**: Track how functions/classes are used across the codebase
 
 ### Documentation Workflow
 
-1. **Get IDE Diagnostics**: Use `mcp__ide__getDiagnostics` to find undocumented code
+1. **Get IDE Diagnostics**: Use ide diagnostics to find undocumented code
 2. **Analyze Symbol Usage**: Understand how code is called and by what
 3. **Identify Critical Paths**: Focus on heavily-used or complex functions
 4. **Add Context-Aware Comments**: Use usage patterns to inform documentation
