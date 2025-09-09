@@ -172,19 +172,34 @@
 **⚠️ CRITICAL: The traditional commands below are ALIASED to modern tools. Using `ls` actually runs `eza`, using `cat` runs `bat`, etc.**
 **⚠️ ALWAYS use the modern tool's syntax and parameters, NOT the traditional command's syntax.**
 
+When you need to call tools from the shell, **use this rubric**:
+
+- **Is it about finding FILES?** use `fd`
+- **Is it about finding TEXT/strings?** use `rg`
+- **Is it about finding CODE STRUCTURE?** use `ast-grep`
+  - **Default to TypeScript:**  
+    - `.ts` → `ast-grep --lang ts -p '<pattern>'`
+    - `.tsx` (React) → `ast-grep --lang tsx -p '<pattern>'`
+  - For other languages, set `--lang` appropriately (e.g., `--lang rust`).
+- **Need to SELECT from multiple results?** pipe to `fzf`
+- **Interacting with JSON?** use `jq`
+- **Interacting with YAML or XML?** use `yq`
+
+You run in an environment where **`ast-grep` is available**.
+Whenever a search requires **syntax‑aware / structural matching**, **default to `ast-grep`** with the correct `--lang`, and **avoid** falling back to text‑only tools like `rg` or `grep` unless a plain‑text search is explicitly requested.
+
 This system has modern alternatives installed and ALIASED:
 
 - `bat` — Use instead of `cat` for file viewing with syntax highlighting and Git context. For machine‑readable output, prefer `bat --style=plain <file>`.
 - `eza` — Use instead of `ls`/`tree` for listings. Common: `eza -la`; tree view: `eza -T`.
 - `rg` (ripgrep) — Use instead of `grep` for text search. Examples: `rg "pattern" -n`, add `-i` for case‑insensitive, scope with `--glob`.
 - `fd` — Use instead of `find` to locate files/dirs. Examples: `fd <pattern> -t f` (files), `fd <pattern> -t d` (dirs).
-- `git-delta` — Already configured for Git; run `git diff` to see styled, syntax‑aware diffs.
+- `difft` — Already configured for Git; run `git diff` to see styled, syntax‑aware diffs.
 - `hexyl` (alias: `hex`) — View files in hexadecimal: `hexyl <file>`.
 - `procs` — Use instead of `ps` to inspect processes. Examples: `procs`, `procs -A`. Aliases: `pst`, `psw`.
 - `tmux` — Terminal multiplexer for sessions/panes. `tm*` aliases are available.
 - `uv` — Python project and package manager. Use for envs and installs. Aliases: `uvs`, `uvi`, `uvr`.
 - `forge`/`cast` — Foundry tools for EVM development. Use when working with Ethereum smart contracts.
-- You run in an environment where `ast-grep` is available; whenever a search requires syntax-aware or structural matching, default to `ast-grep --lang rust -p '<pattern>'` (or set `--lang` appropriately) and avoid falling back to text-only tools like `rg` or `grep` unless I explicitly request a plain-text search.
 
 ### ⚠️ CRITICAL REMINDERS:
 
