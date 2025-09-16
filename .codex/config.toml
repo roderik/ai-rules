@@ -1,9 +1,10 @@
 # Minimal Codex CLI Configuration
 # Only overrides from defaults
 
-file_opener = "none"
-model = "gpt-5"
+file_opener = "cursor"
+model = "gpt-5-codex"
 model_reasoning_effort = "high"
+experimental_use_exec_command_tool = true
 
 # Equivalent to --dangerously-bypass-approvals-and-sandbox
 full-auto = true
@@ -24,3 +25,7 @@ args = ["x", "-y", "@upstash/context7-mcp@latest"]
 [mcp_servers.octocode]
 command = "bun"
 args = ["x", "-y", "octocode-mcp@latest"]
+
+[tui]
+# Send desktop notifications when approvals are required or a turn completes.
+notifications = true
