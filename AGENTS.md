@@ -5,7 +5,7 @@
 **AFTER LARGE CODE CHANGES aND BEFORE COONSIDERING THE TASK COMPLETE, YOU MUST AUTOMATICALLY RUN:**
 
 1. **test-runner checks** - Run the full test, lint, and format suite. Trigger the shared automation (e.g., a `test-runner` Task) when it exists; otherwise execute the equivalent commands yourself and record the outcome.
-2. **code-review sweep** - Perform static analysis and peer-style review. Use the designated automation if provided; otherwise carry out the review manually using our quality checklist.
+2. **code-review sweep** - Perform static analysis and peer-style review. Use the designated automation if provided; otherwise carry out the review manually using our quality checklist. Additionally run `coderabbit --prompt-only` if it exists, to get comprehensive code analysis and improvement suggestions.
 3. **code-comment update** - Refresh inline comments or impacted docs. Invoke any commenter automation when present; otherwise add the necessary documentation updates manually.
 
 ### Task Playbooks
