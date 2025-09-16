@@ -1,14 +1,43 @@
 # AGENTS.md
 
-## 🚨 MANDATORY AUTOMATIC AGENTS (MUST RUN WITHOUT USER ASKING)
+## 🚨 MANDATORY AUTOMATIC TASKS (MUST RUN WITHOUT USER ASKING)
 
 **AFTER ANY CODE CHANGE, YOU MUST AUTOMATICALLY RUN:**
 
-1. **test-runner agent** (via Task tool) - Runs tests, linting, formatting
-2. **code-reviewer agent** (via Task tool) - Reviews code quality
-3. **code-commenter agent** (via Task tool) - Adds documentation
+1. **test-runner checks** - Run the full test, lint, and format suite. Trigger the shared automation (e.g., a `test-runner` Task) when it exists; otherwise execute the equivalent commands yourself and record the outcome.
+2. **code-review sweep** - Perform static analysis and peer-style review. Use the designated automation if provided; otherwise carry out the review manually using our quality checklist.
+3. **code-comment update** - Refresh inline comments or impacted docs. Invoke any commenter automation when present; otherwise add the necessary documentation updates manually.
 
-**These are PROACTIVE agents - they MUST run AUTOMATICALLY after EVERY code edit.**
+### Task Playbooks
+
+#### test-runner checks
+- Start with diagnostics: pull IDE/LSP findings when available; if not, run `bun run lint`, `bun run typecheck`, and any language-specific analyzers to surface errors and warnings.
+- Scope the run using `git status` and focus on changed files first, then expand to the full suite.
+- Execute the full quality stack (`bun run test`, lint, type check, and formatting) and merge the results with diagnostics.
+- Report issues in the format `path:line:function - message`, prioritising errors over warnings, and log the commands/output you executed.
+
+#### code-review sweep
+- Review the diff (`git diff`) and recent history before diving into files so feedback is contextual.
+- Use IDE diagnostics or manual lint/type-check results to flag obvious problems, then assess readability, maintainability, security, performance, and test coverage.
+- Organise feedback into 🔴 Critical (must fix), 🟡 Warnings (fix soon), and 🔵 Suggestions (nice to have) so the main thread can triage quickly.
+- Call out missing tests, unsafe patterns, or architectural risks with concrete action steps.
+
+#### code-comment update
+- Target the files you touched (or those specified) and add why-first documentation: explain rationale, trade-offs, and domain context instead of restating the code.
+- Prefer TSDoc-style block comments for exported functions/classes and focused inline notes for tricky logic.
+- Mention alternatives you rejected, business rules enforced, and performance or security implications that guided the implementation.
+- Match the project’s existing comment style and keep comments in sync when code changes.
+
+
+## Deliberate Planning (MANDATORY)
+
+- Pause before acting to restate the request, confirm constraints, and surface risks.
+- For every non-trivial task, draft a milestone-based plan with at least three concrete steps before running commands or editing files. Include analysis, implementation, and validation milestones with success criteria.
+- Capture the plan using the planning tool (e.g., `update_plan`) and keep it synchronized: mark steps in-progress or completed and revise when scope changes.
+- If a task is truly trivial (the easiest ~25%), note that explicitly; otherwise never skip planning.
+- Do not begin implementation until the plan is recorded and checked against user/system requirements.
+
+**These are PROACTIVE tasks - they MUST run AUTOMATICALLY after EVERY code edit.**
 **DO NOT wait for the user to ask. DO NOT skip for "small" changes.**
 **Fix ALL errors before proceeding with ANY other task.**
 
@@ -24,8 +53,8 @@
 ### Documentation & Research (CRITICAL)
 
 - MANDATORY: At the start of ANY code task, use context7 and octocode MCPs to fetch latest documentation
-- For libraries/frameworks: Use `mcp__context7__resolve-library-id` then `mcp__context7__get-library-docs`
-- For GitHub repos: Use `mcp__octocode__githubSearchCode` and `mcp__octocode__packageSearch`
+- For libraries/frameworks: Use the `context7` MCP server
+- For GitHub repos: Use the `octocode` MCP server
 - NEVER assume API syntax - ALWAYS verify with current documentation first
 
 ### General Principles
@@ -34,7 +63,7 @@
 - Never create documentation unless explicitly requested
 - Follow existing code patterns and conventions in each project
 - Always check for existing dependencies before suggesting new ones
-- **AFTER ANY CODE CHANGE: Immediately run test-runner and code-reviewer agents**
+- **AFTER ANY CODE CHANGE: Immediately complete the test-runner and code-reviewer checks (automation first, manual fallback if needed)**
 
 ### Code Style
 
@@ -48,17 +77,25 @@
 - Branch naming: `feat/`, `fix/`, `chore/`, `docs/` prefixes
 - Commit format: `type(scope): description` (conventional commits)
 - Never commit directly to main/master
-- **MANDATORY before ANY commit: Run test-runner AND code-reviewer agents**
-- **DO NOT commit if agents report errors - fix them first**
+- **MANDATORY before ANY commit: Complete the test-runner and code-reviewer checks (automation preferred, manual fallback if required)**
+- **DO NOT commit if the quality checks report errors - fix them first**
+
+## Pull Request Expectations
+
+- **Preflight quality gate**: Complete `test-runner checks`, `code-review sweep`, and `code-comment update` before attempting a PR. Resolve every reported issue and rerun the checks until clean; document the commands and outputs in your notes.
+- **Branch and commit hygiene**: Work from a feature branch (never `main`/`master`), keep commits scoped and conventional, and ensure no untracked work remains (`git status` must be clean) before creating the PR.
+- **PR content standards**: Use reviewer-friendly structure that explains *what*, *why*, and *how*, lists affected commits/files, documents testing performed, notes breaking changes, and links to relevant tickets (Linear/issues). Include screenshots for UI updates and update documentation where necessary.
+- **GitHub interactions via gh CLI only**: Use `gh` for all PR operations—`gh pr create`, `gh pr view`, `gh pr edit`, `gh pr status`, etc.—instead of the web UI or raw API calls. Re-run `gh pr edit` whenever commits or context change so the description stays accurate.
+- **Lifecycle maintenance**: Monitor CI results, address feedback promptly, and reflect updates in the PR body (e.g., add "Addresses feedback" or testing notes). Keep checklists and ticket links current until the PR merges.
 
 ## Common Commands & Aliases
 
 ### Frequently Used Commands
 
-- Generic quality control check: Use test-runner agent via Task tool (NOT direct commands)
+- Generic quality control check: Prefer the shared test-runner automation when available; if it is missing, run the equivalent commands manually and capture the output
   - Build: `bun run build` (can be run directly for build-only tasks)
-  - Test: MUST use test-runner agent - NEVER run `bun run test` directly
-  - Lint: MUST use test-runner agent - NEVER run `bun run lint` directly
+  - Test: Use the shared test-runner automation when available; otherwise run `bun run test` yourself
+  - Lint: Use the shared test-runner automation when available; otherwise run `bun run lint` yourself
   - Type check: `bun run typecheck` (can be run directly for type-checking only)
 
 ## Tool Preferences
@@ -66,19 +103,19 @@
 ### Language-Specific
 
 - JavaScript/TypeScript: Prefer modern ES6+ syntax, async/await over promises
-- Python: Type hints for functions, use pathlib over os.path
+- Python: Prefer the `python3` CLI (fall back to `python` only if `python3` is unavailable); add type hints for functions and use pathlib over os.path
 - Shell: Prefer bash over sh, use shellcheck conventions
 
 ### Testing & Code Review (MANDATORY - AUTOMATIC EXECUTION)
 
 - **CRITICAL: After ANY code change, you MUST IMMEDIATELY use BOTH:**
-  1. **test-runner agent** - Runs tests, linting, formatting (via Task tool)
-  2. **code-reviewer agent** - Reviews code quality (via Task tool)
+  1. **test-runner checks** - Run tests, linting, and formatting through automation when possible; otherwise handle them manually
+  2. **code-review sweep** - Perform the code quality review via automation when possible; otherwise handle it manually
 - **These are NOT OPTIONAL - they MUST run AUTOMATICALLY after EVERY code edit**
 - **NO EXCEPTIONS - even for "small" changes**
-- NEVER run `bun run test`, `npm test`, or any test commands directly via Bash
-- The agents will return focused error lists that you MUST fix immediately
-- Continue running agents until ALL errors are resolved
+- Capture diagnostics and command outputs for every run; prefer automation but fall back to `bun run test`, `bun run lint`, `bun run typecheck`, and your formatter when required
+- Present all failures in `path:line:function - message` format so they can be fixed quickly
+- Repeat the checks until ALL errors are resolved
 - Prefer unit tests with clear test names
 - Mock external dependencies
 
@@ -98,10 +135,10 @@
 
 ## Multi-Model Collaboration Preferences
 
-**CRITICAL: The tool/agent currently reading this file is the main thread and owns implementation. Other models provide analysis/insights ONLY.**
+**CRITICAL: You are the primary implementation model. Other models provide analysis/insights ONLY.**
 
 - **Gemini**: `gemini -m gemini-2.5-pro -p "<prompt>"` — validation, fact‑checking, and technical analysis
-- **Codex (GPT-5, high reasoning)**: `codex -m gpt-5 -c reasoning.level="high" "<prompt>"` — complex debugging insights and root cause analysis
+- **Codex (GPT-5, high reasoning)**: `codex -m gpt-5-codex -c reasoning.level="high" "<prompt>"` — complex debugging insights and root cause analysis
 - **Claude (Opus)**: `claude --model opus --print "<prompt>"` — synthesis, plan refinement, and risk assessment
 
 **Never ask other models to:**
@@ -147,7 +184,7 @@ When you need to call tools from the shell, **use this rubric**:
 - **Is it about finding FILES?** use `fd`
 - **Is it about finding TEXT/strings?** use `rg`
 - **Is it about finding CODE STRUCTURE?** use `ast-grep`
-  - **Default to TypeScript:**  
+  - **Default to TypeScript:**
     - `.ts` → `ast-grep --lang ts -p '<pattern>'`
     - `.tsx` (React) → `ast-grep --lang tsx -p '<pattern>'`
   - For other languages, set `--lang` appropriately (e.g., `--lang rust`).
@@ -371,6 +408,7 @@ This system has modern alternatives installed and ALIASED:
 - Prefer early returns; reduce nesting; use `else if` rather than deep `else { if (…) }`.
 - Follow the project’s brace and spacing conventions; keep irregular whitespace out.
 - Use `new` for built‑ins that are constructors (e.g., `Date`, `Map`, `Set`) and **not** for `String`, `Number`, or `Boolean`.
+- Only use `import` and never `require`. Import at the top of the file, not inline.
 
 **Strings & numbers**
 

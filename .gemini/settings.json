@@ -1,6 +1,9 @@
 {
   "model": "gemini-2.5-pro",
   "sandbox": false,
+  "context": {
+    "fileName": ["AGENTS.md", "GEMINI.md"]
+  },
   "checkpointing": {
     "enabled": true
   },
