@@ -4,7 +4,6 @@
 file_opener = "cursor"
 model = "gpt-5-codex"
 model_reasoning_effort = "high"
-experimental_use_exec_command_tool = true
 
 # Equivalent to --dangerously-bypass-approvals-and-sandbox
 full-auto = true

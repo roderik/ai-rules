@@ -2,7 +2,7 @@
 
 ## 🚨 MANDATORY AUTOMATIC TASKS (MUST RUN WITHOUT USER ASKING)
 
-**AFTER ANY CODE CHANGE, YOU MUST AUTOMATICALLY RUN:**
+**AFTER LARGE CODE CHANGES aND BEFORE COONSIDERING THE TASK COMPLETE, YOU MUST AUTOMATICALLY RUN:**
 
 1. **test-runner checks** - Run the full test, lint, and format suite. Trigger the shared automation (e.g., a `test-runner` Task) when it exists; otherwise execute the equivalent commands yourself and record the outcome.
 2. **code-review sweep** - Perform static analysis and peer-style review. Use the designated automation if provided; otherwise carry out the review manually using our quality checklist.
@@ -82,11 +82,9 @@
 
 ## Pull Request Expectations
 
-- **Preflight quality gate**: Complete `test-runner checks`, `code-review sweep`, and `code-comment update` before attempting a PR. Resolve every reported issue and rerun the checks until clean; document the commands and outputs in your notes.
 - **Branch and commit hygiene**: Work from a feature branch (never `main`/`master`), keep commits scoped and conventional, and ensure no untracked work remains (`git status` must be clean) before creating the PR.
 - **PR content standards**: Use reviewer-friendly structure that explains *what*, *why*, and *how*, lists affected commits/files, documents testing performed, notes breaking changes, and links to relevant tickets (Linear/issues). Include screenshots for UI updates and update documentation where necessary.
 - **GitHub interactions via gh CLI only**: Use `gh` for all PR operations—`gh pr create`, `gh pr view`, `gh pr edit`, `gh pr status`, etc.—instead of the web UI or raw API calls. Re-run `gh pr edit` whenever commits or context change so the description stays accurate.
-- **Lifecycle maintenance**: Monitor CI results, address feedback promptly, and reflect updates in the PR body (e.g., add "Addresses feedback" or testing notes). Keep checklists and ticket links current until the PR merges.
 
 ## Common Commands & Aliases
 
