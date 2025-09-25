@@ -821,6 +821,48 @@ EOF
         head -10 "$repo_root/AGENTS.md" | sed 's/^/      /'
       fi
     fi
+
+    # Show prompts that would be installed to ~/.codex/prompts/
+    printf "\n"
+    print_color "$BOLD" "🧠 Prompt files that would be installed to ~/.codex/prompts/:"
+    printf "\n"
+    if [ -d "$codex_base/prompts" ]; then
+      for prompt in "$codex_base"/prompts/*.md; do
+        [ -e "$prompt" ] || continue
+        local prompt_name
+        prompt_name="$(basename "$prompt")"
+        local target_prompt="$codex_dir/prompts/$prompt_name"
+        if [ -f "$target_prompt" ]; then
+          print_color "$YELLOW" "  ⚠️  $prompt_name (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_prompt" "$prompt" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_prompt" "$prompt" 2>/dev/null | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          print_color "$GREEN" "  + $prompt_name (new file)"
+          print_color "$CYAN" "    Preview (first 10 lines):"
+          head -10 "$prompt" | sed 's/^/      /'
+        fi
+      done
+    else
+      print_color "$YELLOW" "  ⚠️  No prompt files found in repository .codex/prompts/"
+    fi
   else
     # Install Codex config.toml
     if [ -f "$codex_base/config.toml" ]; then
@@ -911,6 +953,50 @@ EOF
       log_success "Installed AGENTS.md to ~/.codex/"
     fi
 
+    # Install Codex prompt files
+    if [ -d "$codex_base/prompts" ]; then
+      mkdir -p "$codex_dir/prompts"
+      for prompt in "$codex_base"/prompts/*.md; do
+        [ -e "$prompt" ] || continue
+        local prompt_name
+        prompt_name="$(basename "$prompt")"
+        local target_prompt="$codex_dir/prompts/$prompt_name"
+        if [ -f "$target_prompt" ]; then
+          local backup
+          backup="${target_prompt}.backup.$(date +%Y%m%d_%H%M%S)"
+          cp "$target_prompt" "$backup"
+          log_info "Backed up existing prompt $prompt_name to: $backup"
+          print_color "$YELLOW" "  ⚠️  $prompt_name (already exists - showing diff):"
+          if command -v delta >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_prompt" "$prompt" 2>/dev/null | \
+              delta --no-gitconfig \
+                    --paging=never \
+                    --line-numbers \
+                    --syntax-theme="Dracula" \
+                    --width="${COLUMNS:-120}" \
+                    --max-line-length=512 \
+                    --diff-so-fancy \
+                    --hyperlinks 2>/dev/null || true
+          elif command -v diff >/dev/null 2>&1; then
+            diff -u --label "current" --label "new" "$target_prompt" "$prompt" 2>/dev/null | head -20 | while IFS= read -r line; do
+              case "$line" in
+                +*) print_color "$GREEN" "    $line" ;;
+                -*) print_color "$RED" "    $line" ;;
+                @*) print_color "$CYAN" "    $line" ;;
+                *) echo "    $line" ;;
+              esac
+            done
+          fi
+        else
+          print_color "$GREEN" "  + $prompt_name (new file)"
+          print_color "$CYAN" "    Preview (first 10 lines):"
+          head -10 "$prompt" | sed 's/^/      /'
+        fi
+        cp "$prompt" "$target_prompt"
+        log_success "Installed prompt $prompt_name to ~/.codex/prompts/"
+      done
+    fi
+
     # Update manifest to include Codex files
     local manifest="$claude_code_dir/.ai-rules-manifest.json"
     cat > "$manifest" <<EOF
@@ -926,7 +1012,8 @@ EOF
   ],
   "codex_configurations": [
     "$codex_dir/config.toml",
-    "$codex_dir/AGENTS.md"
+    "$codex_dir/AGENTS.md",
+    "$codex_dir/prompts/"
   ]
 }
 EOF
