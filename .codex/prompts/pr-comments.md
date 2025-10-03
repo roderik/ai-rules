@@ -1,0 +1,1 @@
+Get the pr comments and conversations using the gh tool and handle them when relevant. When you handled them resolve the conversation in github.
