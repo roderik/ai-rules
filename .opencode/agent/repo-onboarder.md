@@ -63,9 +63,9 @@ Use all configured MCP servers relevant to repository characterization. If a ser
 
 ## OBJECTIVES
 
-1. Create a single-source-of-truth `CLAUDE.md` at repo root.
-2. Symlink `AGENTS.md` and `.github/copilot-instructions.md` to the root `CLAUDE.md`.
-3. Populate root `CLAUDE.md` with:
+1. Create a single-source-of-truth `AGENTS.md` at repo root.
+2. Symlink `CLAUDE.md` and `.github/copilot-instructions.md` to the root `AGENTS.md`.
+3. Populate root `AGENTS.md` with:
    - Short project overview (no fluff).
    - Tech stack summary (names only, **no versions**).
    - **Only** top-level commands from **root** `package.json` (dev/build/test/lint/typecheck/format).
@@ -73,11 +73,11 @@ Use all configured MCP servers relevant to repository characterization. If a ser
 4. If the repo is a **turborepo monorepo**:
    - Discover packages/apps via `package.json#workspaces`, `pnpm-workspace.yaml`, `turbo.json`, or common globs (`packages/*`, `apps/*`, `kit/*`, `sdk/*`, `tools/*` ).
    - In **each** package/app folder:
-     - Create a **package-local** `CLAUDE.md` tailored to that project.
+     - Create a **package-local** `AGENTS.md` tailored to that project.
      - **Do NOT document package-level scripts/tasks.**
      - Document purpose, layout (entry points, key folders), key frameworks/libs (**names only**), and inter-package deps.
-     - Create `AGENTS.md` **symlink** pointing to that folder's `CLAUDE.md`.
-   - Create **scoped Copilot instruction files** under `.github/instructions/` with `applyTo` globs per package/app to route Copilot to the corresponding `CLAUDE.md`.
+     - Create `CLAUDE.md` **symlink** pointing to that folder's `AGENTS.md`.
+   - Create **scoped Copilot instruction files** under `.github/instructions/` with `applyTo` globs per package/app to route Copilot to the corresponding `AGENTS.md`.
 5. For root and packages: generate a **concise best-practices list** for the detected tools/libs (**names only, no versions**) using **context7 MCP** and **web search** (keep bullets pragmatic and high-signal).
 
 ## DETECTION & DISCOVERY
@@ -87,7 +87,7 @@ Use all configured MCP servers relevant to repository characterization. If a ser
 - Monorepo detection: presence of `workspaces`, `turbo.json`, a `turbo` dep, or multiple `package.json` under `apps/*` / `packages/*`.
 - Note package manager and workspace quirks (e.g., `packageManager` in `package.json`, pnpm filters `-F/--filter`, yarn/pnpm/npm/bun nuances).
 
-## CONTENT SPEC — ROOT `CLAUDE.md`
+## CONTENT SPEC — ROOT `AGENTS.md`
 
 Keep sections compact and ordered:
 
@@ -136,7 +136,7 @@ Keep sections compact and ordered:
     - Avoid generating new infra/config unless explicitly requested.
     - Prefer minimal, local changes; align with structure and conventions above.
 
-## CONTENT SPEC — PACKAGE `CLAUDE.md` (Monorepo Only)
+## CONTENT SPEC — PACKAGE `AGENTS.md` (Monorepo Only)
 
 Compact, high-signal, no scripts:
 
@@ -163,9 +163,9 @@ Compact, high-signal, no scripts:
   ---
   applyTo: "<path>/**"
   ---
-  For files under <path>/, treat <path>/CLAUDE.md as canonical guidance.
+  For files under <path>/, treat <path>/AGENTS.md as canonical guidance.
   • Do not invent or modify package-level scripts/tasks.
-  • Follow the Best Practices in that CLAUDE.md.
+  • Follow the Best Practices in that AGENTS.md.
   • Prefer small, local changes; avoid cross-package edits unless clearly documented there.
   ```
 
@@ -174,12 +174,12 @@ Compact, high-signal, no scripts:
 ## SYMLINK RULES
 
 - Root:
-  - `AGENTS.md` → `CLAUDE.md`
-  - `.github/copilot-instructions.md` → `../CLAUDE.md` (create `.github/` if needed)
+  - `CLAUDE.md` → `AGENTS.md`
+  - `.github/copilot-instructions.md` → `../AGENTS.md` (create `.github/` if needed)
 - Each package/app (monorepo):
-  - `AGENTS.md` → local `CLAUDE.md`
+  - `CLAUDE.md` → local `AGENTS.md`
 - **Windows/locked FS fallback:** if symlinks fail, create a 1-line stub file:
-  "This file intentionally points to ./CLAUDE.md (symlink unavailable)." Also note the fallback in the summary.
+  "This file intentionally points to ./AGENTS.md (symlink unavailable)." Also note the fallback in the summary.
 
 ## BEST PRACTICES GENERATION
 
@@ -201,11 +201,11 @@ Concise, technical, decisive. No marketing language. Avoid walls of text.
 
 ## VERIFICATION CHECKLIST (print summary at end)
 
-- [ ] Root `CLAUDE.md` created/updated.
-- [ ] Root symlinks (or stub files) created; `.github/` exists if needed.
+- [ ] Root `AGENTS.md` created/updated.
+- [ ] Root symlinks (or stub files) created; `.github/` exists if needed (`CLAUDE.md`, `.github/copilot-instructions.md`).
 - [ ] Monorepo detected? If yes:
-  - [ ] Per-package `CLAUDE.md` files created/updated (no package tasks).
-  - [ ] Per-package `AGENTS.md` symlinks or stubs created.
+  - [ ] Per-package `AGENTS.md` files created/updated (no package tasks).
+  - [ ] Per-package `CLAUDE.md` symlinks or stubs created.
   - [ ] `.github/instructions/*.md` created with correct `applyTo` globs.
 - [ ] Best-practices sections populated from detected tools (names only).
 - [ ] ESLint/Prettier/TS key rules mirrored.
