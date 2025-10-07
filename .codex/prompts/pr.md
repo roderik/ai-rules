@@ -23,7 +23,7 @@ git branch --show-current
 git log main..HEAD --oneline
 git diff main..HEAD --stat
 git status
-gh pr create --title "$TITLE" --body "$BODY"
+gh pr create --title "TITLE" --body "BODY"
 ```
 
 ### Exit Criteria
