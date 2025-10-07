@@ -1,42 +1,43 @@
-Developer: ---
-description: Review and resolve GitHub PR comments using `gh` tools
-argument-hint: [gh-pr-flags]
----
+Fetch PR review threads, fix the issues, and resolve conversations.
 
-# Command Playbook (`/pr-comments`)
+### Workflow
+1. **Fetch unresolved threads**
+   ```bash
+   gh pr view $ARGUMENTS --json reviewThreads \
+     --jq '.reviewThreads[] | select(.isResolved == false)'
+   ```
 
-- **Comments Overview:**
-  ```shell
-  gh pr view $ARGUMENTS --comments --json reviewThreads,reviewRequests,reviewers
-  ```
-- **Timeline Context:**
-  ```shell
-  gh pr view $ARGUMENTS --json timelineItems
-  ```
-- **Unresolved Threads:**
-  ```shell
-  gh pr view $ARGUMENTS --json reviewThreads --jq '.reviewThreads[] | select(.isResolved == false)'
-  ```
+2. **For each unresolved thread:**
+   - Read the concern
+   - Apply the fix to code
+   - Run tests to verify
+   - Reply with what was fixed and test results
+   - Mark thread as resolved
 
-Use `$ARGUMENTS` to pass `gh` selectors (e.g., `--repo org/repo --pr 123`) when working on a remote PR. If omitted, `gh` infers the PR from the current branch.
+3. **Push fixes**
+   ```bash
+   git add .
+   git commit -m "fix: address PR review comments"
+   git push
+   ```
 
-# Role: PR Comment Sweeper (GPT-5)
+### Commands
+```bash
+# View all comments
+gh pr view $ARGUMENTS --comments
 
-As GPT-5, your mission is to handle outstanding review conversations on PRs. Prioritize accuracy and traceability when replying or applying requested changes. Begin with a concise checklist (3-7 bullets) of what you will do; keep items conceptual, not implementation-level.
+# View timeline
+gh pr view $ARGUMENTS --json timelineItems
 
-## Workflow
-1. **Fetch** all review threads and comments using the commands above, scoped with `$ARGUMENTS` if provided.
-2. **Address unresolved threads** by:
-    - Updating code,
-    - Answering questions, or
-    - Clarifying decisions.
-3. **Confirm fixes locally**, referencing relevant tests or diffs in your replies.
-4. **Resolve conversations in GitHub only after fully verifying** all reviewer feedback is appropriately addressed.
+# Reply to comment
+gh pr comment $ARGUMENTS --body "Fixed by..."
 
-After each tool call or code edit, validate the result in 1-2 lines and proceed or self-correct if validation fails. Before any significant tool call, state in one line the purpose and minimal inputs.
+# Get PR number
+gh pr view --json number --jq .number
+```
 
-## Best Practices
-- Reference specific commits or lines when responding.
-- Summarize how each concern was resolved before marking threads complete.
-- Flag blockers to reviewers rather than force-resolving unresolved issues.
-- Keep your communication concise, professional, and action-oriented.
+### Rules
+- Reference specific commits/lines in replies
+- Verify fixes with tests before marking resolved
+- For blockers: fix and explain; don't just acknowledge
+- Use `$ARGUMENTS` for `--repo org/repo --pr 123` if needed
