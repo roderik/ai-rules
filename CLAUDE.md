@@ -1,5 +1,10 @@
 # CLAUDE.md
 
+!! Be extremely concise. Sacrifice grammar for the sake of concision.
+!! never use dymamic imports (unless asked to) lile `await import(...)`
+!! never cast to `any`
+!! do not add extra defensive checks or try/catch blocks
+
 ## 🚨 MANDATORY AUTOMATIC AGENTS (MUST RUN WITHOUT USER ASKING)
 
 **AFTER ANY CODE CHANGE, YOU MUST AUTOMATICALLY RUN:**
@@ -177,7 +182,7 @@ When you need to call tools from the shell, **use this rubric**:
 - **Is it about finding FILES?** use `fd`
 - **Is it about finding TEXT/strings?** use `rg`
 - **Is it about finding CODE STRUCTURE?** use `ast-grep`
-  - **Default to TypeScript:**  
+  - **Default to TypeScript:**
     - `.ts` → `ast-grep --lang ts -p '<pattern>'`
     - `.tsx` (React) → `ast-grep --lang tsx -p '<pattern>'`
   - For other languages, set `--lang` appropriately (e.g., `--lang rust`).

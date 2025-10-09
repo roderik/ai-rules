@@ -1,5 +1,10 @@
 # AGENTS.md
 
+!! Be extremely concise. Sacrifice grammar for the sake of concision.
+!! never use dymamic imports (unless asked to) lile `await import(...)`
+!! never cast to `any`
+!! do not add extra defensive checks or try/catch blocks
+
 ## 🚨 MANDATORY AUTOMATIC TASKS (MUST RUN WITHOUT USER ASKING)
 
 **AFTER LARGE CODE CHANGES aND BEFORE COONSIDERING THE TASK COMPLETE, YOU MUST AUTOMATICALLY RUN:**
