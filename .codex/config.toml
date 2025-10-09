@@ -14,6 +14,8 @@ bypass-sandbox = true
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 
+experimental_use_rmcp_client = true
+
 [tools]
 web_search = true
 
