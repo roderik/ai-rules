@@ -3,7 +3,7 @@
 
 file_opener = "cursor"
 model = "gpt-5-codex"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
 model_reasoning_summary_format = "experimental"
 
 # Equivalent to --dangerously-bypass-approvals-and-sandbox
