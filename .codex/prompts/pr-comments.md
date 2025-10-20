@@ -1,69 +1,42 @@
-Fetch all PR comments (threads + inline file comments), fix issues, and resolve conversations.
+Handle and resolve every review thread.
 
-### Workflow
-1. **Fetch all comments**
-   ```bash
-   # Get unresolved review threads
-   gh pr view $ARGUMENTS --json reviewThreads \
-     --jq '.reviewThreads[] | select(.isResolved == false)'
-   
-   # Get inline file comments with locations
-   gh pr view $ARGUMENTS --json reviewThreads \
-     --jq '.reviewThreads[] | select(.path != null) | 
-           {file: .path, line: .line, comment: .comments[0].body, resolved: .isResolved}'
-   
-   # View diff to see context
-   gh pr diff $ARGUMENTS
-   ```
+### Setup
+- Define targets once: `export GH_REPO=org/name PR_NUMBER=123 ARGS="--repo $GH_REPO --pr $PR_NUMBER"`
+- Keep local branch rebased; stash unrelated work before sweeping comments.
 
-2. **For each comment (thread or inline):**
-   - **Inline file comments**: Navigate to `file:line` mentioned in comment
-   - **Thread comments**: Read the full conversation context
-   - Apply the requested fix to code
-   - Run tests to verify the fix works
-   - Reply with what was fixed and test results
-   - Reference commit SHA in reply
+### Gather context
+- Timeline (general + summaries): `gh pr view $ARGS --comments`
+- Diff with numbers: `gh pr diff $ARGS`
+- Structured review threads (id, status, file/line, bodies):
+  ```bash
+  gh api graphql \
+    -F owner="${GH_REPO%/*}" \
+    -F name="${GH_REPO#*/}" \
+    -F pr="$PR_NUMBER" \
+    -f query='query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:100){nodes{id isResolved isOutdated comments(first:20){nodes{id databaseId body url path originalLine line startLine originalStartLine author{login}}}}}}}}'
+  ```
 
-3. **Handle inline file comments:**
-   - Read the file and surrounding context
-   - Understand the concern about that specific line
-   - Make the fix while preserving functionality
-   - Add test coverage if missing
+### Fix loop
+1. Walk each thread newest→oldest; open `path:line` where provided.
+2. Understand ask, edit code, add/extend tests covering the change.
+3. Run full project checks before replying.
+4. Craft reply referencing the commit SHA and test outcome.
 
-4. **Push all fixes**
-   ```bash
-   git add .
-   git commit -m "fix: address PR review comments
+### Reply + resolve
+- Reply inline to an existing thread:
+  ```bash
+  gh api graphql \
+    -F pullRequestReviewThreadId=<threadId> \
+    -F body='<short fix summary + tests>' \
+    -f query='mutation($pullRequestReviewThreadId:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$pullRequestReviewThreadId,body:$body}){comment{id url}}}'
+  ```
+- Resolve after verifying merge-ready:
+  ```bash
+  gh api graphql \
+    -F threadId=<threadId> \
+    -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'
+  ```
 
-   - Fix issue at file.ts:42 (inline comment)
-   - Address thread about error handling"
-   git push
-   ```
-
-### Commands
-```bash
-# View all comments (general + inline)
-gh pr view $ARGUMENTS --comments
-
-# View diff with line numbers for context
-gh pr diff $ARGUMENTS
-
-# Get inline comments with file locations
-gh pr view $ARGUMENTS --json reviewThreads \
-  --jq '.reviewThreads[] | {file: .path, line: .line, body: .comments[0].body}'
-
-# Reply to comment
-gh pr comment $ARGUMENTS --body "Fixed in [commit]: [explanation]"
-
-# Get PR number
-gh pr view --json number --jq .number
-```
-
-### Rules
-- **For inline comments**: Quote `file:line` in your reply and explain the fix
-- **For thread comments**: Reference the conversation context
-- Verify ALL fixes with tests before marking resolved
-- For blockers: fix immediately and explain what changed
-- For suggestions: implement if reasonable, or explain why not
-- Group related fixes into logical commits with descriptive messages
-- Use `$ARGUMENTS` for `--repo org/repo --pr 123` if needed
+### Finish
+- Group fixes logically: `git add <files> && git commit -m "fix(pr-review): ..."`
+- Push, rerun `gh pr view $ARGS --comments` to confirm no open threads.
