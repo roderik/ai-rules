@@ -79,3 +79,41 @@ Fix approach:
 Keep iterating until clean.
 "'''
 description = "Run tests, linting, and auto-fix issues"
+
+[docs]
+command = '''gemini "
+## Write/Improve Documentation
+
+Files to work on: $1
+
+Apply OpenAI documentation best practices:
+
+### Make Docs Easy to Skim
+- Use informative sentence titles, not abstract nouns
+- Keep paragraphs short with clear topic sentences
+- Put important info at the top
+- Use bullets, tables, bold for highlights
+
+### Write Well
+- Simple, clear, unambiguous sentences
+- Minimize 'this/that' - be specific
+- Maintain consistency
+
+### Be Broadly Helpful
+- Explain potential problems proactively
+- Use specific, accurate terminology
+- Provide realistic, copy-pastable examples
+- Give broad context for new topics
+
+### Visual Communication
+- ALWAYS add Mermaid diagrams for: architecture, workflows, dependencies, state machines
+- Use repo's markdown components (check existing docs for patterns)
+
+### Content Requirements
+- Introduce new concepts with brief context
+- Link third-party tools to their docs (e.g., [Terraform](https://developer.hashicorp.com/terraform/docs))
+- Show realistic code examples with imports and context
+
+Focus on: ${1:-all documentation files}
+"'''
+description = "Write/improve documentation with OpenAI best practices"

@@ -142,6 +142,16 @@ Configurations are installed to:
   - Supports Linear ticket integration
   - Returns PR URL for review
 
+- **/docs**: Write/improve documentation with OpenAI best practices
+  - Claude: Applies documentation principles with visual diagrams
+  - Gemini: Structured documentation workflow
+  - Codex: Available via `prompts/docs.md`
+  - Makes docs easy to skim with clear section titles
+  - Adds Mermaid diagrams for architecture and workflows
+  - Links third-party tools to official documentation
+  - Introduces new concepts with context
+  - Provides realistic, copy-pastable examples
+
 ### Environment Variables
 
 ```json
@@ -184,6 +194,13 @@ The configuration supports seamless collaboration between AI assistants:
 
 - **AGENTS.md**: Specialized agent instructions for multi-model collaboration
 - **config.toml**: Model selection and prompt customization
+- **Custom Prompts**:
+  - `prompts/docs.md`: Documentation writing using OpenAI best practices
+  - `prompts/pr.md`: Pull request creation workflow
+  - `prompts/test.md`: Quality checks and auto-fix
+  - `prompts/comments.md`: Code documentation generation
+  - `prompts/pr-comments.md`: PR review comments
+  - `prompts/onboard.md`: Repository onboarding
 - **Role**: Complex implementation and code generation specialist
 
 #### Gemini CLI
