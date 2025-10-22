@@ -28,6 +28,10 @@ args = ["x", "-y", "@upstash/context7-mcp@latest"]
 command = "bun"
 args = ["x", "-y", "octocode-mcp@latest"]
 
+[mcp_servers.shadcn]
+command = "bun"
+args = ["x", "-y", "shadcn@latest", "mcp"]
+
 [tui]
 # Send desktop notifications when approvals are required or a turn completes.
 notifications = true

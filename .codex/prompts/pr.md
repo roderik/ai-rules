@@ -11,6 +11,7 @@ Create a well-documented PR on GitHub with quality checks passed.
    - Performance: algorithmic efficiency, resource usage
    - Quality: error handling, maintainability, documentation
    - Architecture: test coverage, separation of concerns
+   - Documentation: are all README.md, AGENTS.md and other documentation files (typically in docs/*) updated
 
 3. **Analyze changes**: Review the diff to understand what changed
    ```bash
@@ -35,11 +36,6 @@ Create a well-documented PR on GitHub with quality checks passed.
 ## How
 [Key implementation details and technical decisions]
 
-## Testing
-- [x] Unit tests passing
-- [x] Linting and type checks clean
-- [ ] Manual testing: [describe what you tested]
-
 ## Breaking Changes
 [List breaking changes, or "None"]
 
@@ -47,9 +43,6 @@ Create a well-documented PR on GitHub with quality checks passed.
 - Fixes #[issue-number]
 - Closes #[issue-number]
 [Or "None"]
-
-## Screenshots/Evidence
-[Screenshots for UI changes, or "N/A"]
 ```
 
 ### Title Examples
