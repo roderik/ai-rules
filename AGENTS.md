@@ -12,6 +12,7 @@
 1. **test-runner checks** - Run the full test, lint, and format suite. Trigger the shared automation (e.g., a `test-runner` Task) when it exists; otherwise execute the equivalent commands yourself and record the outcome.
 2. **code-review sweep** - Perform static analysis and peer-style review. Use the designated automation if provided; otherwise carry out the review manually using our quality checklist.
 3. **code-comment update** - Refresh inline comments or impacted docs. Invoke any commenter automation when present; otherwise add the necessary documentation updates manually.
+4. **docs-update gate** - Confirm whether broader documentation needs updates (README/guides/CHANGELOG/API docs). If yes, update before marking the task done.
 
 ### Task Playbooks
 
@@ -32,6 +33,11 @@
 - Prefer TSDoc-style block comments for exported functions/classes and focused inline notes for tricky logic.
 - Mention alternatives you rejected, business rules enforced, and performance or security implications that guided the implementation.
 - Match the project’s existing comment style and keep comments in sync when code changes.
+
+#### docs-update gate
+- Detect impact: public APIs, CLI flags, env vars, data contracts, user flows, ops/runbooks.
+- Update impacted docs: README, `/docs/**`, API/reference pages, migration notes, changelog.
+- Enforce: task is not “done” and no commit/PR is acceptable until docs are updated or you explicitly record “No docs changes needed” with justification in the PR description.
 
 
 ## Deliberate Planning (MANDATORY)
@@ -65,13 +71,14 @@
 ### General Principles
 
 - Prefer editing existing files over creating new ones
-- Never create documentation unless explicitly requested
+- Do not create new standalone documentation unless explicitly requested. ALWAYS update existing docs/comments when code behavior, APIs, or user flows change (mandatory).
 - Follow existing code patterns and conventions in each project
 - Always check for existing dependencies before suggesting new ones
 - Delete unused or obsolete files when your changes make them irrelevant (refactors, feature removals, etc.), and revert files only when the change is yours or explicitly requested. If a git operation leaves you unsure about other agents' in-flight work, stop and coordinate instead of deleting.
 - **Before attempting to delete a file to resolve a local type/lint failure, stop and ask the user.** Other agents are often editing adjacent files; deleting their work to silence an error is never acceptable without explicit approval.
 - NEVER edit `.env` or any environment variable files—only the user may change them.
 - Coordinate with other agents before removing their in-progress edits—don't revert or delete work you didn't author unless everyone agrees.
+- Never revert the user's manual edits in this branch/session. Treat them as part of the change; integrate and adjust surrounding code/tests/docs accordingly.
 - Moving/renaming and restoring files is allowed.
 - **AFTER ANY CODE CHANGE: Immediately complete the test-runner and code-reviewer checks (automation first, manual fallback if needed)**
 
@@ -123,9 +130,10 @@
 
 ### Testing & Code Review (MANDATORY - AUTOMATIC EXECUTION)
 
-- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use BOTH:**
+- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use ALL THREE:**
   1. **test-runner checks** - Run tests, linting, and formatting through automation when possible; otherwise handle them manually
   2. **code-review sweep** - Perform the code quality review via automation when possible; otherwise handle it manually
+  3. **docs-update gate** - Decide if broader documentation must change; update or justify “No docs changes needed.”
 - **These are NOT OPTIONAL - they MUST run AUTOMATICALLY after EVERY code edit**
 - **NO EXCEPTIONS - even for "small" changes**
 - Capture diagnostics and command outputs for every run; prefer automation but fall back to `bun run test`, `bun run lint`, `bun run typecheck`, and your formatter when required
