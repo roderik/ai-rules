@@ -1,19 +1,22 @@
 Handle and resolve every review thread.
 
 ### Setup
-- Define targets once: `export GH_REPO=org/name PR_NUMBER=123 ARGS="--repo $GH_REPO --pr $PR_NUMBER"`
+- Detect current branch PR automatically: `gh pr view --json number,url,headRefName`
 - Keep local branch rebased; stash unrelated work before sweeping comments.
 
 ### Gather context
-- Timeline (general + summaries): `gh pr view $ARGS --comments`
-- Diff with numbers: `gh pr diff $ARGS`
+- Timeline (general + summaries): `gh pr view --comments`
+- Diff with numbers: `gh pr diff`
 - Structured review threads (id, status, file/line, bodies):
   ```bash
-  gh api graphql \
-    -F owner="${GH_REPO%/*}" \
-    -F name="${GH_REPO#*/}" \
-    -F pr="$PR_NUMBER" \
-    -f query='query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:100){nodes{id isResolved isOutdated comments(first:20){nodes{id databaseId body url path originalLine line startLine originalStartLine author{login}}}}}}}}'
+  gh pr view --json number,headRepository | jq -r '.number as $pr | .headRepository | "owner=\(.owner.login) name=\(.name) pr=\($pr)"' | xargs -I {} sh -c '
+    eval "$(echo {} | tr " " "\n" | sed "s/^/export /")"
+    gh api graphql \
+      -F owner="$owner" \
+      -F name="$name" \
+      -F pr="$pr" \
+      -f query="query(\$owner:String!,\$name:String!,\$pr:Int!){repository(owner:\$owner,name:\$name){pullRequest(number:\$pr){reviewThreads(first:100){nodes{id isResolved isOutdated comments(first:20){nodes{id databaseId body url path originalLine line startLine originalStartLine author{login}}}}}}}}}"
+  '
   ```
 
 ### Fix loop
@@ -39,4 +42,4 @@ Handle and resolve every review thread.
 
 ### Finish
 - Group fixes logically: `git add <files> && git commit -m "fix(pr-review): ..."`
-- Push, rerun `gh pr view $ARGS --comments` to confirm no open threads.
+- Push, rerun `gh pr view --comments` to confirm no open threads.
