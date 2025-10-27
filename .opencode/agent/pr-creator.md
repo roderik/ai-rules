@@ -1,11 +1,7 @@
 ---
 description: PR creation and lifecycle management agent - creates pull requests when explicitly requested by user
 mode: primary
-model: anthropic/claude-sonnet-4-20250514
-permission:
-  edit: allow
-  bash: allow
-  webfetch: allow
+model: anthropic/claude-haiku-4-5
 ---
 
 # PR Creator Agent

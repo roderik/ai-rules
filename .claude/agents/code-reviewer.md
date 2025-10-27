@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Reviews code for best practices, security, performance, and maintainability using IDE LSP analysis. Use proactively for code quality assurance and before commits.
-model: claude-3-5-sonnet-20241022
+model: sonnet
 color: red
 ---
 

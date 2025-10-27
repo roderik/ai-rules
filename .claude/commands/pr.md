@@ -1,32 +1,70 @@
 ---
 description: Create a comprehensive pull request with proper title, description, and quality checks
-argument-hint: [title]
-allowed-tools: Bash, Read
 ---
 
-## Current Branch Status
-- Branch: !`git branch --show-current`
-- Commits since main: !`git log main..HEAD --oneline`
-- Changed files: !`git diff main..HEAD --stat`
+### Workflow
+1. **Quality gate**: Run all checks and FIX failures
+   - Tests, lint, typecheck, formatting
+   - IDE diagnostics for changed files
+   - Keep running until clean
 
-## Pull Request Creation Task
+2. **Code review**: Fix critical issues found in diff
+   - Security: input validation, auth, secrets exposure
+   - Performance: algorithmic efficiency, resource usage
+   - Quality: error handling, maintainability, documentation
+   - Architecture: test coverage, separation of concerns
+   - Documentation: are all README.md, AGENTS.md and other documentation files (typically in docs/*) updated
 
-First, use the test-runner subagent to ensure quality:
-1. Run all tests and fix any failures
-2. Run linting and fix issues
-3. Ensure code formatting is correct
+3. **Analyze changes**: Review the diff to understand what changed
+   ```bash
+   git log main..HEAD --format="%s"
+   git diff main..HEAD --stat
+   git diff main..HEAD
+   ```
 
-Then use the code-reviewer subagent to:
-1. Review all changes for quality issues
-2. Check security considerations
-3. Verify best practices are followed
+4. **Generate PR**: Push branch and create PR via GitHub CLI
+   - **Title**: Use `$ARGUMENTS` or generate from commits in format: `type(scope): description`
+   - **Body**: Write comprehensive markdown using template below
+   - Command: `gh pr create --title "TITLE" --body "BODY"`
 
-Finally, create the pull request with:
-- Title: $ARGUMENTS
-- Comprehensive description including:
-  - What changes were made and why
-  - Any breaking changes or migration notes
-  - Testing approach used
-  - Screenshots/examples if relevant
+### PR Body Template (Use Markdown)
+```markdown
+## What
+[Clear summary of what changed - be specific about files/features]
 
-Push branch and create PR using GitHub CLI if available.
+## Why
+[Business/technical rationale - what problem does this solve?]
+
+## How
+[Key implementation details and technical decisions]
+
+## Breaking Changes
+[List breaking changes, or "None"]
+
+## Related
+- Fixes #[issue-number]
+- Closes #[issue-number]
+[Or "None"]
+```
+
+### Title Examples
+- `feat(auth): add OAuth2 login flow`
+- `fix(api): handle null responses in user endpoint`
+- `refactor(database): migrate to Prisma ORM`
+- `chore(deps): update typescript to 5.x`
+- `docs(readme): add deployment instructions`
+
+### Commands
+```bash
+git branch --show-current
+git log main..HEAD --format="%s"
+git diff main..HEAD --stat
+git diff main..HEAD
+gh pr create --title "TITLE" --body "BODY"
+```
+
+### Exit Criteria
+- All quality checks passing
+- Critical code issues fixed
+- PR created on GitHub with well-formatted markdown body
+- PR URL displayed

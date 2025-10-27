@@ -1,34 +1,28 @@
 ---
-description: Run comprehensive quality checks using IDE diagnostics and traditional tests, automatically fix any failures found
+description: Run diagnostics, tests, lint, typecheck, and formatting—then FIX all issues automatically.
 ---
 
-## Current Status
+### Workflow
+1. Check IDE diagnostics for changed files (use `$ARGUMENTS` to scope if provided)
+2. Run quality stack: `bun run test`, `bun run lint`, `bun run typecheck`, formatter
+3. **FIX all failures immediately** - don't just report them
+4. Re-run checks until everything passes
+5. Report final status: "✓ All checks passing" or list remaining blockers
 
-- Git status: !`git status --porcelain`
-- Changed files: !`git diff --name-only HEAD`
+### Scope
+- If `$ARGUMENTS` provided: focus on those paths/patterns
+- Otherwise: prioritize changed files from `git status`
+- Expand to full suite if scoped checks pass
 
-## Your Task
+### Error Handling
+- Format each issue: `file:line:function - message`
+- Apply automated fixes for lint/format issues
+- For test failures: analyze with IDE context and fix root cause
+- For type errors: add proper types or fix type mismatches
 
-Use IDE-enhanced quality checking with the test-runner subagent:
-
-### 1. IDE Diagnostics First
-
-- Use ide diagnostics to get all workspace errors/warnings
-- Focus on changed files but check entire workspace
-- Report TypeScript/ESLint errors with precise locations
-
-### 2. Traditional Testing
-
-- Execute all tests and report any failures
-- Run linting and fix any issues
-- Run type checking and report errors
-- Apply formatting fixes
-
-### 3. Combined Reporting
-
-- Merge IDE diagnostics with test results
-- Report in file:line:function format
-- Prioritize critical errors over warnings
-- Suggest fixes based on LSP intelligence
-
-Focus on files that have been changed recently, but use IDE to catch related issues.
+### Exit Criteria
+- All tests passing
+- Zero lint errors
+- No type errors
+- Code formatted
+- If unfixable blockers remain: explain why and request guidance

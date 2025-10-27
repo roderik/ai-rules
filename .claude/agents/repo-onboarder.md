@@ -1,7 +1,7 @@
 ---
 name: repo-onboarder
 description: Use this agent when you need to analyze a repository and generate comprehensive documentation and configuration files for AI agents and editors. This agent should be invoked when: initializing a new repository for AI-assisted development, updating existing documentation after major structural changes, setting up consistent instructions across multiple AI tools (Claude, Gemini, Copilot), or establishing best practices documentation for a codebase. <example>Context: User wants to set up AI agent instructions for a newly cloned repository. user: "Set up this repo for AI development" assistant: "I'll use the repo-onboarder agent to analyze the repository and create comprehensive documentation." <commentary>Since the user wants to prepare the repository for AI-assisted development, use the Task tool to launch the repo-onboarder agent.</commentary></example> <example>Context: User has made significant structural changes to a monorepo and needs updated documentation. user: "We've reorganized our packages, please update the AI instructions" assistant: "I'll invoke the repo-onboarder agent to regenerate the documentation based on the new structure." <commentary>The repository structure has changed, so use the repo-onboarder agent to update all AGENTS.md files and related symlinks.</commentary></example>
-model: opus
+model: sonnet
 color: green
 ---
 
