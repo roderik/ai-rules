@@ -1,70 +1,68 @@
 ---
-description: Create a comprehensive pull request with proper title, description, and quality checks
+description: Create comprehensive PR with quality checks
 ---
 
-### Workflow
-1. **Quality gate**: Run all checks and FIX failures
+## Workflow
+
+1. **Quality gate** (FIX all failures)
    - Tests, lint, typecheck, formatting
    - IDE diagnostics for changed files
    - Keep running until clean
 
-2. **Code review**: Fix critical issues found in diff
-   - Security: input validation, auth, secrets exposure
-   - Performance: algorithmic efficiency, resource usage
-   - Quality: error handling, maintainability, documentation
+2. **Code review** (fix critical issues)
+   - Security: input validation, auth, secrets
+   - Performance: efficiency, resource usage
+   - Quality: error handling, maintainability, docs
    - Architecture: test coverage, separation of concerns
-   - Documentation: are all README.md, AGENTS.md and other documentation files (typically in docs/*) updated
+   - Documentation: README.md, AGENTS.md, docs/* updated
 
-3. **Analyze changes**: Review the diff to understand what changed
+3. **Analyze changes**
    ```bash
    git log main..HEAD --format="%s"
    git diff main..HEAD --stat
    git diff main..HEAD
    ```
 
-4. **Generate PR**: Push branch and create PR via GitHub CLI
-   - **Title**: Use `$ARGUMENTS` or generate from commits in format: `type(scope): description`
-   - **Body**: Write comprehensive markdown using template below
-   - Command: `gh pr create --title "TITLE" --body "BODY"`
+4. **Create PR**
+   ```bash
+   gh pr create --title "TITLE" --body "BODY"
+   ```
 
-### PR Body Template (Use Markdown)
-```markdown
-## What
-[Clear summary of what changed - be specific about files/features]
+## Title Format
 
-## Why
-[Business/technical rationale - what problem does this solve?]
+Use `$ARGUMENTS` or generate from commits: `type(scope): description`
 
-## How
-[Key implementation details and technical decisions]
-
-## Breaking Changes
-[List breaking changes, or "None"]
-
-## Related
-- Fixes #[issue-number]
-- Closes #[issue-number]
-[Or "None"]
-```
-
-### Title Examples
+Examples:
 - `feat(auth): add OAuth2 login flow`
-- `fix(api): handle null responses in user endpoint`
-- `refactor(database): migrate to Prisma ORM`
+- `fix(api): handle null responses`
+- `refactor(database): migrate to Prisma`
 - `chore(deps): update typescript to 5.x`
 - `docs(readme): add deployment instructions`
 
-### Commands
-```bash
-git branch --show-current
-git log main..HEAD --format="%s"
-git diff main..HEAD --stat
-git diff main..HEAD
-gh pr create --title "TITLE" --body "BODY"
+## Body Template
+
+```markdown
+## What
+[Clear summary - be specific about files/features]
+
+## Why
+[Business/technical rationale - problem solved?]
+
+## How
+[Key implementation details and decisions]
+
+## Breaking Changes
+[List changes, or "None"]
+
+## Related
+- Fixes #[issue]
+- Closes #[issue]
+[Or "None"]
 ```
 
-### Exit Criteria
+## Exit Criteria
+
 - All quality checks passing
-- Critical code issues fixed
-- PR created on GitHub with well-formatted markdown body
+- Critical issues fixed
+- PR created with well-formatted body
 - PR URL displayed

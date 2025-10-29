@@ -1,94 +1,87 @@
 ---
-description: Analyze the repository and generate `AGENTS.md` documentation for AI agent alignment.
+description: Analyze repository and generate AGENTS.md documentation
 ---
 
+## Workflow
 
-### Workflow
-1. **Analyze structure**
-   - Inspect `package.json`, `README`, configs (`tsconfig`, `.eslintrc`, etc.)
-   - Map folder structure (skip `node_modules`, build outputs)
-   - Detect monorepo structure (Turborepo, pnpm workspaces, etc.)
-   - Focus on `$ARGUMENTS` areas if provided
+1. **Analyze**
+   - Inspect: `package.json`, `README`, configs (tsconfig, eslint, etc.)
+   - Map structure (skip `node_modules`, build outputs)
+   - Detect monorepo (Turborepo, pnpm workspaces)
+   - Focus on `$ARGUMENTS` if provided
 
-2. **Research dependencies** (use MCP when available)
-   - Context7: `mcp__context7__resolve-library-id` + `get-library-docs`
-   - Octocode: `mcp__octocode__packageSearch` for package info
+2. **Research** (use MCP when available)
+   - Context7: `resolve-library-id` + `get-library-docs`
+   - Octocode: `packageSearch` for package info
    - GitHub: `githubSearchCode` for similar structures
 
-3. **Create documentation**
-   - Root `AGENTS.md` with full structure (see below)
-   - For monorepos: per-package `AGENTS.md`
+3. **Generate**
+   - Root `AGENTS.md` (see structure below)
+   - Monorepo: per-package `AGENTS.md`
    - Symlink `CLAUDE.md` → `AGENTS.md`
    - Symlink `.github/copilot-instructions.md` → `../AGENTS.md`
 
-### Root AGENTS.md Structure
+## Root AGENTS.md
+
 ```markdown
-# AGENTS.md
+# Project Overview
+[Purpose and architecture]
 
-## Project Overview
-- Purpose and architecture
+# Tech Stack
+[Tool names (no versions)]
 
-## Tech Stack
-- Tool names (no versions)
+# Commands
+[Build, test, lint scripts]
 
-## Top-Level Scripts
-- Build, test, lint commands
+# Structure
+[Workspace map for monorepo, or top-level dirs]
 
-## Workspace Map (monorepo only)
-- Package locations and purposes
+# Best Practices
+[4-8 key practices for stack]
 
-## Best Practices
-- 4-8 key practices for the stack
+# Linting & Formatting
+[ESLint/Prettier/TS rules]
 
-## Linting & Formatting
-- Rules from ESLint/Prettier/TypeScript
+# Testing
+[Frameworks, commands, fixture locations]
 
-## Testing
-- Frameworks and test command
-- Fixture locations
+# CI Gates
+[Checks and local reproduction]
 
-## CI Gates
-- CI checks and how to run locally
+# Security
+[Secrets management, auth flows]
 
-## Security
-- Secrets management
-- Auth flows
-
-## Agent Hints
-- Architecture boundaries
-- Safe extension points
+# Agent Hints
+[Boundaries, extension points]
 ```
 
-### Package AGENTS.md (monorepo)
+## Package AGENTS.md (Monorepo)
+
 ```markdown
-# AGENTS.md
+# Purpose & Layout
+[What package does]
 
-## Package Purpose & Layout
-- What this package does
+# Dependencies
+[Main libraries]
 
-## Key Dependencies
-- Main libraries used
+# Best Practices
+[Package-specific workflows]
 
-## Best Practices
-- Package-specific workflows
+# Style & Testing
+[Local rules, test patterns, fixtures]
 
-## Style, Lint & Testing
-- Local rules and test patterns
-
-## Fixtures
-- Test data locations
-
-## Agent Hints
-- Boundaries and extension points
+# Agent Hints
+[Boundaries, extension points]
 ```
 
-### Commands
+## Commands
+
 ```bash
 # Detect monorepo
 fd -t f "package.json|pnpm-workspace.yaml|turbo.json"
 
 # Find configs
-fd -t f "tsconfig|eslintrc|prettierrc|vite.config|next.config"
+fd -t f "tsconfig|eslintrc|prettierrc"
 
 # Map structure
 eza -T -L 3 --ignore-glob "node_modules|dist|build"

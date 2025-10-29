@@ -1,49 +1,42 @@
 ---
-description: Add comprehensive documentation comments to code focusing on why-first explanations
+description: Add why-first documentation comments to code
 agent: code-commenter
 ---
 
-### Workflow
-1. Target files from recent changes or matching `$ARGUMENTS`
-2. Use IDE analysis to understand code structure and usage
-3. Add comments for:
-   - Complex business logic and edge cases
+## Execution
+
+1. Target: recent changes or `$ARGUMENTS` pattern
+2. IDE analysis for code structure
+3. Comment:
+   - Complex business logic/edge cases
    - Performance/security trade-offs
-   - Rejected alternatives and design decisions
+   - Rejected alternatives
    - Non-obvious algorithms
-   - Workarounds and tech debt
+   - Workarounds/tech debt
 
-### Comment Style
+## Style
 
-**TSDoc for functions:**
+**TSDoc:**
 ```typescript
 /**
- * Processes payment using exponential backoff to handle gateway failures.
- *
- * Exponential retries prevent load spikes per gateway SLA requirements.
+ * Exponential backoff prevents gateway overload per SLA.
  *
  * @param payment - Payment details
  * @param maxRetries - Max attempts (default 3)
- * @returns Payment result
- * @throws PaymentError if all retries fail
+ * @throws PaymentError if exhausted
  */
 ```
 
-**Inline for critical constants:**
+**Inline:**
 ```typescript
-// Cache 5min to balance DB load with stale auth risk
+// 5min cache balances DB load vs stale auth risk
 const PERMISSION_CACHE_TTL = 5 * 60 * 1000;
 ```
 
-### Rules
-- Explain WHY, not what: "Tracks user interactions for analytics attribution"
-- Link to domain requirements, SLAs, incidents when relevant
-- Document security/performance implications
-- Match existing comment style and indentation
-- Remove outdated comments found during review
+## Rules
 
-### Commands
-```bash
-git diff --name-only HEAD~1..HEAD
-git status --porcelain
-```
+- Explain WHY, not what
+- Link to requirements/SLAs/incidents
+- Document security/performance implications
+- Match existing style
+- Remove outdated comments

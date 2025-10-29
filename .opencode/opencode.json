@@ -12,7 +12,6 @@
       "rm -rf *": "deny",
       "rm -rf /*": "deny",
       "sudo *": "ask",
-      "git push": "ask",
       "dd if=* of=/dev/*": "deny",
       "mkfs.* /dev/*": "deny",
       ":(){ :|:& };:": "deny"
