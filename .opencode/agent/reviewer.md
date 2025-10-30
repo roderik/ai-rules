@@ -1,7 +1,7 @@
 ---
 description: "PROACTIVE reviewer. MUST RUN after ANY code change. Qualitative analysis: architecture, security, performance, style. DOES NOT execute tests (relies on test-runner output)."
-mode: primary
-model: gpt-5-codex-high
+mode: subagent
+model: openai/gpt-5-codex-high
 ---
 
 ## Review Categories

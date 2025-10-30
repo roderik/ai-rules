@@ -1,6 +1,6 @@
 ---
 description: Craft or enhance documentation efficiently
-agent: content-writer
+agent: reviewer
 ---
 
 Review the folowing section:

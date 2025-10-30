@@ -9,10 +9,10 @@
 
 **AFTER LARGE CODE CHANGES aND BEFORE COONSIDERING THE TASK COMPLETE, YOU MUST AUTOMATICALLY RUN:**
 
-1. **test-runner checks** - Run the full test, lint, and format suite. Trigger the shared automation (e.g., a `test-runner` Task) when it exists; otherwise execute the equivalent commands yourself and record the outcome.
-2. **code-review sweep** - Perform static analysis and peer-style review. Use the designated automation if provided; otherwise carry out the review manually using our quality checklist.
-3. **code-comment update** - Refresh inline comments or impacted docs. Invoke any commenter automation when present; otherwise add the necessary documentation updates manually.
-4. **docs-update gate** - Confirm whether broader documentation needs updates (README/guides/CHANGELOG/API docs). If yes, update before marking the task done.
+1. **test runner checks** - Run the full test, lint, and format suite. Trigger the shared automation (e.g., a `test-runner` Task) when it exists; otherwise execute the equivalent commands yourself and record the outcome.
+2. **review sweep** - Perform static analysis and peer-style review. Use the designated automation if provided; otherwise carry out the review manually using our quality checklist.
+3. **comment update** - Refresh inline comments or impacted docs. Invoke any commenter automation when present; otherwise add the necessary documentation updates manually.
+4. **docs update gate** - Confirm whether broader documentation needs updates (README/guides/CHANGELOG/API docs). If yes, update before marking the task done.
 
 ### Task Playbooks
 
@@ -80,7 +80,7 @@
 - Coordinate with other agents before removing their in-progress edits—don't revert or delete work you didn't author unless everyone agrees.
 - Never revert the user's manual edits in this branch/session. Treat them as part of the change; integrate and adjust surrounding code/tests/docs accordingly.
 - Moving/renaming and restoring files is allowed.
-- **AFTER ANY CODE CHANGE: Immediately complete the test-runner and code-reviewer checks (automation first, manual fallback if needed)**
+- **AFTER ANY CODE CHANGE: Immediately complete the test-runner and reviewer checks (automation first, manual fallback if needed)**
 
 ### Code Style
 
@@ -101,7 +101,7 @@
 - Quote any git paths containing brackets or parentheses (e.g., `src/app/[candidate]/**`) when staging or committing so the shell does not treat them as globs or subshells.
 - When running `git rebase`, avoid opening editors—export `GIT_EDITOR=:` and `GIT_SEQUENCE_EDITOR=:` (or pass `--no-edit`) so the default messages are used automatically.
 - Never amend commits unless you have explicit written approval in the task thread.
-- **MANDATORY before ANY commit: Complete the test-runner and code-reviewer checks (automation preferred, manual fallback if required)**
+- **MANDATORY before ANY commit: Complete the test-runner and reviewer checks (automation preferred, manual fallback if required)**
 - **DO NOT commit if the quality checks report errors - fix them first**
 
 ## Pull Request Expectations

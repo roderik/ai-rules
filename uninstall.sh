@@ -356,8 +356,8 @@ USAGE
     if [ -d "$claude_code_dir/agents" ]; then
       printf "\n"
       print_color "$BOLD" "🤖 Agents that would be removed:"
-      if [ -f "$claude_code_dir/agents/code-reviewer.md" ]; then
-        print_color "$RED" "  - code-reviewer"
+      if [ -f "$claude_code_dir/agents/reviewer.md" ]; then
+        print_color "$RED" "  - reviewer"
       fi
     fi
     
@@ -397,10 +397,10 @@ USAGE
     
     # Remove agents installed by AI Rules
     if [ -d "$claude_code_dir/agents" ]; then
-      # Only remove agents that we installed (code-reviewer.md)
-      if [ -f "$claude_code_dir/agents/code-reviewer.md" ]; then
-        rm "$claude_code_dir/agents/code-reviewer.md"
-        log_success "Removed agent: code-reviewer.md"
+      # Only remove agents that we installed (reviewer.md)
+      if [ -f "$claude_code_dir/agents/reviewer.md" ]; then
+        rm "$claude_code_dir/agents/reviewer.md"
+        log_success "Removed agent: reviewer.md"
       fi
       # Remove directory if empty
       rmdir "$claude_code_dir/agents" 2>/dev/null || true

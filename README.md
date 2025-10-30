@@ -94,8 +94,8 @@ Configurations are installed to:
 
 ### AI Agents (Claude Code)
 
-- **code-reviewer**: Automatically reviews code changes for quality, security, and best practices
-  - Invoke directly with `@code-reviewer` in Claude Code
+- **reviewer**: Automatically reviews code changes for quality, security, and best practices
+  - Invoke directly with `@reviewer` in Claude Code
   - Runs automatically after code modifications
   - Checks for security vulnerabilities
   - Validates architecture patterns
@@ -120,7 +120,7 @@ Configurations are installed to:
 #### Claude Code & Gemini CLI
 
 - **/review**: Manual trigger for comprehensive code review
-  - Claude: Use `@code-reviewer` to invoke the agent directly
+  - Claude: Use `@reviewer` to invoke the agent directly
   - Gemini: Scripted behavior matching agent functionality
   - Reviews unstaged, staged, and branch commits
   - Provides detailed feedback
@@ -362,7 +362,7 @@ bun add -g ccusage
 ai-rules/
 ├── .claude/                   # Claude Code configuration
 │   ├── agents/
-│   │   ├── code-reviewer.md  # AI code review agent
+│   │   ├── reviewer.md  # AI code review agent
 │   │   ├── test-runner.md    # Quality checks agent
 │   │   └── pr-creator.md     # PR creation agent
 │   ├── commands/

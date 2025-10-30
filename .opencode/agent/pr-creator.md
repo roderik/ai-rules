@@ -1,6 +1,6 @@
 ---
 description: PR creation and lifecycle management - ONLY when user explicitly requests via /pr command
-mode: primary
+mode: subagent
 model: anthropic/claude-haiku-4-5
 ---
 
