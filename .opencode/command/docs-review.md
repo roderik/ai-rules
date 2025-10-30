@@ -22,4 +22,4 @@ Verify that:
   code, but did not go overboard with useless charts?
 
 Do not actually execute the changes, just review the content and suggest a clear
-and detailed plan for improvements.
+, detailed and concrete list of changes that we need adjust. This means a concrete todo list of what we need to change or do in which file.
