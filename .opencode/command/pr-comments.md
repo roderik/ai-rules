@@ -2,7 +2,7 @@
 description: Handle and resolve every PR review thread
 ---
 
-CRITICAL: use only the commands mentioned in this prompt!
+CRITICAL: all the PR comments are provided in the prompt, use them from the prompt, do not fetch them yourself
 
 ## Fix Loop
 
