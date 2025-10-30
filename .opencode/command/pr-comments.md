@@ -14,8 +14,9 @@ For each unresolved thread (process newest→oldest):
 4. **Test**: Run test-runner agent on changed files, also lint!
 5. **Review**: Run reviewer agent to verify fix quality
 6. **Commit**: `git add <files> && git commit -m "fix(pr-review): address <summary>"`
-7. **Reply and resolve**: Use thread ID with fix summary + commit SHA + test results and resolve the comment
-8. **Verify**: Re-run checks, confirm fix resolves the concern
+7. **Reply**: Post reply to thread with fix summary + commit SHA + test results (see Reply command below)
+8. **RESOLVE IN GITHUB**: Execute the Resolve command to mark thread as resolved in GitHub (MANDATORY - do not skip!)
+9. **Verify**: Re-run checks, confirm fix resolves the concern
 
 ## Reply Template
 
@@ -41,12 +42,15 @@ gh api graphql \
   -f query='mutation($pullRequestReviewThreadId:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$pullRequestReviewThreadId,body:$body}){comment{id url}}}'
 ```
 
-## Resolve Thread
+## Resolve Thread (MANDATORY FOR EVERY FIXED THREAD)
+
+**CRITICAL: You MUST execute this command in GitHub for EVERY thread you fix!**
+**This is NOT optional - the thread will remain open until you run this command.**
 
 Only resolve after:
 - Fix committed and pushed
 - Tests passing
-- Reviewer acknowledges fix
+- Reply posted to thread
 
 Resolve command:
 ```bash
@@ -57,6 +61,8 @@ gh api graphql \
 
 ## Finish
 
+**BEFORE completing, verify you executed the Resolve command for EVERY fixed thread!**
+
 ```bash
 # Push all commits
 git push
@@ -64,6 +70,8 @@ git push
 # Verify no unresolved threads remain
 gh pr view --comments | grep -i "outstanding\|pending\|unresolved" || echo "✓ All threads resolved"
 ```
+
+**If any threads remain unresolved, go back and execute the Resolve command for each one.**
 
 ## Gather Context
 
