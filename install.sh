@@ -127,21 +127,38 @@ script_dir() {
   cd -P "$(dirname "$src")" >/dev/null 2>&1 && pwd
 }
 
+# Clean up old backup files
+cleanup_backups() {
+  local base_dirs=(
+    "$HOME/.claude"
+    "$HOME/.codex"
+    "$HOME/.gemini"
+    "$HOME/.config/opencode"
+  )
+
+  if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+    base_dirs=(
+      "$USERPROFILE/.claude"
+      "$USERPROFILE/.codex"
+      "$USERPROFILE/.gemini"
+      "$USERPROFILE/.config/opencode"
+    )
+  fi
+
+  for dir in "${base_dirs[@]}"; do
+    if [ -d "$dir" ]; then
+      find "$dir" -type f -name "*.backup.*" -delete 2>/dev/null || true
+    fi
+  done
+}
+
 # Merge JSON files using jq
 merge_json() {
   local target="$1"
   local source="$2"
-  local backup
-  backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
 
   # Create target directory if needed
   mkdir -p "$(dirname "$target")"
-
-  # Backup existing file if it exists
-  if [ -f "$target" ]; then
-    cp "$target" "$backup"
-    log_info "Backed up existing file to: $backup"
-  fi
 
   # Merge or create
   if [ -f "$target" ]; then
@@ -166,14 +183,10 @@ merge_json() {
 merge_hooks() {
   local target="$1"
   local source="$2"
-  local backup
-  backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
 
   mkdir -p "$(dirname "$target")"
 
   if [ -f "$target" ]; then
-    cp "$target" "$backup"
-    log_info "Backed up existing hooks to: $backup"
 
     # Merge hooks using Python for better error handling
     python3 -c "
@@ -271,6 +284,11 @@ USAGE
 
   # Check dependencies
   check_dependencies
+
+  # Clean up old backups
+  if [ "$dry_run" -eq 0 ]; then
+    cleanup_backups
+  fi
 
   # Detect source directory
   local repo_root
@@ -867,15 +885,10 @@ EOF
     # Install Codex config.toml
     if [ -f "$codex_base/config.toml" ]; then
       mkdir -p "$codex_dir"
-      local backup
-      backup="${codex_dir}/config.toml.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$codex_dir/config.toml"
 
-      # Backup existing file if it exists
+      # Show diff if file exists
       if [ -f "$target_file" ]; then
-        cp "$target_file" "$backup"
-        log_info "Backed up existing Codex config to: $backup"
-
         # Show diff
         print_color "$YELLOW" "  ⚠️  config.toml (already exists - showing diff):"
         if command -v delta >/dev/null 2>&1; then
@@ -911,15 +924,10 @@ EOF
 
     # Install AGENTS.md
     if [ -f "$repo_root/AGENTS.md" ]; then
-      local backup
-      backup="${codex_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$codex_dir/AGENTS.md"
 
-      # Backup existing file if it exists
+      # Show diff if file exists
       if [ -f "$target_file" ]; then
-        cp "$target_file" "$backup"
-        log_info "Backed up existing AGENTS.md to: $backup"
-
         # Show diff
         print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
         if command -v delta >/dev/null 2>&1; then
@@ -962,10 +970,6 @@ EOF
         prompt_name="$(basename "$prompt")"
         local target_prompt="$codex_dir/prompts/$prompt_name"
         if [ -f "$target_prompt" ]; then
-          local backup
-          backup="${target_prompt}.backup.$(date +%Y%m%d_%H%M%S)"
-          cp "$target_prompt" "$backup"
-          log_info "Backed up existing prompt $prompt_name to: $backup"
           print_color "$YELLOW" "  ⚠️  $prompt_name (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
             diff -u --label "current" --label "new" "$target_prompt" "$prompt" 2>/dev/null | \
@@ -1156,15 +1160,10 @@ EOF
 
       # Install AGENTS.md from root
       if [ -f "$repo_root/AGENTS.md" ]; then
-        local backup
-        backup="${gemini_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
         local target_file="$gemini_dir/AGENTS.md"
 
-        # Backup existing file if it exists
+        # Show diff if file exists
         if [ -f "$target_file" ]; then
-          cp "$target_file" "$backup"
-          log_info "Backed up existing AGENTS.md to: $backup"
-
           # Show diff
           print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
@@ -1200,15 +1199,10 @@ EOF
 
       # Install settings.json
       if [ -f "$gemini_base/settings.json" ]; then
-        local backup
-        backup="${gemini_dir}/settings.json.backup.$(date +%Y%m%d_%H%M%S)"
         local target_file="$gemini_dir/settings.json"
 
-        # Backup existing file if it exists
+        # Show diff if file exists
         if [ -f "$target_file" ]; then
-          cp "$target_file" "$backup"
-          log_info "Backed up existing Gemini settings to: $backup"
-
           # Show diff
           print_color "$YELLOW" "  ⚠️  settings.json (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
@@ -1244,15 +1238,10 @@ EOF
 
       # Install commands.toml
       if [ -f "$gemini_base/commands.toml" ]; then
-        local backup
-        backup="${gemini_dir}/commands.toml.backup.$(date +%Y%m%d_%H%M%S)"
         local target_file="$gemini_dir/commands.toml"
 
-        # Backup existing file if it exists
+        # Show diff if file exists
         if [ -f "$target_file" ]; then
-          cp "$target_file" "$backup"
-          log_info "Backed up existing commands.toml to: $backup"
-
           # Show diff
           print_color "$YELLOW" "  ⚠️  commands.toml (already exists - showing diff):"
           if command -v delta >/dev/null 2>&1; then
@@ -1490,15 +1479,10 @@ EOF
     if [ -f "$repo_root/AGENTS.md" ]; then
       printf "\n"
       print_color "$BOLD" "Installing AGENTS.md for OpenCode..."
-      local backup
-      backup="${opencode_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$opencode_dir/AGENTS.md"
 
-      # Backup existing file if it exists
+      # Show diff if file exists
       if [ -f "$target_file" ]; then
-        cp "$target_file" "$backup"
-        log_info "Backed up existing AGENTS.md to: $backup"
-
         # Show diff
         print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
         if command -v delta >/dev/null 2>&1; then
@@ -1541,12 +1525,6 @@ EOF
     # Merge OpenCode config using jq (override MCP definitions)
     if [ -f "$opencode_base/opencode.json" ]; then
       if [ -f "$opencode_config" ]; then
-        # Backup existing config
-        local backup
-        backup="${opencode_config}.backup.$(date +%Y%m%d_%H%M%S)"
-        cp "$opencode_config" "$backup"
-        log_info "Backed up existing OpenCode config to: $backup"
-
         # Merge configurations but fully replace `.mcp` block when present
         jq -s '
           .[0] as $old | .[1] as $new |
