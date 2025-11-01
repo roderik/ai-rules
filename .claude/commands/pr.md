@@ -2,6 +2,21 @@
 description: Create a comprehensive pull request with proper title, description, and quality checks
 ---
 
+## Gather Context (Pre-collect all data)
+
+Current branch:
+!`git branch --show-current`
+
+Uncommitted changes:
+!`git status --porcelain`
+
+All changes vs main (committed + uncommitted):
+!`git diff --stat main...HEAD`
+!`git diff main...HEAD`
+
+Committed changes:
+!`git log main..HEAD --format="%s" --no-decorate`
+
 ### Workflow
 1. **Quality gate**: Run all checks and FIX failures
    - Tests, lint, typecheck, formatting
@@ -15,16 +30,19 @@ description: Create a comprehensive pull request with proper title, description,
    - Architecture: test coverage, separation of concerns
    - Documentation: are all README.md, AGENTS.md and other documentation files (typically in docs/*) updated
 
-3. **Analyze changes**: Review the diff to understand what changed
-   ```bash
-   git log main..HEAD --format="%s"
-   git diff main..HEAD --stat
-   git diff main..HEAD
-   ```
+3. **Commit all changes**: Create multiple small targeted commits combining related changes
+   - Group related files together (e.g., feature + tests, docs + code, config + implementation)
+   - Use conventional commit format: `type(scope): description`
+   - Commit ALL uncommitted changes - nothing should remain uncommitted
+   - Examples:
+     - `feat(auth): add OAuth2 login flow`
+     - `test(auth): add OAuth2 tests`
+     - `docs(readme): update auth documentation`
+     - `chore(config): update auth configuration`
 
 4. **Generate PR**: Push branch and create PR via GitHub CLI
-   - **Title**: Use `$ARGUMENTS` or generate from commits in format: `type(scope): description`
-   - **Body**: Write comprehensive markdown using template below
+   - **Title**: Use `$ARGUMENTS` or generate from ALL changes - combine most relevant user/developer facing changes (limited length)
+   - **Body**: Write comprehensive markdown covering ALL changes using template below
    - Command: `gh pr create --title "TITLE" --body "BODY"`
 
 ### PR Body Template (Use Markdown)
@@ -56,15 +74,15 @@ description: Create a comprehensive pull request with proper title, description,
 
 ### Commands
 ```bash
-git branch --show-current
-git log main..HEAD --format="%s"
-git diff main..HEAD --stat
-git diff main..HEAD
+# After committing all changes:
+git push
 gh pr create --title "TITLE" --body "BODY"
 ```
 
 ### Exit Criteria
 - All quality checks passing
 - Critical code issues fixed
-- PR created on GitHub with well-formatted markdown body
+- ALL changes committed (no uncommitted files)
+- Multiple small targeted commits created
+- PR created on GitHub with well-formatted markdown body covering ALL changes
 - PR URL displayed

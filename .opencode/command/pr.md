@@ -2,6 +2,21 @@
 description: Create comprehensive PR with quality checks
 ---
 
+## Gather Context (Pre-collect all data)
+
+Current branch:
+!`git branch --show-current`
+
+Uncommitted changes:
+!`git status --porcelain`
+
+All changes vs main (committed + uncommitted):
+!`git diff --stat main...HEAD`
+!`git diff main...HEAD`
+
+Committed changes:
+!`git log main..HEAD --format="%s" --no-decorate`
+
 ## Workflow
 
 1. **Quality gate** (FIX all failures)
@@ -16,21 +31,26 @@ description: Create comprehensive PR with quality checks
    - Architecture: test coverage, separation of concerns
    - Documentation: README.md, AGENTS.md, docs/* updated
 
-3. **Analyze changes**
-   ```bash
-   git log main..HEAD --format="%s"
-   git diff main..HEAD --stat
-   git diff main..HEAD
-   ```
+3. **Commit all changes**: Create multiple small targeted commits combining related changes
+   - Group related files together (e.g., feature + tests, docs + code, config + implementation)
+   - Use conventional commit format: `type(scope): description`
+   - Commit ALL uncommitted changes - nothing should remain uncommitted
+   - Examples:
+     - `feat(auth): add OAuth2 login flow`
+     - `test(auth): add OAuth2 tests`
+     - `docs(readme): update auth documentation`
+     - `chore(config): update auth configuration`
 
 4. **Create PR**
    ```bash
+   git push
    gh pr create --title "TITLE" --body "BODY"
    ```
 
 ## Title Format
 
-Use `$ARGUMENTS` or generate from commits: `type(scope): description`
+Use `$ARGUMENTS` or generate from ALL changes: `type(scope): description`
+- Combine most relevant user/developer facing changes (limited length)
 
 Examples:
 - `feat(auth): add OAuth2 login flow`
@@ -64,5 +84,7 @@ Examples:
 
 - All quality checks passing
 - Critical issues fixed
-- PR created with well-formatted body
+- ALL changes committed (no uncommitted files)
+- Multiple small targeted commits created
+- PR created with well-formatted body covering ALL changes
 - PR URL displayed
