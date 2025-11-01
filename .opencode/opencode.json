@@ -28,6 +28,11 @@
       "type": "local",
       "command": ["bun", "x", "-y", "octocode-mcp@latest"],
       "enabled": true
+    },
+    "shadcn": {
+      "type": "local",
+      "command": ["bun", "x", "-y", "shadcn@latest", "mcp"],
+      "enabled": true
     }
   },
     "provider": {
