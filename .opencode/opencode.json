@@ -5,10 +5,6 @@
   "plugin": [
     "opencode-openai-codex-auth"
   ],
-  "keybinds": {
-    "session_child_cycle": "<leader>right",
-    "session_child_cycle_reverse": "<leader>left"
-  },
   "permission": {
     "edit": "allow",
     "bash": {
