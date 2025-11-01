@@ -29,7 +29,7 @@ Guidelines:
   the content in the image caption
 - does it adhere to the writing style described in the AGENTS.md.
 - based on the source code, are there any factual errors or hallucinated content?
-- do these pages follow the optimal template from The Good Docs (use context7 mcp to get the docs, key gitlab_tgdp/templates)
+- do these pages follow the optimal template from The Good Docs (use context7 mcp to get the docs, https://context7.com/gitlab_tgdp/templates )
 - are there any content gaps or pages that are missing and can be beneficial for the target reader profile?
 - is all content present targetting the right audience? If not, adjust the content to the right audience and move information you would be deleting to the right section.
 - Did we liberally use mermaid charts to improve understanding and break up
