@@ -10,9 +10,8 @@
 **AFTER LARGE CODE CHANGES aND BEFORE COONSIDERING THE TASK COMPLETE, YOU MUST AUTOMATICALLY RUN:**
 
 1. **test runner checks** - Run the full test, lint, and format suite. Trigger the shared automation (e.g., a `test-runner` Task) when it exists; otherwise execute the equivalent commands yourself and record the outcome.
-2. **review sweep** - Perform static analysis and peer-style review. Use the designated automation if provided; otherwise carry out the review manually using our quality checklist.
-3. **comment update** - Refresh inline comments or impacted docs. Invoke any commenter automation when present; otherwise add the necessary documentation updates manually.
-4. **docs update gate** - Confirm whether broader documentation needs updates (README/guides/CHANGELOG/API docs). If yes, update before marking the task done.
+2. **comment update** - Refresh inline comments or impacted docs. Invoke any commenter automation when present; otherwise add the necessary documentation updates manually.
+3. **docs update gate** - Confirm whether broader documentation needs updates (README/guides/CHANGELOG/API docs). If yes, update before marking the task done.
 
 ### Task Playbooks
 
@@ -21,12 +20,6 @@
 - Scope the run using `git status` and focus on changed files first, then expand to the full suite.
 - Execute the full quality stack (`bun run test`, lint, type check, and formatting) and merge the results with diagnostics.
 - Report issues in the format `path:line:function - message`, prioritising errors over warnings, and log the commands/output you executed.
-
-#### code-review sweep
-- Review the diff (`git diff`) and recent history before diving into files so feedback is contextual.
-- Use IDE diagnostics or manual lint/type-check results to flag obvious problems, then assess readability, maintainability, security, performance, and test coverage.
-- Organise feedback into 🔴 Critical (must fix), 🟡 Warnings (fix soon), and 🔵 Suggestions (nice to have) so the main thread can triage quickly.
-- Call out missing tests, unsafe patterns, or architectural risks with concrete action steps.
 
 #### code-comment update
 - Target the files you touched (or those specified) and add why-first documentation: explain rationale, trade-offs, and domain context instead of restating the code.
@@ -80,7 +73,7 @@
 - Coordinate with other agents before removing their in-progress edits—don't revert or delete work you didn't author unless everyone agrees.
 - Never revert the user's manual edits in this branch/session. Treat them as part of the change; integrate and adjust surrounding code/tests/docs accordingly.
 - Moving/renaming and restoring files is allowed.
-- **AFTER ANY CODE CHANGE: Immediately complete the test-runner and reviewer checks (automation first, manual fallback if needed)**
+- **AFTER ANY CODE CHANGE: Immediately complete the test-runner checks (automation first, manual fallback if needed)**
 
 ### Code Style
 
@@ -101,7 +94,7 @@
 - Quote any git paths containing brackets or parentheses (e.g., `src/app/[candidate]/**`) when staging or committing so the shell does not treat them as globs or subshells.
 - When running `git rebase`, avoid opening editors—export `GIT_EDITOR=:` and `GIT_SEQUENCE_EDITOR=:` (or pass `--no-edit`) so the default messages are used automatically.
 - Never amend commits unless you have explicit written approval in the task thread.
-- **MANDATORY before ANY commit: Complete the test-runner and reviewer checks (automation preferred, manual fallback if required)**
+- **MANDATORY before ANY commit: Complete the test-runner checks (automation preferred, manual fallback if required)**
 - **DO NOT commit if the quality checks report errors - fix them first**
 
 ## Pull Request Expectations
@@ -130,10 +123,9 @@
 
 ### Testing & Code Review (MANDATORY - AUTOMATIC EXECUTION)
 
-- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use ALL THREE:**
+- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use BOTH:**
   1. **test-runner checks** - Run tests, linting, and formatting through automation when possible; otherwise handle them manually
-  2. **code-review sweep** - Perform the code quality review via automation when possible; otherwise handle it manually
-  3. **docs-update gate** - Decide if broader documentation must change; update or justify “No docs changes needed.”
+  2. **docs-update gate** - Decide if broader documentation must change; update or justify "No docs changes needed."
 - **These are NOT OPTIONAL - they MUST run AUTOMATICALLY after EVERY code edit**
 - **NO EXCEPTIONS - even for "small" changes**
 - Capture diagnostics and command outputs for every run; prefer automation but fall back to `bun run test`, `bun run lint`, `bun run typecheck`, and your formatter when required

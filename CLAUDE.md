@@ -10,8 +10,7 @@
 **AFTER ANY CODE CHANGE, YOU MUST AUTOMATICALLY RUN:**
 
 1. **test runner agent** (via Task tool) - Uses IDE diagnostics + runs tests, linting, formatting
-2. **reviewer agent** (via Task tool) - Leverages LSP for code quality analysis
-3. **code commenter agent** (via Task tool) - Uses IDE symbol analysis for smart documentation
+2. **code commenter agent** (via Task tool) - Uses IDE symbol analysis for smart documentation
 
 **These are PROACTIVE agents - they MUST run AUTOMATICALLY after EVERY code edit.**
 **DO NOT wait for the user to ask. DO NOT skip for "small" changes.**
@@ -60,7 +59,7 @@
 - NEVER edit `.env` or any environment variable files—only the user may change them.
 - Coordinate with other agents before removing their in-progress edits—don't revert or delete work you didn't author unless everyone agrees.
 - Moving/renaming and restoring files is allowed.
-- **AFTER ANY CODE CHANGE: Immediately run test-runner and reviewer agents**
+- **AFTER ANY CODE CHANGE: Immediately run test-runner agent**
 
 ### Code Style
 
@@ -81,7 +80,7 @@
 - Quote any git paths containing brackets or parentheses (e.g., `src/app/[candidate]/**`) when staging or committing so the shell does not treat them as globs or subshells.
 - When running `git rebase`, avoid opening editors—export `GIT_EDITOR=:` and `GIT_SEQUENCE_EDITOR=:` (or pass `--no-edit`) so the default messages are used automatically.
 - Never amend commits unless you have explicit written approval in the task thread.
-- **MANDATORY before ANY commit: Run test-runner AND reviewer agents**
+- **MANDATORY before ANY commit: Run test-runner agent**
 - **DO NOT commit if agents report errors - fix them first**
 
 ## Common Commands & Aliases
@@ -115,10 +114,9 @@
 
 ### Testing & Code Review (MANDATORY - IDE-ENHANCED AUTOMATIC EXECUTION)
 
-- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use ALL THREE:**
+- **CRITICAL: After ANY code change, you MUST IMMEDIATELY use BOTH:**
   1. **test-runner agent** - IDE diagnostics FIRST, then tests/linting/formatting (via Task tool)
-  2. **reviewer agent** - LSP-powered code quality analysis (via Task tool)
-  3. **code-commenter agent** - Symbol-aware documentation (via Task tool)
+  2. **code-commenter agent** - Symbol-aware documentation (via Task tool)
 - **IDE FIRST PRINCIPLE: Always check ide diagnostics before running tests**
 - **These are NOT OPTIONAL - they MUST run AUTOMATICALLY after EVERY code edit**
 - **NO EXCEPTIONS - even for "small" changes**

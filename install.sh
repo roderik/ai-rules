@@ -633,6 +633,13 @@ USAGE
         mv "$temp_file" "$target_file"
         log_success "Installed agent: $agent_name.md"
       done
+
+      # Remove deprecated reviewer agent if it exists
+      local reviewer_file="$claude_code_dir/agents/reviewer.md"
+      if [ -f "$reviewer_file" ]; then
+        rm -f "$reviewer_file"
+        log_success "Removed deprecated reviewer agent"
+      fi
     fi
 
     # Install commands (overwrite markdown as-is, no shared content, no backups)
@@ -1418,6 +1425,13 @@ EOF
         mv "$temp_file" "$target_file"
         log_success "Installed OpenCode agent: $agent_name.md"
       done
+
+      # Remove deprecated reviewer agent if it exists
+      local reviewer_file="$opencode_dir/agent/reviewer.md"
+      if [ -f "$reviewer_file" ]; then
+        rm -f "$reviewer_file"
+        log_success "Removed deprecated OpenCode reviewer agent"
+      fi
     fi
 
     # Install OpenCode commands
