@@ -3,77 +3,34 @@ description: Craft or enhance documentation efficiently
 agent: content-writer
 ---
 
-## Mission
+Current branch:
+!`git branch --show-current`
 
-Create skimmable, accurate documentation. Focus on `$FOCUS_AREA` if specified.
-Start with 3-7 conceptual bullets outlining major sections.
+Find and investigate the pre-existing documentation in this repository. Markdown files that should be considered:
 
-## Principles
+!`bash -c 'fd -t f "\.md$"'`
 
-**Skimmability:**
-- Descriptive headings: "Installation requires Node.js 18+" not "Requirements"
-- Table of contents for long docs
-- Lead with summary sentences
-- Lists and tables over dense paragraphs
-- Front-load key info
+Write or update the documentation for:
 
-**Clarity:**
-- Simple language, short sentences
-- Main ideas first, context second
-- Clarify references ("this example" not "this")
-- Consistent tone/formatting
+- if provided, focus on these topics: $ARGUMENTS
+- any changes in the code:
+    - if we are running in the `main` branch, do a general scan and handle the top 3 content that can be improved
+    - if we are running in another branch, update the docs, based on the type of docs, with whatever we need to mention or change for the changes vs main.
 
-**Helpfulness:**
-- Assume varied audience levels
-- Define/link acronyms on first use
-- Anticipate problems proactively
-- Recommend best practices
-- Provide context and rationale
+Guidelines:
 
-**Visuals:**
-- Mermaid diagrams for complexity
-- Focus on single idea per diagram
-- Use proper diagram type (flowchart, sequence, etc.)
-
-## Structure (Diátaxis)
-
-**Guides:**
-- Onboarding, walkthroughs for newcomers
-- Teach with lessons, milestones
-- Begin with learning outcomes
-- Minimal theory, link to deep explanations
-
-**Tips:**
-- How-tos, troubleshooting, best practices
-- Outcome-focused, concise
-- Stepwise instructions
-- Annotated examples
-
-**Reference:**
-- Exhaustive technical info (APIs, commands)
-- Neutral, concise, self-contained
-- Tables for options/flags
-- Runnable examples
-- Version markers
-
-**FAQ:**
-- Q&A format at end
-- Brief answers with links
-
-## Code Examples
-
-- Complete, runnable, realistic
-- Show common usage first
-- Comment non-obvious parts
-- Display expected output
-- One concept per example
-
-## Exit Criteria
-
-- [ ] Skimmable structure
-- [ ] Visual aids present
-- [ ] External refs linked
-- [ ] New terms defined
-- [ ] Examples runnable
-- [ ] Consistent style
-- [ ] Functional and high-quality
+- Ensure your content is in line with the already written sections (or adjust
+  them where needed)
+- Verify that you are not hallucinating features, verify with source code in this repo
+- Be very precise in your wording, locations of files and code snippets,
+  developers will use this and should be able to use the docs as is
+- Add clear placeholders for where screenshots should be included, do this by
+  creating and setting one placeholder image (put it in the repo) and describing
+  the content in the image caption
+- does it adhere to the writing style described in the AGENTS.md.
+- based on the source code, are there any factual errors or hallucinated content?
+- do these pages follow the optimal template from The Good Docs (use context7 mcp to get the docs, key gitlab_tgdp/templates)
+- are there any content gaps or pages that are missing and can be beneficial for the target reader profile?
+- is all content present targetting the right audience? If not, adjust the content to the right audience and move information you would be deleting to the right section.
+- Did we liberally use mermaid charts to improve understanding and break up
+  code, but did not go overboard with useless charts?

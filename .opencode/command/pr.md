@@ -2,34 +2,27 @@
 description: Create comprehensive PR with quality checks
 ---
 
-## Gather Context (Pre-collect all data)
+## PR context
 
 Current branch:
 !`git branch --show-current`
 
-Uncommitted changes:
-!`git status --porcelain`
+Changes vs origin/main (or main):
+!`bash -c 'echo "=== Uncommitted changes ==="; git status --porcelain 2>&1; echo ""; STAT=$(git diff --stat origin/main 2>&1); if [ $? -ne 0 ]; then STAT=$(git diff --stat main 2>&1); BASE="main"; else BASE="origin/main"; fi; LAST_LINE=$(echo "$STAT" | tail -1); TOTAL=$(echo "$LAST_LINE" | awk "{print \$4+\$6}" 2>/dev/null || echo "0"); if [ -z "$TOTAL" ] || [ "$TOTAL" = "0" ]; then FILE_COUNT=$(echo "$STAT" | grep -c "^ " || echo "0"); TOTAL=$FILE_COUNT; fi; if [ "$TOTAL" -gt 200 ]; then echo "=== Changed files (diff too large: $TOTAL+ lines) ==="; echo "$STAT" | grep -v "^$" | sed "$ d"; echo ""; echo "=== Committed changes ==="; git log "$BASE"..HEAD --format="%s" --no-decorate 2>&1 | head -10; else echo "=== Full diff vs $BASE ==="; GIT_PAGER=cat git diff --no-ext-diff "$BASE" 2>&1; fi'`
 
-All changes vs main (committed + uncommitted):
-!`git diff --stat main...HEAD`
-!`git diff main...HEAD`
-
-Committed changes:
-!`git log main..HEAD --format="%s" --no-decorate`
+Linear tickets assigned to me (only include if relevant to this PR scope):
+!`bash -c 'if which linctl >/dev/null 2>&1; then AUTH_STATUS=$(linctl auth status --json 2>&1); if echo "$AUTH_STATUS" | jq -e ".authenticated == true" >/dev/null 2>&1; then linctl issue list --assignee me --plaintext 2>&1; else echo "⚠️ linctl not authenticated"; fi; else echo "⚠️ linctl not installed"; fi'`
 
 ## Workflow
 
-1. **Quality gate** (FIX all failures)
-   - Tests, lint, typecheck, formatting
-   - IDE diagnostics for changed files
-   - Keep running until clean
+1. **Branch confirmation**
+   - Confirm current branch exists (from "Current branch" above) - MUST be on a feature branch, NEVER on main/master
+   - If already on a branch: use it (NEVER create another branch)
+   - If on main/master: create a feature branch first (use Linear ticket ID if relevant)
 
-2. **Code review** (fix critical issues)
-   - Security: input validation, auth, secrets
-   - Performance: efficiency, resource usage
-   - Quality: error handling, maintainability, docs
-   - Architecture: test coverage, separation of concerns
-   - Documentation: README.md, AGENTS.md, docs/* updated
+2. **Quality gate** (FIX all failures)
+   - Tests, lint, typecheck, formatting (typically `bun run ci`)
+   - Documentation: README.md, AGENTS.md, CLAUDE.md, `**/docs/**/*.md` updated
 
 3. **Commit all changes**: Create multiple small targeted commits combining related changes
    - Group related files together (e.g., feature + tests, docs + code, config + implementation)
@@ -44,7 +37,7 @@ Committed changes:
 4. **Create PR**
    ```bash
    git push
-   gh pr create --title "TITLE" --body "BODY"
+   gh pr create --title "TITLE" --body "BODY" --assignee "@me"
    ```
 
 ## Title Format
@@ -74,11 +67,8 @@ Examples:
 ## Breaking Changes
 [List changes, or "None"]
 
-## Related
-- Fixes #[issue]
-- Closes #[issue]
-[Or "None"]
-```
+## Related Linear Issues
+[Use the tickets fetched above which MIGHT be involved in the context of this PR. This is NOT a given and should be evaluated closely. Add any issues mentioned in agent context and list them in the format that links them to Linear]
 
 ## Exit Criteria
 
