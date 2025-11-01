@@ -33,6 +33,11 @@
       "type": "local",
       "command": ["bun", "x", "-y", "shadcn@latest", "mcp"],
       "enabled": true
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": ["bun", "x", "-y", "chrome-devtools-mcp@latest"],
+      "enabled": true
     }
   },
     "provider": {

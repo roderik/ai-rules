@@ -41,7 +41,13 @@
             "command": "bun",
             "args": ["x", "-y", "shadcn@latest", "mcp"],
             "env": {}
-        }
+        },
+        "chrome-devtools": {
+            "type": "stdio",
+            "command": "bun",
+            "args": ["x", "-y", "chrome-devtools-mcp@latest"],
+            "env": {}
+          }
       },
       "hooks": {
         "PostToolUse": [

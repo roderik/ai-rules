@@ -1636,52 +1636,6 @@ EOF
     printf "\n"
   fi
 
-  # Install openskills
-  print_color "$BOLD" "=== Installing openskills ==="
-  if [ "$dry_run" -eq 1 ]; then
-    log_info "[DRY RUN] Would install openskills@latest globally with bun"
-    log_info "[DRY RUN] Would run: openskills install anthropics/skills --universal --global --yes"
-  else
-    if command -v bun >/dev/null 2>&1; then
-      log_info "Installing openskills@latest globally..."
-      if bun install -g openskills@latest 2>/dev/null; then
-        log_success "Successfully installed openskills@latest"
-        # Install anthropics/skills after openskills is installed
-        if command -v openskills >/dev/null 2>&1; then
-          log_info "Installing anthropics/skills..."
-          if openskills install anthropics/skills --universal --global --yes 2>/dev/null; then
-            log_success "Successfully installed anthropics/skills"
-          else
-            log_warning "Failed to install anthropics/skills (optional component)"
-          fi
-        else
-          log_warning "openskills command not found after installation"
-        fi
-      else
-        log_warning "Failed to install openskills (optional component)"
-      fi
-    else
-      log_warning "bun not found - cannot install openskills"
-    fi
-  fi
-
-  printf "\n"
-
-  # Install claude-code-docs
-  print_color "$BOLD" "=== Installing Claude Code Docs ==="
-  log_info "Installing claude-code-docs..."
-  if [ "$dry_run" -eq 1 ]; then
-    log_info "[DRY RUN] Would install claude-code-docs"
-  else
-    if curl -fsSL https://raw.githubusercontent.com/ericbuess/claude-code-docs/main/install.sh | bash; then
-      log_success "Successfully installed claude-code-docs"
-    else
-      log_warning "Failed to install claude-code-docs (optional component)"
-    fi
-  fi
-
-  printf "\n"
-
   # Success message
   print_color "$BOLD$GREEN" "╔════════════════════════════════════════════╗"
   print_color "$BOLD$GREEN" "║     ${ROCKET} Installation Complete! ${ROCKET}        ║"
