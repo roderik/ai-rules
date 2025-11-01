@@ -35,6 +35,12 @@
           "command": "bun",
           "args": ["x", "-y", "octocode-mcp@latest"],
           "env": {}
+        },
+        "shadcn": {
+            "type": "stdio",
+            "command": "bun",
+            "args": ["x", "-y", "shadcn@latest", "mcp"],
+            "env": {}
         }
       },
       "hooks": {
