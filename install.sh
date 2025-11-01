@@ -1325,10 +1325,13 @@ EOF
     # Windows path
     opencode_dir="$USERPROFILE/.config/opencode"
     log_info "Detected Windows environment for OpenCode"
+    rm -rf $USERPROFILE/.cache/opencode
   else
     # Unix-like path (macOS, Linux)
     opencode_dir="$HOME/.config/opencode"
+    rm -rf $HOME/.cache/opencode
   fi
+
 
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Would install OpenCode agents to: $opencode_dir/agent/"
@@ -1344,7 +1347,7 @@ EOF
         print_color "$GREEN" "  + $agent_name.md"
       done
     fi
-    
+
     # Show commands that would be installed
     printf "\n"
     print_color "$BOLD" "📋 OpenCode commands that would be installed:"
@@ -1356,7 +1359,7 @@ EOF
         print_color "$GREEN" "  + $cmd_name.md"
       done
     fi
-    
+
     # Show MCP servers that would be configured
     printf "\n"
     print_color "$BOLD" "🔌 MCP servers that would be configured in opencode.json:"
@@ -1364,7 +1367,7 @@ EOF
     if [ -f "$opencode_base/opencode.json" ]; then
       print_color "$CYAN" "  MCP servers from OpenCode configuration will be applied"
     fi
-    
+
     # Show AGENTS.md that would be installed
     printf "\n"
     print_color "$BOLD" "📄 AGENTS.md file that would be installed to ~/.config/opencode/:"
@@ -1427,7 +1430,7 @@ EOF
         log_success "Installed OpenCode agent: $agent_name.md"
       done
     fi
-    
+
     # Install OpenCode commands
     if [ -d "$opencode_base/command" ]; then
       printf "\n"
@@ -1482,7 +1485,7 @@ EOF
         log_success "Installed OpenCode command: $cmd_name.md"
       done
     fi
-    
+
     # Install AGENTS.md for OpenCode
     if [ -f "$repo_root/AGENTS.md" ]; then
       printf "\n"
@@ -1490,12 +1493,12 @@ EOF
       local backup
       backup="${opencode_dir}/AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
       local target_file="$opencode_dir/AGENTS.md"
-      
+
       # Backup existing file if it exists
       if [ -f "$target_file" ]; then
         cp "$target_file" "$backup"
         log_info "Backed up existing AGENTS.md to: $backup"
-        
+
         # Show diff
         print_color "$YELLOW" "  ⚠️  AGENTS.md (already exists - showing diff):"
         if command -v delta >/dev/null 2>&1; then
@@ -1524,17 +1527,17 @@ EOF
         print_color "$CYAN" "    Preview (first 10 lines):"
         head -10 "$repo_root/AGENTS.md" | sed 's/^/      /'
       fi
-      
+
       cp "$repo_root/AGENTS.md" "$target_file"
       log_success "Installed AGENTS.md to ~/.config/opencode/"
     fi
-    
+
     # Install or update OpenCode configuration
     printf "\n"
     print_color "$BOLD" "Installing OpenCode Configuration..."
-    
+
     local opencode_config="$opencode_dir/opencode.json"
-    
+
     # Merge OpenCode config using jq (override MCP definitions)
     if [ -f "$opencode_base/opencode.json" ]; then
       if [ -f "$opencode_config" ]; then
@@ -1543,7 +1546,7 @@ EOF
         backup="${opencode_config}.backup.$(date +%Y%m%d_%H%M%S)"
         cp "$opencode_config" "$backup"
         log_info "Backed up existing OpenCode config to: $backup"
-        
+
         # Merge configurations but fully replace `.mcp` block when present
         jq -s '
           .[0] as $old | .[1] as $new |
@@ -1557,7 +1560,7 @@ EOF
         cp "$opencode_base/opencode.json" "$opencode_config"
         log_success "Installed OpenCode configuration"
       fi
-      
+
       # Show what was configured
       log_info "MCP servers configured:"
       jq -r '.mcp | keys[]' "$opencode_config" 2>/dev/null | while read -r server; do
@@ -1632,6 +1635,37 @@ EOF
     fi
     printf "\n"
   fi
+
+  # Install openskills
+  print_color "$BOLD" "=== Installing openskills ==="
+  if [ "$dry_run" -eq 1 ]; then
+    log_info "[DRY RUN] Would install openskills@latest globally with bun"
+    log_info "[DRY RUN] Would run: openskills install anthropics/skills --universal --global --yes"
+  else
+    if command -v bun >/dev/null 2>&1; then
+      log_info "Installing openskills@latest globally..."
+      if bun install -g openskills@latest 2>/dev/null; then
+        log_success "Successfully installed openskills@latest"
+        # Install anthropics/skills after openskills is installed
+        if command -v openskills >/dev/null 2>&1; then
+          log_info "Installing anthropics/skills..."
+          if openskills install anthropics/skills --universal --global --yes 2>/dev/null; then
+            log_success "Successfully installed anthropics/skills"
+          else
+            log_warning "Failed to install anthropics/skills (optional component)"
+          fi
+        else
+          log_warning "openskills command not found after installation"
+        fi
+      else
+        log_warning "Failed to install openskills (optional component)"
+      fi
+    else
+      log_warning "bun not found - cannot install openskills"
+    fi
+  fi
+
+  printf "\n"
 
   # Install claude-code-docs
   print_color "$BOLD" "=== Installing Claude Code Docs ==="

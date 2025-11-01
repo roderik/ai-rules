@@ -3,7 +3,8 @@
   "model": "anthropic/claude-sonnet-4-5",
   "small_model": "anthropic/claude-haiku-4-5",
   "plugin": [
-    "opencode-openai-codex-auth"
+    "opencode-openai-codex-auth@latest",
+    "opencode-skills@latest"
   ],
   "permission": {
     "edit": "allow",
