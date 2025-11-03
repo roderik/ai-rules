@@ -96,9 +96,6 @@ Files changed:
 PR timeline + comments:
 !`gh pr view --comments 2>&1`
 
-Diff with line numbers:
-!`gh pr diff 2>&1`
-
 Unresolved review threads count:
 !`bash -c 'GH_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null) && PR_NUMBER=$(gh pr view --json number -q .number 2>/dev/null | grep -E "^[0-9]+$") && if [ -z "$GH_REPO" ] || [ -z "$PR_NUMBER" ]; then echo "ERROR: Could not fetch PR info"; else TMP=$(mktemp) && cat > "$TMP" << '\''EOF'\''
 query($owner:String!,$name:String!,$pr:Int!){
