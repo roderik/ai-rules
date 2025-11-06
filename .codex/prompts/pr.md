@@ -7,8 +7,11 @@ description: Create comprehensive PR with quality checks
 Current branch:
 !`git branch --show-current`
 
-Changes vs origin/main (or main):
-!`bash -c 'echo "=== Uncommitted changes ==="; git status --porcelain 2>&1; echo ""; STAT=$(git diff --stat origin/main 2>&1); if [ $? -ne 0 ]; then STAT=$(git diff --stat main 2>&1); BASE="main"; else BASE="origin/main"; fi; LAST_LINE=$(echo "$STAT" | tail -1); TOTAL=$(echo "$LAST_LINE" | awk "{print \$4+\$6}" 2>/dev/null || echo "0"); if [ -z "$TOTAL" ] || [ "$TOTAL" = "0" ]; then FILE_COUNT=$(echo "$STAT" | grep -c "^ " || echo "0"); TOTAL=$FILE_COUNT; fi; if [ "$TOTAL" -gt 200 ]; then echo "=== Changed files (diff too large: $TOTAL+ lines) ==="; echo "$STAT" | grep -v "^$" | sed "$ d"; echo ""; echo "=== Committed changes ==="; git log "$BASE"..HEAD --format="%s" --no-decorate 2>&1 | head -10; else echo "=== Full diff vs $BASE ==="; GIT_PAGER=cat git diff --no-ext-diff "$BASE" 2>&1; fi'`
+Full PR scope analysis (ALL changes in this branch):
+!`bash -c 'STAT=$(git diff --stat origin/main 2>&1); if [ $? -ne 0 ]; then STAT=$(git diff --stat main 2>&1); BASE="main"; else BASE="origin/main"; fi; echo "=== Changed files (top 25) ==="; echo "$STAT" | head -26; FILE_COUNT=$(echo "$STAT" | grep -c "^ " || echo "0"); if [ "$FILE_COUNT" -gt 25 ]; then echo "... ($FILE_COUNT total files)"; fi; echo ""; echo "=== Commits (last 15) ==="; git log "$BASE"..HEAD --format="%h %s" --no-decorate 2>&1 | head -15; COMMIT_COUNT=$(git rev-list --count "$BASE"..HEAD 2>/dev/null || echo "0"); if [ "$COMMIT_COUNT" -gt 15 ]; then echo "... ($COMMIT_COUNT total commits)"; fi; echo ""; echo "=== File types changed ==="; git diff --name-status "$BASE" 2>&1 | head -30 | awk "{print \$2}" | sed "s|.*\.||" | sort | uniq -c | sort -rn | head -10'`
+
+Full diff vs origin/main (or main) - limited preview:
+!`bash -c 'STAT=$(git diff --stat origin/main 2>&1); if [ $? -ne 0 ]; then STAT=$(git diff --stat main 2>&1); BASE="main"; else BASE="origin/main"; fi; LAST_LINE=$(echo "$STAT" | tail -1); TOTAL=$(echo "$LAST_LINE" | awk "{print \$4+\$6}" 2>/dev/null || echo "0"); if [ -z "$TOTAL" ] || [ "$TOTAL" = "0" ]; then FILE_COUNT=$(echo "$STAT" | grep -c "^ " || echo "0"); TOTAL=$FILE_COUNT; fi; if [ "$TOTAL" -gt 100 ]; then echo "=== Summary (diff too large: $TOTAL+ lines) ==="; echo "$STAT" | head -30; if [ "$(echo "$STAT" | grep -c "^ ")" -gt 30 ]; then echo "... (see full diff with: git diff $BASE)"; fi; echo ""; echo "=== Commit messages ==="; git log "$BASE"..HEAD --format="%s" --no-decorate 2>&1 | head -10; else echo "=== Full diff vs $BASE ==="; GIT_PAGER=cat git diff --no-ext-diff "$BASE" 2>&1 | head -500; fi'`
 
 Linear tickets assigned to me (only include if relevant to this PR scope):
 !`bash -c 'if which linctl >/dev/null 2>&1; then AUTH_STATUS=$(linctl auth status --json 2>&1); if echo "$AUTH_STATUS" | jq -e ".authenticated == true" >/dev/null 2>&1; then linctl issue list --assignee me --plaintext 2>&1; else echo "⚠️ linctl not authenticated"; fi; else echo "⚠️ linctl not installed"; fi'`
@@ -42,33 +45,57 @@ Linear tickets assigned to me (only include if relevant to this PR scope):
 
 ## Title Format
 
-Use `$ARGUMENTS` or generate from ALL changes: `type(scope): description`
-- Combine most relevant user/developer facing changes (limited length)
+**CRITICAL: Analyze ALL changed files and commits to determine the main theme/topic of the ENTIRE PR**
 
-Examples:
-- `feat(auth): add OAuth2 login flow`
-- `fix(api): handle null responses`
-- `refactor(database): migrate to Prisma`
-- `chore(deps): update typescript to 5.x`
-- `docs(readme): add deployment instructions`
+1. **Analyze the full PR scope first:**
+   - Review ALL changed files from "Full PR scope analysis" above
+   - Review ALL commits in this branch
+   - Identify the PRIMARY theme that unifies all changes
+   - Ignore the current agent session context - focus ONLY on what files actually changed
+
+2. **Generate title from the main theme:**
+   - Use `$ARGUMENTS` if provided, OR generate from the PRIMARY theme identified above
+   - Format: `type(scope): description`
+   - The scope should reflect the main area affected across ALL changes
+   - The description should capture the overall change, not just recent edits
+
+3. **Examples:**
+   - If changes span auth files, API routes, and tests → `feat(auth): add OAuth2 login flow`
+   - If changes are only in one component → `fix(api): handle null responses`
+   - If changes refactor multiple related files → `refactor(database): migrate to Prisma`
+   - If changes update dependencies across project → `chore(deps): update typescript to 5.x`
 
 ## Body Template
 
+**CRITICAL: Base the PR description on ALL changed files, not just recent context**
+
+1. **Analyze the full PR scope:**
+   - Review "Full PR scope analysis" section above
+   - List ALL changed files and their purposes
+   - Identify the unifying theme across all changes
+   - Determine what the PR accomplishes as a whole
+
+2. **Generate description from full scope:**
+
 ```markdown
 ## What
-[Clear summary - be specific about files/features]
+[Summary based on ALL changed files - list key files/features affected across the entire PR]
 
 ## Why
-[Business/technical rationale - problem solved?]
+[Business/technical rationale that explains the overall change - what problem does the FULL PR solve?]
 
 ## How
-[Key implementation details and decisions]
+[Key implementation details covering ALL major changes - organize by theme/area, not chronologically]
+
+## Files Changed
+[List or summarize the main files/areas changed - use the "Full PR scope analysis" data]
 
 ## Breaking Changes
 [List changes, or "None"]
 
 ## Related Linear Issues
-[Use the tickets fetched above which MIGHT be involved in the context of this PR. This is NOT a given and should be evaluated closely. Add any issues mentioned in agent context and list them in the format that links them to Linear]
+[Use the tickets fetched above which MIGHT be involved in the context of this PR. This is NOT a given and should be evaluated closely. Only include tickets that relate to the FULL scope of changes, not just recent edits]
+```
 
 ## Exit Criteria
 
