@@ -82,6 +82,7 @@
 - Never amend commits unless you have explicit written approval in the task thread.
 - **MANDATORY before ANY commit: Run test-runner agent**
 - **DO NOT commit if agents report errors - fix them first**
+- When you are pushing to a PR or opening a PR, watch the successful CI run with `gh run watch <run-id>`
 
 ## Common Commands & Aliases
 

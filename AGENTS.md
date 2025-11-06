@@ -96,6 +96,7 @@
 - Never amend commits unless you have explicit written approval in the task thread.
 - **MANDATORY before ANY commit: Complete the test-runner checks (automation preferred, manual fallback if required)**
 - **DO NOT commit if the quality checks report errors - fix them first**
+- When you are pushing to a PR or opening a PR, watch the successful CI run with `gh run watch <run-id>`
 
 ## Pull Request Expectations
 

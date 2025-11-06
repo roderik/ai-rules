@@ -78,3 +78,4 @@ Examples:
 - Multiple small targeted commits created
 - PR created with well-formatted body covering ALL changes
 - PR URL displayed
+- Watch the CI build to ensure it all works, if not iterate and fix: `gh run watch <run-id>`
