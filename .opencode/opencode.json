@@ -19,146 +19,188 @@
   "mcp": {
     "context7": {
       "type": "local",
-      "command": ["bun", "x", "-y", "@upstash/context7-mcp@latest"],
+      "command": [
+        "bun",
+        "x",
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ],
       "enabled": true
     },
     "octocode": {
       "type": "local",
-      "command": ["bun", "x", "-y", "octocode-mcp@latest"],
+      "command": [
+        "bun",
+        "x",
+        "-y",
+        "octocode-mcp@latest"
+      ],
       "enabled": true
     },
     "shadcn": {
       "type": "local",
-      "command": ["bun", "x", "-y", "shadcn@latest", "mcp"],
+      "command": [
+        "bun",
+        "x",
+        "-y",
+        "shadcn@latest",
+        "mcp"
+      ],
       "enabled": true
     },
     "chrome-devtools": {
       "type": "local",
-      "command": ["bun", "x", "-y", "chrome-devtools-mcp@latest"],
+      "command": [
+        "bun",
+        "x",
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ],
       "enabled": true
     }
   },
-    "provider": {
-      "openai": {
-        "options": {
-          "reasoningEffort": "medium",
-          "reasoningSummary": "auto",
-          "textVerbosity": "medium",
-          "include": [
-            "reasoning.encrypted_content"
-          ],
-          "store": false
+  "lsp": {
+    "biome": {
+      "command": [
+        "bun",
+        "x",
+        "-y",
+        "biome",
+        "lsp-proxy"
+      ],
+      "extensions": [
+        ".js",
+        ".jsx",
+        ".ts",
+        ".tsx",
+        ".json",
+        ".jsonc",
+        ".css",
+        ".html"
+      ]
+    }
+  },
+  "provider": {
+    "openai": {
+      "options": {
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "textVerbosity": "medium",
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "store": false
+      },
+      "models": {
+        "gpt-5-codex-low": {
+          "name": "GPT 5 Codex Low (OAuth)",
+          "options": {
+            "reasoningEffort": "low",
+            "reasoningSummary": "auto",
+            "textVerbosity": "medium",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
+          }
         },
-        "models": {
-          "gpt-5-codex-low": {
-            "name": "GPT 5 Codex Low (OAuth)",
-            "options": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
-          },
-          "gpt-5-codex-medium": {
-            "name": "GPT 5 Codex Medium (OAuth)",
-            "options": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
-          },
-          "gpt-5-codex-high": {
-            "name": "GPT 5 Codex High (OAuth)",
-            "options": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
-          },
-          "gpt-5-minimal": {
-            "name": "GPT 5 Minimal (OAuth)",
-            "options": {
-              "reasoningEffort": "minimal",
-              "reasoningSummary": "auto",
-              "textVerbosity": "low",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
-          },
-          "gpt-5-low": {
-            "name": "GPT 5 Low (OAuth)",
-            "options": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "low",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
-          },
-          "gpt-5-medium": {
-            "name": "GPT 5 Medium (OAuth)",
-            "options": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
-          },
-          "gpt-5-high": {
-            "name": "GPT 5 High (OAuth)",
-            "options": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "high",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
-          },
-          "gpt-5-mini": {
-            "name": "GPT 5 Mini (OAuth)",
-            "options": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "low",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
-          },
-          "gpt-5-nano": {
-            "name": "GPT 5 Nano (OAuth)",
-            "options": {
-              "reasoningEffort": "minimal",
-              "reasoningSummary": "auto",
-              "textVerbosity": "low",
-              "include": [
-                "reasoning.encrypted_content"
-              ],
-              "store": false
-            }
+        "gpt-5-codex-medium": {
+          "name": "GPT 5 Codex Medium (OAuth)",
+          "options": {
+            "reasoningEffort": "medium",
+            "reasoningSummary": "auto",
+            "textVerbosity": "medium",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
+          }
+        },
+        "gpt-5-codex-high": {
+          "name": "GPT 5 Codex High (OAuth)",
+          "options": {
+            "reasoningEffort": "high",
+            "reasoningSummary": "detailed",
+            "textVerbosity": "medium",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
+          }
+        },
+        "gpt-5-minimal": {
+          "name": "GPT 5 Minimal (OAuth)",
+          "options": {
+            "reasoningEffort": "minimal",
+            "reasoningSummary": "auto",
+            "textVerbosity": "low",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
+          }
+        },
+        "gpt-5-low": {
+          "name": "GPT 5 Low (OAuth)",
+          "options": {
+            "reasoningEffort": "low",
+            "reasoningSummary": "auto",
+            "textVerbosity": "low",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
+          }
+        },
+        "gpt-5-medium": {
+          "name": "GPT 5 Medium (OAuth)",
+          "options": {
+            "reasoningEffort": "medium",
+            "reasoningSummary": "auto",
+            "textVerbosity": "medium",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
+          }
+        },
+        "gpt-5-high": {
+          "name": "GPT 5 High (OAuth)",
+          "options": {
+            "reasoningEffort": "high",
+            "reasoningSummary": "detailed",
+            "textVerbosity": "high",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
+          }
+        },
+        "gpt-5-mini": {
+          "name": "GPT 5 Mini (OAuth)",
+          "options": {
+            "reasoningEffort": "low",
+            "reasoningSummary": "auto",
+            "textVerbosity": "low",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
+          }
+        },
+        "gpt-5-nano": {
+          "name": "GPT 5 Nano (OAuth)",
+          "options": {
+            "reasoningEffort": "minimal",
+            "reasoningSummary": "auto",
+            "textVerbosity": "low",
+            "include": [
+              "reasoning.encrypted_content"
+            ],
+            "store": false
           }
         }
       }
     }
+  }
 }

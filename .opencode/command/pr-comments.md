@@ -4,6 +4,36 @@ description: Handle and resolve every PR review thread
 
 CRITICAL: all the PR comments are provided in the prompt, use them from the prompt, do not fetch them yourself
 
+## Sub-Agent Strategy
+
+**MANDATORY: Launch sub-agents to process issues while grouping related issues together.**
+
+Before processing threads individually:
+
+1. **Analyze & Group**: Review all unresolved threads and group them by:
+   - Same file or related files
+   - Similar issue type (e.g., type errors, lint issues, style consistency)
+   - Related functionality or context
+   - Dependencies between fixes
+
+2. **Launch Sub-Agents**: For each group of related issues, launch a sub-agent with:
+   - All threads in that group
+   - Context about the grouping rationale
+   - Instructions to process all threads in the group together
+
+3. **Sub-Agent Processing**: Each sub-agent should:
+   - Process all threads in its assigned group
+   - Make coordinated fixes when threads are interdependent
+   - Commit related fixes together when appropriate
+   - Follow the Fix Loop steps below for each thread in its group
+
+4. **Coordination**: The main agent coordinates sub-agents and ensures:
+   - All threads are assigned to a group
+   - No thread is processed by multiple sub-agents
+   - Final verification that all threads are resolved
+
+**Benefits**: Related issues fixed together reduce conflicts, improve code consistency, and enable better test coverage.
+
 ## Fix Loop
 
 For each unresolved thread (process newest→oldest):
