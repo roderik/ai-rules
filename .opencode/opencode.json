@@ -80,6 +80,10 @@
       ]
     }
   },
+  "keybinds": {
+    "session_child_cycle": "<leader>right",
+    "session_child_cycle_reverse": "<leader>left"
+  },
   "provider": {
     "openai": {
       "options": {
