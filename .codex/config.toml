@@ -1,12 +1,18 @@
-# Minimal Codex CLI Configuration
-# Only overrides from defaults
-
 file_opener = "cursor"
-model = "gpt-5-codex"
-model_reasoning_effort = "high"
-model_reasoning_summary_format = "experimental"
+profile = "full-auto"
 
-# Equivalent to --dangerously-bypass-approvals-and-sandbox
+[features]
+web_search_request = true
+rmcp_client = true
+unified_exec = true
+streamable_shell = true
+apply_patch_freeform = true
+ghost_commit = true
+
+[profiles.full-auto]
+model = "gpt-5-codex"
+model_provider = "openai"
+model_reasoning_effort = "medium"
 full-auto = true
 bypass-approvals = true
 trusted-workspace = true
@@ -14,12 +20,21 @@ bypass-sandbox = true
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 
-experimental_use_rmcp_client = true
+[profiles.safe]
+model = "gpt-5-codex"
+model_provider = "openai"
+model_reasoning_effort = "medium"
+full-auto = false
+bypass-approvals = false
+trusted-workspace = false
+bypass-sandbox = false
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
 
-[tools]
-web_search = true
+[shell_environment_policy]
+inherit = "all"
+set = { AGENT = "1" }
 
-# MCP Servers using bun x
 [mcp_servers.context7]
 command = "bun"
 args = ["x", "-y", "@upstash/context7-mcp@latest"]
@@ -32,6 +47,9 @@ args = ["x", "-y", "octocode-mcp@latest"]
 command = "bun"
 args = ["x", "-y", "shadcn@latest", "mcp"]
 
+[mcp_servers.chrome_devtools]
+command = "bun"
+args = ["x", "-y", "chrome-devtools-mcp@latest"]
+
 [tui]
-# Send desktop notifications when approvals are required or a turn completes.
 notifications = true
