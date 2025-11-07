@@ -115,7 +115,7 @@ gh pr view --comments | grep -i "outstanding\|pending\|unresolved" || echo "✓ 
 ## Gather Context
 
 Check for PR:
-!`gh pr view --json number,url,title,state -q 'if .number then "\(.number): \(.title) (\(.url)) [\(.state)]" else "ERROR: No PR found for current branch"' 2>&1`
+!`gh pr view --json number,url,title,state -q 'if .number then "\(.number): \(.title) (\(.url)) [\(.state)]" else "ERROR: No PR found for current branch" end' 2>&1`
 
 Recent commits:
 !`git log origin/main..HEAD --oneline --no-decorate | head -10`
