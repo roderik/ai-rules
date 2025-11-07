@@ -45,7 +45,7 @@ For each unresolved thread (process newest→oldest):
 7. **Reply**: Post reply to thread with fix summary + commit SHA + test results (see Reply command below)
 8. **RESOLVE IN GITHUB**: **MANDATORY STEP** - Execute the Resolve command IMMEDIATELY after replying. **DO NOT SKIP THIS STEP!**
    - Copy the thread ID from the thread info (it's the `Thread: PRRT_...` value from the unresolved threads list)
-   - Run: `gh api graphql --field threadId="<threadId>" --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'`
+   - Run: `gh api graphql --field threadId="<threadId>" --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'` (all on one line, no line breaks)
    - Verify the response shows `"isResolved": true` - if not, the thread is NOT resolved!
    - **Failure to execute this command means the thread will remain unresolved in GitHub**
 9. **Verify**: Re-run unresolved threads check to confirm thread is resolved before moving to next thread
@@ -69,10 +69,7 @@ Fixed in commit <SHA>.
 Reply command:
 ```bash
 # Replace <threadId> with the actual thread ID and <your-reply> with your reply text
-gh api graphql \
-  --field pullRequestReviewThreadId="<threadId>" \
-  --field body="<your-reply>" \
-  --field query='mutation($pullRequestReviewThreadId:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$pullRequestReviewThreadId,body:$body}){comment{id url}}}'
+gh api graphql --field pullRequestReviewThreadId="<threadId>" --field body="<your-reply>" --field query='mutation($pullRequestReviewThreadId:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$pullRequestReviewThreadId,body:$body}){comment{id url}}}'
 ```
 
 ## Resolve Thread (MANDATORY FOR EVERY FIXED THREAD)
@@ -88,9 +85,7 @@ Only resolve after:
 Resolve command (MUST RUN AFTER EACH FIX):
 ```bash
 # Replace <threadId> with the actual thread ID (e.g., PRRT_kwDOQG7ygc5gMWuD)
-gh api graphql \
-  --field threadId="<threadId>" \
-  --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'
+gh api graphql --field threadId="<threadId>" --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'
 ```
 
 **Example:**

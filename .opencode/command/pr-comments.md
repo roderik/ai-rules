@@ -71,10 +71,7 @@ Fixed in commit <SHA>.
 Reply command:
 ```bash
 # Replace <threadId> with the actual thread ID and <your-reply> with your reply text
-gh api graphql \
-  --field pullRequestReviewThreadId="<threadId>" \
-  --field body="<your-reply>" \
-  --field query='mutation($pullRequestReviewThreadId:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$pullRequestReviewThreadId,body:$body}){comment{id url}}}'
+gh api graphql --field pullRequestReviewThreadId="<threadId>" --field body="<your-reply>" --field query='mutation($pullRequestReviewThreadId:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$pullRequestReviewThreadId,body:$body}){comment{id url}}}'
 ```
 
 ## Resolve Thread (MANDATORY FOR EVERY FIXED THREAD)
@@ -90,9 +87,7 @@ Only resolve after:
 Resolve command (MUST RUN AFTER EACH FIX):
 ```bash
 # Replace <threadId> with the actual thread ID (e.g., PRRT_kwDOQG7ygc5gMWuD)
-gh api graphql \
-  --field threadId="<threadId>" \
-  --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'
+gh api graphql --field threadId="<threadId>" --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'
 ```
 
 **Example:**
