@@ -1,4 +1,4 @@
-CRITICAL: all the PR comments are provided in the prompt, use them from the prompt, do not fetch them yourself
+CRITICAL: All unresolved PR review threads are provided in the prompt. **USE THEM FROM THE PROMPT FIRST.** Only use the fallback commands in "Gather Context" section if threads are NOT provided in the prompt. Do NOT fetch threads yourself if they are already in the prompt.
 
 ## Sub-Agent Strategy
 
@@ -31,6 +31,8 @@ Before processing threads individually:
 **Benefits**: Related issues fixed together reduce conflicts, improve code consistency, and enable better test coverage.
 
 ## Fix Loop
+
+**REMINDER: Use unresolved threads from the prompt. Do NOT fetch them if already provided.**
 
 For each unresolved thread (process newest→oldest):
 
@@ -114,6 +116,8 @@ gh pr view --comments | grep -i "outstanding\|pending\|unresolved" || echo "✓ 
 
 ## Gather Context
 
+**IMPORTANT: Use unresolved threads from the prompt first. Only run these commands if threads are not provided in the prompt.**
+
 Check for PR:
 !`gh pr view --json number,url,title,state -q 'if .number then "\(.number): \(.title) (\(.url)) [\(.state)]" else "ERROR: No PR found for current branch" end' 2>&1`
 
@@ -123,11 +127,11 @@ Recent commits:
 Files changed:
 !`git diff --stat origin/main..HEAD`
 
-PR timeline + comments:
+PR timeline + comments (fallback only if not in prompt):
 !`gh pr view --comments 2>&1`
 
-Unresolved review threads count:
+Unresolved review threads count (fallback only if not in prompt):
 !`bash -c 'GH_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null) && PR_NUMBER=$(gh pr view --json number -q .number 2>/dev/null | grep -E "^[0-9]+$") && if [ -z "$GH_REPO" ] || [ -z "$PR_NUMBER" ]; then echo "ERROR: Could not fetch PR info"; else TMP=$(mktemp) && printf '\''query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:100){nodes{isResolved}}}}}\n'\'' > "$TMP" && gh api graphql --field owner="${GH_REPO%/*}" --field name="${GH_REPO#*/}" --field pr="$PR_NUMBER" --field query=@"$TMP" 2>/dev/null | jq -r '\''if .data.repository.pullRequest then ([.data.repository.pullRequest.reviewThreads.nodes[]? | select(.isResolved == false)] | length | "Total unresolved: \(.)") else "No PR found" end'\''; rm -f "$TMP"; fi'`
 
-Unresolved review threads (newest first):
+Unresolved review threads (newest first) - **FALLBACK ONLY: Use threads from prompt if provided**:
 !`bash -c 'GH_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null) && PR_NUMBER=$(gh pr view --json number -q .number 2>/dev/null | grep -E "^[0-9]+$") && if [ -z "$GH_REPO" ] || [ -z "$PR_NUMBER" ]; then echo "ERROR: Could not fetch PR info"; else TMP=$(mktemp) && printf '\''query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:100){nodes{id isResolved isOutdated path line startLine comments(first:20){nodes{id databaseId body author{login} createdAt}}}}}}}\n'\'' > "$TMP" && gh api graphql --field owner="${GH_REPO%/*}" --field name="${GH_REPO#*/}" --field pr="$PR_NUMBER" --field query=@"$TMP" 2>/dev/null | jq -r '\''.data.repository.pullRequest.reviewThreads.nodes[]? | select(.isResolved == false) | select(.comments.nodes | length > 0) | "\(.comments.nodes[0].createdAt)|\(.id)|\(.path // "general")|\(.line // .startLine // "?")|\(.comments.nodes[0].author.login)|\(.comments.nodes[0].body | gsub("\\n"; "\u0001"))"'\'' | sort -t"|" -k1 -r | while IFS="|" read -r date id path line author body; do printf "Thread: %s\nFile: %s:%s\nAuthor: %s\nMessage:\n%s\n---\n" "$id" "$path" "$line" "$author" "${body//$'\''\u0001'\''/$'\''\n'\''}"; done; rm -f "$TMP"; fi'`

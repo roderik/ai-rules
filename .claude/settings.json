@@ -13,11 +13,11 @@
         "MAX_MCP_OUTPUT_TOKENS": "50000",
         "DISABLE_COST_WARNINGS": "1"
     },
-    "statusLine": {
-        "type": "command",
-        "command": "bun x ccusage@latest statusline",
-        "padding": 0
-    },
+	"statusLine": {
+		"type": "command",
+		"command": "bun x ccusage statusline --visual-burn-rate emoji",
+		"padding": 0
+	},
     "enableAllProjectMcpServers": true,
     "mcpServers": {
         "linear": {
