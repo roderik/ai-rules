@@ -1,395 +1,614 @@
-# AI Rules
+# AI Skills Management with OpenSkills
 
-Professional AI assistant configurations for Claude Code, Codex CLI, OpenCode and Gemini CLI with enterprise-grade defaults for Solidity and TypeScript development.
+Professional skills collection for AI assistants covering security-first blockchain development and production-ready cloud-native infrastructure.
 
-## Complete Setup
+Manage custom skills across Claude Code, OpenCode, Cursor, and Codex using [openskills](https://github.com/numman-ali/openskills).
 
-This repository is part of a comprehensive development environment setup. For the full experience, check out:
+## Overview
 
-- **[Shell Config](https://github.com/roderik/shell-config)** - Shell configuration and dotfiles
-- **[AI Rules](https://github.com/roderik/ai-rules)** - AI assistant configurations (this repo)
-- **[WT](https://github.com/roderik/wt)** - Windows Terminal configuration
+This repository uses the `.claude/skills/` directory to store custom skills that follow Anthropic's skills specification. These skills work across multiple AI coding tools:
 
-**Author**: [@r0derik](https://x.com/r0derik)
+- **Claude Code**: Native skill support via `Skill` tool
+- **OpenCode**: CLI-based skills via `openskills read <name>`
+- **Cursor**: CLI-based skills via `openskills read <name>` in AGENTS.md
+- **Codex**: CLI-based skills via `openskills read <name>` in AGENTS.md
 
-## Features
+## Quick Start: Bare Machine Setup
 
-### 🎯 Smart Configuration
+Complete setup from scratch on a new machine.
 
-- **Multi-AI Support**: Unified configuration for Claude Code, Codex CLI, and Gemini CLI
-- **Optimized Environment Variables**: Extended timeouts, enhanced output limits, deep thinking tokens
-- **Professional Hooks**: Auto-formatting with Prettier and Forge, security warnings, sensitive file protection
-- **Status Line Integration**: Real-time usage tracking with `ccusage`
-- **MCP Server Support**: Shared MCP servers across all AI assistants
-- **AI Agents**: Automatic code review, test runner, and PR creator agents
-- **Custom Commands**: Unified `/review`, `/test`, and `/pr` commands across platforms
-
-### 🛡️ Security First
-
-- Warns about dangerous commands (`rm -rf`, `sudo`, etc.)
-- Protects sensitive files (`.env`, secrets, SSH configs)
-- Blocks prompts containing passwords or API keys
-- Creates backups before any modifications
-
-### 🎨 Developer Experience
-
-- Beautiful gradient ASCII art banner
-- Colorful terminal output with emoji indicators
-- Dry-run mode for safe testing
-- Selective installation (Code-only or Desktop-only)
-- Intelligent JSON merging preserves your settings
-
-## Quick Install
-
-### Basic One-liner
+### Step 1: Install Homebrew (macOS/Linux)
 
 ```bash
-# Default installation
-curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/install.sh | bash
+# Install Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Verify installation
+brew --version
 ```
 
-### One-liner with Options
+### Step 2: Install Bun
 
 ```bash
-# Preview changes without installing (dry run)
-curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/install.sh | bash -s -- --dry-run
+# Install via Homebrew (preferred)
+brew install bun
 
-# Force overwrite existing configurations
-curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/install.sh | bash -s -- --force
+# Or via curl (alternative)
+# curl -fsSL https://bun.sh/install | bash
 
-# Using wget instead of curl
-wget -qO- https://raw.githubusercontent.com/roderik/ai-rules/main/install.sh | bash -s -- --dry-run
+# Verify installation
+bun --version
 ```
 
-### Clone and Install
+### Step 3: Install AI CLI Tools
 
 ```bash
-git clone https://github.com/roderik/ai-rules.git
-cd ai-rules
-./install.sh
+# Install Claude Code (via Homebrew if available, otherwise use npm/bun)
+brew install claude-code || bun add -g claude-code
+
+# Install OpenCode
+brew install opencode || bun add -g @opencode/cli
+
+# Install Codex
+brew install codex || bun add -g @codex/cli
+
+# Install Gemini CLI
+bun add -g @google/gemini-cli
 ```
 
-## Installation Options
+**Note:** Some tools may not be in Homebrew yet. The commands above fall back to `bun add` if Homebrew install fails.
+
+### Step 4: Install OpenSkills
 
 ```bash
-# Default installation
-./install.sh
+# Install openskills globally via bun
+bun add -g openskills
 
-# Preview changes without installing
-./install.sh --dry-run
-
-# Force overwrite existing configurations
-./install.sh --force
+# Verify installation
+openskills --version
 ```
 
-## Configuration Locations
-
-Configurations are installed to:
-
-- **Claude Code**: `~/.claude/`
-- **Codex CLI**: `~/.codex/`
-- **Gemini CLI**: `~/.gemini/`
-
-## What Gets Installed
-
-### AI Agents (Claude Code)
-
-- **test-runner**: Proactive agent for running quality checks
-  - Invoke directly with `@test-runner` in Claude Code
-  - Runs tests, linting, and formatting
-  - Returns focused error list with file:line:function format
-  - Critical requirement - runs after ANY code change
-  - No exceptions for quality enforcement
-
-- **pr-creator**: PR creation and lifecycle management agent
-  - Invoke directly with `@pr-creator` in Claude Code
-  - Creates pull requests when explicitly requested
-  - Handles branch creation, commits, and pushing
-  - Generates PR title and description from changes
-  - Returns PR URL for review
-
-### Custom Commands
-
-#### Claude Code & Gemini CLI
-
-- **/test**: Automated test and fix workflow
-  - Claude: Launches test-runner agent to check for issues
-  - Gemini: Scripted test execution and auto-fix
-  - Automatically fixes format, lint, and type errors
-  - Iterates until all checks pass
-  - Returns focused error list with file:line format
-
-- **/pr**: Create pull requests with a single command
-  - Claude: Uses pr-creator agent
-  - Gemini: Scripted PR creation workflow
-  - Handles complete PR workflow automatically
-  - Creates appropriate branch names
-  - Commits uncommitted changes
-  - Generates PR title and description from changes
-  - Supports Linear ticket integration
-  - Returns PR URL for review
-
-- **/docs**: Write/improve documentation with OpenAI best practices
-  - Claude: Applies documentation principles with visual diagrams
-  - Gemini: Structured documentation workflow
-  - Codex: Available via `prompts/docs.md`
-  - Makes docs easy to skim with clear section titles
-  - Adds Mermaid diagrams for architecture and workflows
-  - Links third-party tools to official documentation
-  - Introduces new concepts with context
-  - Provides realistic, copy-pastable examples
-
-### Environment Variables
-
-```json
-{
-  "ENABLE_BACKGROUND_TASKS": "1",
-  "FORCE_AUTO_BACKGROUND_TASKS": "1",
-  "CLAUDE_CODE_ENABLE_UNIFIED_READ_TOOL": "1",
-  "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
-  "BASH_MAX_TIMEOUT_MS": "600000",
-  "BASH_DEFAULT_TIMEOUT_MS": "600000",
-  "BASH_MAX_OUTPUT_LENGTH": "50000",
-  "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "8192",
-  "MAX_THINKING_TOKENS": "32768",
-  "MCP_TIMEOUT": "30000",
-  "MCP_TOOL_TIMEOUT": "60000",
-  "MAX_MCP_OUTPUT_TOKENS": "50000",
-  "DISABLE_COST_WARNINGS": "1",
-  "DISABLE_NON_ESSENTIAL_MODEL_CALLS": "1"
-}
-```
-
-### Hooks
-
-- **PostToolUse**: Auto-format with Prettier and Forge for Solidity
-- **PreToolUse**: Security warnings for dangerous operations
-- **SessionStart**: Session logging with timestamp
-- **UserPromptSubmit**: Sensitive data filtering
-
-### Features
-
-- `ccusage` status line for real-time usage tracking
-- Auto-approval for all project MCP servers
-- Co-authorship disabled by default
-
-### Multi-AI Collaboration
-
-The configuration supports seamless collaboration between AI assistants:
-
-#### Codex CLI
-
-- **AGENTS.md**: Specialized agent instructions for multi-model collaboration
-- **config.toml**: Model selection and prompt customization
-- **Custom Prompts**:
-  - `prompts/docs.md`: Documentation writing using OpenAI best practices
-  - `prompts/pr.md`: Pull request creation workflow
-  - `prompts/test.md`: Quality checks and auto-fix
-  - `prompts/comments.md`: Code documentation generation
-  - `prompts/pr-comments.md`: PR review comments
-  - `prompts/onboard.md`: Repository onboarding
-- **Role**: Complex implementation and code generation specialist
-
-#### Gemini CLI
-
-- **AGENTS.md**: Shared agent collaboration instructions
-- **settings.json**: Shared MCP servers with Claude
-- **commands.toml**: Unified command structure (`/pr`, `/review`, `/test`)
-- **Role**: Validation, review, and quality assurance specialist
-
-### MCP Servers
-
-Shared MCP (Model Context Protocol) servers across all AI assistants:
-
-#### Shared Across All Platforms
-
-- **linear**: Linear issue tracking integration
-- **context7**: Library documentation and code examples
-- **deepwiki**: GitHub repository documentation
-- **sentry**: Error tracking and monitoring
-- **playwright**: Browser automation and testing
-- **grep**: Code search across GitHub
-- **OpenZeppelinSolidityContracts**: Solidity contract templates
-- **octocode**: GitHub code exploration
-
-## Uninstallation
-
-### Basic One-liner
+### Step 5: Install Skills Globally
 
 ```bash
-# Default uninstall
-curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/uninstall.sh | bash
+# Install all skills from this repository
+openskills install roderik/ai-rules --global
+
+# Skills are installed to ~/.claude/skills/
+# Interactive checkbox lets you select which skills to install
 ```
 
-### One-liner with Options
+**Note:** Skills are now globally installed and ready to use. You'll sync to project-specific `AGENTS.md` later when you have a project.
+
+## Authentication Setup
+
+### Claude Code Authentication
 
 ```bash
-# Preview what will be removed (dry run)
-curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/uninstall.sh | bash -s -- --dry-run
+# Login to Claude Code
+claude login
 
-# Skip confirmation prompt
-curl -fsSL https://raw.githubusercontent.com/roderik/ai-rules/main/uninstall.sh | bash -s -- --force
-
-# Using wget instead of curl
-wget -qO- https://raw.githubusercontent.com/roderik/ai-rules/main/uninstall.sh | bash -s -- --dry-run
+# Verify authentication
+claude whoami
 ```
 
-### Using Local Script
+Visit the authentication URL and enter the code provided.
+
+### OpenCode Authentication
 
 ```bash
-./uninstall.sh           # Interactive uninstall
-./uninstall.sh --dry-run # Preview what will be removed
-./uninstall.sh --force   # Skip confirmation prompt
+# Login to OpenCode
+opencode auth login
+
+# Verify authentication
+opencode auth whoami
 ```
 
-The uninstaller:
+Follow the authentication prompts to complete the login process.
 
-- Preserves your personal settings
-- Creates timestamped backups
-- Only removes AI Rules specific configurations
-
-## Requirements
-
-- `jq` - JSON processor (required)
-- `git` - Version control (required)
-- `bun` or `npm` - For Prettier formatting
-- `forge` - For Solidity formatting (optional)
-
-### Installing Dependencies
-
-**macOS:**
+### Codex Authentication
 
 ```bash
-brew install jq git
+# Login to Codex
+codex login
+
+# Verify authentication
+codex whoami
 ```
 
-**Ubuntu/Debian:**
+### Gemini Authentication
 
 ```bash
-sudo apt-get install jq git
+# Set API key
+export GOOGLE_API_KEY="your-api-key-here"
+
+# Or add to ~/.bashrc or ~/.zshrc
+echo 'export GOOGLE_API_KEY="your-api-key-here"' >> ~/.zshrc
+
+# Verify authentication
+gemini --version
 ```
 
-**Fedora/RHEL:**
+Get your API key from: https://aistudio.google.com/app/apikey
+
+## Complete System Setup with rr-system Skill
+
+After installing the skills and authenticating, use the `rr-system` skill to finish configuring your development environment with modern CLI tools.
+
+Since we don't have a project with `AGENTS.md` yet, we'll use `openskills read` to load the skill directly.
+
+### Using Claude Code
 
 ```bash
-sudo yum install jq git
+# Load the skill content and pass to Claude
+claude "$(openskills read rr-system)
+
+Complete my system setup following the instructions above."
 ```
 
-**Arch Linux:**
+### Using OpenCode
 
 ```bash
-sudo pacman -S jq git
+# Load the skill content and pass to OpenCode
+opencode "$(openskills read rr-system)
+
+Complete my system setup following the instructions above."
 ```
 
-## Advanced Usage
-
-### Custom Installation Directory
+### Using Codex
 
 ```bash
-export CLAUDE_CONFIG_ROOT="/custom/path"
-./install.sh
+# Load the skill content and pass to Codex
+codex "$(openskills read rr-system)
+
+Complete my system setup following the instructions above."
 ```
 
-### Backup Files
-
-Both installer and uninstaller create timestamped backups:
-
-- `settings.json.backup.YYYYMMDD_HHMMSS`
-- Preserves your existing configurations before changes
-
-### JSON Merging
-
-The installer intelligently merges configurations:
-
-- Preserves existing user settings
-- Appends new hooks without duplicates
-- Merges environment variables
-- Handles nested JSON structures
-
-## Troubleshooting
-
-### Missing Dependencies
+### Using Gemini
 
 ```bash
-# Check for required tools
-command -v jq >/dev/null || echo "jq not installed"
-command -v git >/dev/null || echo "git not installed"
+# Load the skill content and pass to Gemini
+gemini "$(openskills read rr-system)
+
+Complete my system setup following the instructions above."
 ```
 
-### Permission Errors
+The `rr-system` skill will guide the agent to install and configure:
+- Modern CLI tools (fd, rg, bat, eza, etc.)
+- Git configuration
+- Development tools and aliases
+- Shell enhancements
+
+### After System Setup: Sync Skills to Projects
+
+Once you have a project directory, sync skills to enable automatic skill loading:
 
 ```bash
-# Make scripts executable
-chmod +x install.sh uninstall.sh
+# In your project directory
+cd /path/to/your/project
+
+# Sync skills to AGENTS.md
+openskills sync
 ```
 
-### Forge Not Found
+This creates/updates `AGENTS.md` with a `<skills_system>` section, allowing agents to automatically discover and use skills without manually loading them via `openskills read`.
 
-Forge formatting is optional. To enable Solidity formatting:
+## Quick Reference
 
 ```bash
-# Install Foundry
-curl -L https://foundry.paradigm.xyz | bash
-foundryup
+# List installed skills
+openskills list
+
+# Read a skill (useful for manual loading or inspection)
+openskills read rr-system
+
+# Call an agent with a skill (if AGENTS.md is synced in project)
+claude "Use rr-typescript skill to help me set up a new TypeScript project"
+opencode "Use rr-kubernetes skill to create a production-ready deployment"
+codex "Use rr-solidity skill to write a secure ERC20 contract"
+gemini "Use rr-tanstack skill to set up TanStack Query"
+
+# Call an agent with a skill (without AGENTS.md - manual loading)
+claude "$(openskills read rr-typescript)
+
+Help me set up a new TypeScript project following the instructions above."
+
+# Sync skills to project AGENTS.md
+cd /path/to/your/project
+openskills sync
 ```
 
-### Status Line Not Working
+## Available Skills
 
-Install ccusage for the status line feature:
+### 🔐 [rr-better-auth](./.claude/skills/rr-better-auth/)
+**Better Auth Authentication Framework**
+
+Type-safe authentication with Better Auth framework for Next.js and React applications.
+
+**Triggers:** `better-auth`, authentication setup, auth configuration
+
+---
+
+### 🔧 [rr-gitops](./.claude/skills/rr-gitops/)
+**Git Workflow & GitHub CLI**
+
+Git best practices, GitHub CLI operations, and PR management workflows.
+
+**Triggers:** Git operations, GitHub CLI, PR workflows
+
+---
+
+### ☸️ [rr-kubernetes](./.claude/skills/rr-kubernetes/)
+**Kubernetes, Helm & OpenShift Operations**
+
+Production-ready Kubernetes manifest generation, Helm chart development, and security policy implementation.
+
+**Features:**
+- Generate production-ready K8s manifests
+- Scaffold Helm charts with best practices
+- Security policies (PSS, Network Policies, RBAC)
+- OpenShift-specific resources (Routes, ImageStreams)
+- Automated validation and security scanning
+- Multi-environment deployment strategies
+
+**Triggers:** `.yaml`/`.yml` files, Helm charts, kubectl/oc commands
+
+---
+
+### 🔌 [rr-orpc](./.claude/skills/rr-orpc/)
+**oRPC Framework**
+
+Type-safe API development with oRPC framework for building end-to-end type-safe APIs.
+
+**Triggers:** `orpc`, API development, type-safe RPC
+
+---
+
+### 🛠️ [rr-skill-creator](./.claude/skills/rr-skill-creator/)
+**Skill Creator Guide**
+
+Comprehensive guide for creating effective skills with proper structure, validation, and packaging.
+
+**Triggers:** Creating or editing skills, SKILL.md files
+
+---
+
+### 🔗 [rr-solidity](./.claude/skills/rr-solidity/)
+**Solidity Development with Foundry**
+
+Security-first smart contract development with Foundry framework, testing, static analysis, and deployment workflows.
+
+**Features:**
+- Security-first contract patterns (CEI, access control)
+- Comprehensive testing (unit, fuzz, invariant)
+- Static analysis integration (Slither, solhint)
+- Deployment and verification scripts
+- Gas optimization strategies
+
+**Triggers:** `.sol` files, Foundry projects
+
+---
+
+### 💻 [rr-system](./.claude/skills/rr-system/)
+**System Setup & Modern CLI Tools**
+
+System configuration, modern CLI tool setup, and development environment best practices.
+
+**Triggers:** System setup, CLI tool configuration
+
+---
+
+### 📊 [rr-tanstack](./.claude/skills/rr-tanstack/)
+**TanStack Ecosystem**
+
+Comprehensive guidance for TanStack libraries (Query, Router, Table, Form, Start, Virtual, Store, DB).
+
+**Triggers:** TanStack libraries, data fetching, routing, forms, tables
+
+---
+
+### 📘 [rr-typescript](./.claude/skills/rr-typescript/)
+**TypeScript, Bun & Vitest**
+
+TypeScript best practices, Bun runtime patterns, and Vitest testing standards.
+
+**Triggers:** `.ts`/`.tsx` files, TypeScript projects
+
+---
+
+## Skills Marketplace
+
+A **[marketplace.json](./marketplace.json)** file at the repository root provides a complete catalog of published skills with metadata.
+
+The marketplace focuses on **security-first blockchain development** (Solidity smart contracts with Foundry) and **production-ready cloud-native infrastructure** (Kubernetes orchestration, Helm charts, OpenShift operations, security policies, and multi-environment deployment strategies).
 
 ```bash
-npm install -g ccusage
-# or
-bun add -g ccusage
+# Browse all skills
+cat marketplace.json | jq '.skills[] | {id, name, category}'
+
+# View skill details
+cat marketplace.json | jq '.skills[] | select(.id == "rr-kubernetes")'
 ```
 
-## Project Structure
+The marketplace includes:
+- **Category organization** (Blockchain & Web3, DevOps & Infrastructure)
+- **Trigger patterns** for auto-activation (file extensions, patterns, keywords)
+- **Feature descriptions** and compatibility info
+- **Tags and keywords** for discovery
+
+## Directory Structure
 
 ```
-ai-rules/
-├── .claude/                   # Claude Code configuration
-│   ├── agents/
-│   │   ├── test-runner.md    # Quality checks agent
-│   │   └── pr-creator.md     # PR creation agent
-│   ├── commands/
-│   │   ├── test.md           # Automated test/fix command
-│   │   └── pr.md             # PR creation command
-│   ├── settings/
-│   │   └── settings.json     # Environment variables and features
-│   ├── hooks/
-│   │   └── hooks.json        # Pre/Post tool hooks
-│   └── mcp/
-│       └── mcp.json          # MCP server configurations
-├── .codex/                    # Codex CLI configuration
-│   ├── config.toml           # Codex settings and model config
-│   └── AGENTS.md             # Agent collaboration instructions
-├── .gemini/                   # Gemini CLI configuration
-│   ├── settings.json         # Gemini settings with MCP servers
-│   └── commands.toml         # Custom command definitions
-├── CLAUDE.md                  # Global Claude instructions
-├── AGENTS.md                  # Global agent instructions
-├── install.sh                 # Installer script
-├── uninstall.sh               # Uninstaller script
-└── README.md                  # This file
+.
+├── marketplace.json     # Skills catalog with metadata
+├── .claude/
+│   └── skills/          # Skill source code
+│       ├── rr-typescript/
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── rr-orpc/
+│       │   ├── SKILL.md
+│       │   └── references/
+│       └── ...
+├── .github/
+│   ├── workflows/       # CI validation
+│   └── validate-all.sh  # Local validation script
+├── AGENTS.md            # Configuration for OpenCode, Cursor, Codex
+└── CLAUDE.md            # Global preferences for all tools
 ```
+
+Skills are installed globally to `~/.claude/skills/` on your machine.
+
+## Skill Structure
+
+Each skill follows this structure:
+
+```
+skill-name/
+├── SKILL.md              # Main skill documentation
+├── references/           # Reference documentation
+├── scripts/              # Executable utilities
+├── assets/               # Templates and resources
+└── marketplace.json      # Individual skill metadata (optional)
+```
+
+## Common Commands
+
+### List Installed Skills
+
+```bash
+openskills list
+```
+
+Shows all globally installed skills from `~/.claude/skills/`.
+
+### Install Skills
+
+```bash
+# From this repository
+openskills install roderik/ai-rules --global
+
+# From Anthropic's marketplace
+openskills install anthropics/skills --global
+
+# From other repositories
+openskills install your-username/your-skill --global
+```
+
+### Read Skills
+
+```bash
+# Read skill content (for inspection or manual loading)
+openskills read rr-system
+
+# Use with agents (without AGENTS.md synced)
+claude "$(openskills read rr-typescript)
+
+Set up a new TypeScript project following the instructions above."
+```
+
+### Sync to AGENTS.md
+
+Update the skills list in AGENTS.md (run from project directory):
+
+```bash
+cd /path/to/your/project
+openskills sync
+```
+
+Run after installing or removing skills, or when setting up a new project.
+
+### Remove Skills
+
+```bash
+# Interactive removal
+openskills manage
+
+# Remove specific skill
+openskills remove rr-typescript
+```
+
+## Validation
+
+All skills are automatically validated in CI using GitHub Actions. Validate locally before committing:
+
+```bash
+# Validate all skills
+./.github/validate-all.sh
+
+# Validate specific skill
+python3 .claude/skills/rr-skill-creator/scripts/quick_validate.py .claude/skills/rr-tanstack
+```
+
+Validation checks:
+- YAML frontmatter format
+- Required fields (`name`, `description`)
+- Naming conventions (hyphen-case)
+- Description format
+- openskills CLI compatibility
+
+See [.github/workflows/README.md](./.github/workflows/README.md) for CI details.
+
+## How Skills Work Across Tools
+
+### Claude Code
+
+Claude Code has **native skill support** via the `Skill` tool:
+
+```xml
+<skill>
+<name>rr-typescript</name>
+<description>Guidance for writing TypeScript code...</description>
+<location>project</location>
+</skill>
+```
+
+When user mentions a skill, Claude invokes: `Skill("rr-typescript")`
+
+### OpenCode, Cursor, Codex
+
+These tools support skills in two ways:
+
+**1. Via AGENTS.md (automatic - after sync)**
+
+```xml
+<skill>
+<name>rr-typescript</name>
+<description>Guidance for writing TypeScript code...</description>
+<location>project</location>
+</skill>
+```
+
+When user mentions a skill, agent invokes: `Bash("openskills read rr-typescript")`
+
+**2. Via Manual Loading (before project setup)**
+
+```bash
+# Load skill content directly into prompt
+opencode "$(openskills read rr-typescript)
+
+Set up TypeScript project following the instructions above."
+```
+
+**Same format, different invocation methods.**
+
+## Multi-Tool Setup
+
+If you use multiple AI tools, here's the recommended configuration:
+
+### Claude Code
+- Reads skills from `.claude/skills/` automatically
+- Can also read from AGENTS.md if synced
+- Uses native `Skill` tool
+- Works immediately after global skill installation
+
+### OpenCode
+- **With project:** Requires AGENTS.md with skills section (via `openskills sync`)
+- **Without project:** Use `openskills read <name>` to manually load skills
+- Uses `openskills read <name>` via Bash when AGENTS.md is synced
+
+### Cursor
+- **With project:** Requires AGENTS.md with skills section (via `openskills sync`)
+- **Without project:** Use `openskills read <name>` to manually load skills
+- Uses `openskills read <name>` via Bash when AGENTS.md is synced
+
+### Codex
+- **With project:** Requires AGENTS.md with skills section (via `openskills sync`)
+- **Without project:** Use `openskills read <name>` to manually load skills
+- Uses `openskills read <name>` via Bash when AGENTS.md is synced
+
+### Sync Strategy
+
+**Before project setup:** Use `openskills read <name>` to manually load skills into prompts
+
+**After project setup:** Run `openskills sync` in your project directory to enable automatic skill discovery via AGENTS.md
+
+Run `openskills sync` after any skill changes to ensure all tools have the updated list.
+
+## Skill Naming Convention
+
+This repository uses the `rr-` prefix for custom skills to distinguish them from Anthropic's marketplace skills.
+
+**Patterns used:**
+- `rr-<domain>` - Domain-specific skills (e.g., `rr-typescript`, `rr-solidity`)
+- `rr-<framework>` - Framework skills (e.g., `rr-orpc`, `rr-tanstack`)
+- `rr-<workflow>` - Workflow skills (e.g., `rr-gitops`, `rr-system`)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! To add a new skill:
 
-### Development
+1. Follow existing skill structure
+2. Validate with `./.github/validate-all.sh`
+3. Add entry to root `marketplace.json`
+4. Update this README
+5. Submit pull request
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## Troubleshooting
 
-## License
+### Skills not appearing in list
 
-MIT - See [LICENSE](LICENSE) file for details
+Check install location:
+
+```bash
+ls -la ~/.claude/skills/
+```
+
+### Agent not loading skills
+
+1. Verify AGENTS.md has skills section:
+
+```bash
+grep -A 10 "<skills_system>" AGENTS.md
+```
+
+2. Re-sync:
+
+```bash
+openskills sync
+```
+
+3. Restart your AI tool
+
+### Skill not reading correctly
+
+Verify SKILL.md format:
+
+```bash
+openskills read skill-name
+```
+
+Ensure frontmatter has `name` and `description`.
+
+## Requirements
+
+- **Homebrew** (macOS/Linux) - Preferred installation method
+- **Bun** or **Node.js** 20.6+ (for openskills and fallback installations)
+- **Git** (for installing from GitHub)
+- **Bash** (for agents to invoke openskills)
+- **Python** 3.11+ (for validation scripts)
+
+**Installation preference order:**
+1. `brew install <package>` (preferred - easiest updates and management)
+2. `bun add -g <package>` (fallback - when not in Homebrew)
+3. `npm i -g <package>` or `pnpm add -g <package>` (alternatives)
+
+## Resources
+
+- [OpenSkills GitHub](https://github.com/numman-ali/openskills)
+- [Anthropic Skills Marketplace](https://github.com/anthropics/skills)
+- [Anthropic Skills Blog Post](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/roderik/ai-rules/issues)
-- Discussions: [GitHub Discussions](https://github.com/roderik/ai-rules/discussions)
+- **Documentation**: See individual skill README files
+- **Issues**: [GitHub Issues](https://github.com/roderik/ai-rules/issues)
+- **Repository**: [github.com/roderik/ai-rules](https://github.com/roderik/ai-rules)
+
+## License
+
+MIT License - see individual skill directories for details.
+
+---
+
+**Note**: OpenSkills is not affiliated with Anthropic. It implements Anthropic's open skills specification.

@@ -1,0 +1,100 @@
+name: Validate Skills
+
+on:
+  push:
+    branches: [main, feat/**]
+    paths:
+      - '.claude/skills/**'
+      - '.github/workflows/validate-skills.yml'
+  pull_request:
+    paths:
+      - '.claude/skills/**'
+      - '.github/workflows/validate-skills.yml'
+
+jobs:
+  validate:
+    name: Validate All Skills
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install openskills
+        run: npm install -g openskills
+
+      - name: Validate skills with quick_validate.py
+        run: |
+          echo "🔍 Running validation script..."
+          ./.github/validate-all.sh
+
+      - name: Test openskills compatibility
+        run: |
+          echo "🔍 Testing openskills compatibility..."
+
+          # List skills to verify openskills can read them
+          openskills list || echo "⚠️  openskills list returned non-zero (may be expected if no skills installed)"
+
+          # Try to sync (with -y flag for non-interactive)
+          if openskills sync -y; then
+            echo "✅ Skills are compatible with openskills"
+          else
+            echo "⚠️  openskills sync had issues (may be expected in CI)"
+          fi
+
+      - name: Validate skill structure
+        run: |
+          echo "🔍 Checking skill directory structure..."
+
+          for skill_dir in .claude/skills/*/; do
+            if [ -f "${skill_dir}SKILL.md" ]; then
+              skill_name=$(basename "$skill_dir")
+              echo ""
+              echo "Checking structure: $skill_name"
+
+              # Check SKILL.md frontmatter
+              if head -n 1 "${skill_dir}SKILL.md" | grep -q "^---$"; then
+                echo "  ✅ Valid YAML frontmatter"
+              else
+                echo "  ❌ Missing or invalid YAML frontmatter"
+                exit 1
+              fi
+
+              # Check for valid resource directories (if they exist)
+              for resource_dir in references scripts assets; do
+                if [ -d "${skill_dir}${resource_dir}" ]; then
+                  file_count=$(find "${skill_dir}${resource_dir}" -type f | wc -l)
+                  echo "  ✅ ${resource_dir}/ exists with ${file_count} file(s)"
+                fi
+              done
+            fi
+          done
+
+          echo ""
+          echo "✅ All skill structures are valid"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo ""
+          echo "📊 Validation Summary"
+          echo "===================="
+          skill_count=$(find .claude/skills -maxdepth 2 -name "SKILL.md" | wc -l)
+          echo "Total skills found: $skill_count"
+          echo ""
+          echo "Skills validated:"
+          for skill_dir in .claude/skills/*/; do
+            if [ -f "${skill_dir}SKILL.md" ]; then
+              echo "  - $(basename "$skill_dir")"
+            fi
+          done

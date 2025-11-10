@@ -1,0 +1,55 @@
+file_opener = "cursor"
+profile = "full-auto"
+
+[features]
+web_search_request = true
+rmcp_client = true
+unified_exec = true
+streamable_shell = true
+apply_patch_freeform = true
+ghost_commit = true
+
+[profiles.full-auto]
+model = "gpt-5-codex"
+model_provider = "openai"
+model_reasoning_effort = "medium"
+full-auto = true
+bypass-approvals = true
+trusted-workspace = true
+bypass-sandbox = true
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+[profiles.safe]
+model = "gpt-5-codex"
+model_provider = "openai"
+model_reasoning_effort = "medium"
+full-auto = false
+bypass-approvals = false
+trusted-workspace = false
+bypass-sandbox = false
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[shell_environment_policy]
+inherit = "all"
+set = { AGENT = "1" }
+
+[mcp_servers.context7]
+command = "bun"
+args = ["x", "-y", "@upstash/context7-mcp@latest"]
+
+[mcp_servers.octocode]
+command = "bun"
+args = ["x", "-y", "octocode-mcp@latest"]
+
+[mcp_servers.shadcn]
+command = "bun"
+args = ["x", "-y", "shadcn@latest", "mcp"]
+
+[mcp_servers.chrome_devtools]
+command = "bun"
+args = ["x", "-y", "chrome-devtools-mcp@latest"]
+
+[tui]
+notifications = true

@@ -1,0 +1,124 @@
+{
+  "marketplace": {
+    "name": "RR Skills Collection",
+    "version": "1.0.0",
+    "description": "Professional skills collection for AI assistants covering security-first blockchain development (Solidity smart contracts with Foundry) and production-ready cloud-native infrastructure (Kubernetes orchestration, Helm charts, OpenShift operations, security policies, and multi-environment deployment strategies)",
+    "author": {
+      "name": "Roderik",
+      "namespace": "rr",
+      "url": "https://github.com/roderik/ai-rules",
+      "email": "roderik@vanderveer.be"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/roderik/ai-rules",
+      "directory": ".claude/skills"
+    },
+    "license": "MIT",
+    "updated": "2025-01-10T00:00:00Z"
+  },
+  "skills": [
+    {
+      "id": "rr-solidity",
+      "name": "Solidity Development with Foundry",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-solidity",
+      "category": "Blockchain & Web3",
+      "subcategories": ["Smart Contracts", "Security", "Testing"],
+      "description": "Comprehensive Solidity smart contract development skill using Foundry framework. Provides security-first development practices, testing patterns, static analysis integration, and deployment workflows for EVM-compatible blockchains.",
+      "shortDescription": "Security-first Solidity development with Foundry, testing, and auditing",
+      "tags": [
+        "solidity",
+        "foundry",
+        "smart-contracts",
+        "blockchain",
+        "ethereum",
+        "web3",
+        "defi",
+        "security",
+        "testing",
+        "evm"
+      ],
+      "features": [
+        "Security-first contract development patterns",
+        "Comprehensive testing with fuzzing and invariants",
+        "Static analysis integration (Slither, solhint)",
+        "Deployment scripts and verification",
+        "Gas optimization strategies",
+        "ERC standard implementations"
+      ],
+      "triggers": {
+        "fileExtensions": [".sol"],
+        "filePatterns": ["**/foundry.toml", "**/remappings.txt"],
+        "keywords": ["solidity", "foundry", "smart contract", "blockchain", "ethereum"]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": ["forge", "cast", "anvil", "slither", "solhint"]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-kubernetes",
+      "name": "Kubernetes, Helm & OpenShift Operations",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-kubernetes",
+      "category": "DevOps & Infrastructure",
+      "subcategories": ["Container Orchestration", "Cloud Native", "Infrastructure as Code"],
+      "description": "Comprehensive skill for professional Kubernetes operations covering manifest generation, Helm chart development, security policy implementation, and OpenShift-specific patterns. Provides production-ready templates, security-first practices, and multi-environment deployment strategies.",
+      "shortDescription": "Production-ready Kubernetes, Helm, and OpenShift operations with security-first practices",
+      "tags": [
+        "kubernetes",
+        "k8s",
+        "helm",
+        "openshift",
+        "container-orchestration",
+        "devops",
+        "cloud-native",
+        "infrastructure",
+        "security",
+        "rbac",
+        "network-policies",
+        "deployments"
+      ],
+      "features": [
+        "Generate production-ready Kubernetes manifests",
+        "Scaffold Helm charts with best practices",
+        "Implement security policies (PSS, Network Policies, RBAC)",
+        "OpenShift-specific resources (Routes, ImageStreams, BuildConfigs)",
+        "Automated validation and security scanning",
+        "Multi-environment deployment strategies"
+      ],
+      "triggers": {
+        "fileExtensions": [".yaml", ".yml"],
+        "filePatterns": ["**/Chart.yaml", "**/values.yaml", "**/kustomization.yaml"],
+        "keywords": ["kubernetes", "helm", "openshift", "kubectl", "deployment", "pod"]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": ["kubectl", "helm", "oc", "kubeval", "kube-linter", "yamllint"]
+      },
+      "status": "active"
+    }
+  ],
+  "categories": [
+    {
+      "id": "blockchain-web3",
+      "name": "Blockchain & Web3",
+      "description": "Smart contracts, DeFi, and blockchain development"
+    },
+    {
+      "id": "devops-infrastructure",
+      "name": "DevOps & Infrastructure",
+      "description": "Container orchestration, cloud platforms, and infrastructure automation"
+    }
+  ],
+  "statistics": {
+    "totalSkills": 2,
+    "activeSkills": 2,
+    "categories": 2,
+    "lastUpdated": "2025-01-10T00:00:00Z"
+  }
+}
