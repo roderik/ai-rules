@@ -124,7 +124,8 @@ install_from_brewfile() {
   printf "\n"
 
   # Use brew bundle to install everything
-  if brew bundle --file="$brewfile"; then
+  # Avoid writing Brewfile.lock.json while keeping bundle idempotent
+  if HOMEBREW_BUNDLE_NO_LOCK=1 brew bundle --file="$brewfile"; then
     log_success "Completed: $(basename "$brewfile")"
   else
     log_warn "Some tools from $(basename "$brewfile") may have failed to install"
