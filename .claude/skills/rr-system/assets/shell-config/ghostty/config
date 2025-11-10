@@ -1,0 +1,76 @@
+# --- Ghostty: tuned by assistant (safe, commented) ---
+# Date: Configuration template
+# Keep this concise and override only non-defaults.
+
+# UI & Theme
+# Use popular built-in themes with auto light/dark switching
+theme = Catppuccin Mocha
+
+
+# Subtle translucency with tasteful blur (macOS supported)
+background-opacity = 0.95
+background-blur = 20
+
+# Make unfocused splits slightly see-through
+unfocused-split-opacity = 0.90
+
+# Use bright palette for bold text
+bold-is-bright = true
+
+# Fonts
+# Reset and set preferred fallbacks (first available takes effect)
+font-family = ""
+font-family = "Berkeley Mono"
+font-family = "JetBrainsMono Nerd Font"
+font-family = "SF Mono"
+font-family = "Iosevka"
+font-family = "FiraCode Nerd Font"
+font-family = "Menlo"
+font-family = "Monaco"
+font-size = 12.5
+font-feature = calt, liga, dlig, clig
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = true
+cursor-opacity = 0.9
+
+# macOS-native look & feel
+window-theme = system
+macos-titlebar-style = tabs
+window-colorspace = display-p3
+alpha-blending = linear-corrected
+
+# macOS behavior & safety
+macos-option-as-alt = true
+macos-auto-secure-input = true
+macos-secure-input-indication = true
+window-step-resize = true
+macos-non-native-fullscreen = false
+
+# Clipboard & selection (safe defaults)
+copy-on-select = true
+clipboard-read = ask
+clipboard-write = allow
+clipboard-paste-protection = true
+clipboard-trim-trailing-spaces = true
+
+# Updates (macOS app builds)
+auto-update = check
+auto-update-channel = tip
+
+# Quick drop-down terminal (global hotkey; grant Accessibility on first use)
+quick-terminal-position = top
+quick-terminal-autohide = true
+keybind = global:cmd+grave_accent=toggle_quick_terminal
+
+# Familiar copy/paste shortcuts
+keybind = cmd+c=copy_to_clipboard
+keybind = cmd+v=paste_from_clipboard
+
+# Optional: font tuning for macOS renderer
+font-thicken = true
+font-thicken-strength = 40
+
+# Claude
+keybind = shift+enter=text:\n

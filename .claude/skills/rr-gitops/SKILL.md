@@ -205,6 +205,36 @@ gh run watch 123456
 gh run view 123456 --log-failed
 ```
 
+### Linting GitHub Actions Workflows
+
+**ALWAYS lint workflows before committing:**
+
+```bash
+# Lint all workflows
+actionlint
+
+# Lint specific workflow
+actionlint .github/workflows/ci.yml
+
+# Run in strict mode (fail on warnings)
+actionlint -verbose
+
+# Auto-fix issues (when available)
+actionlint -format '{{json .}}'
+```
+
+**Common issues detected:**
+
+- Invalid action versions or references
+- Missing required inputs
+- Deprecated syntax
+- Shell script errors in run steps
+- Invalid YAML structure
+- Security issues (e.g., script injection)
+
+**Integration with pre-commit:**
+Actionlint runs automatically during pre-commit validation when workflow files are staged.
+
 ### Getting Review Comments
 
 ```bash
@@ -284,7 +314,12 @@ git diff --staged
 # 4. Run tests/lint (via test-runner agent)
 # Quality checks MUST pass before commit
 
-# 5. Then commit
+# 5. Lint GitHub Actions workflows (if modified)
+if git diff --staged --name-only | grep -q '.github/workflows/'; then
+  actionlint
+fi
+
+# 6. Then commit
 git commit -m "message" -- explicit-files.ts
 ```
 
@@ -294,23 +329,28 @@ git commit -m "message" -- explicit-files.ts
 
 ```markdown
 ## Summary
+
 - What changed
 - Why it changed
 - How it changed
 
 ## Test plan
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests pass
 - [ ] Manual testing performed
 
 ## Breaking changes
+
 - List any breaking changes
 - Include migration steps
 
 ## Screenshots
+
 (if UI changes)
 
 ## Related
+
 - Fixes #123
 - Related to #456
 

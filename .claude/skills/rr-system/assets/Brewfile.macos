@@ -1,0 +1,31 @@
+# Brewfile for macOS-Only Applications
+# Install with: brew bundle --file=Brewfile.macos
+# This file contains GUI applications and macOS-specific tools
+
+# Password & Security
+cask "1password"        # Password manager
+cask "1password-cli"    # 1Password CLI
+
+# Communication & Collaboration
+cask "linear-linear"           # Issue tracking
+cask "slack"            # Team communication
+cask "zoom"             # Video conferencing
+
+# Development Tools
+cask "cursor"           # AI-powered code editor
+cask "ghostty"          # Modern terminal emulator
+cask "tower"            # Git client
+
+# AI Assistants
+cask "chatgpt"          # ChatGPT desktop app
+cask "claude"           # Claude AI desktop app
+cask "claude-code"      # Claude Code CLI
+cask "codex"            # Codex CLI (AI code assistant)
+
+# Productivity
+cask "granola"          # Meeting notes
+cask "raycast"          # Spotlight replacement
+cask "shottr"           # Screenshot tool
+
+# Cloud SDKs
+cask "google-cloud-sdk" # Google Cloud SDK (gcloud)

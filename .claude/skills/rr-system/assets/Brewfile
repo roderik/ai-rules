@@ -1,0 +1,82 @@
+# Brewfile for Modern Development Environment
+# Install with: brew bundle --file=Brewfile
+
+# Add Homebrew taps
+tap "dorkitude/linctl"
+
+# Shells
+brew "bash"             # Latest Bash
+brew "fish"             # Fish shell
+brew "zsh"              # Latest Zsh
+
+# Zsh plugins
+brew "zsh-autosuggestions"
+brew "zsh-completions"
+brew "zsh-syntax-highlighting"
+
+# Core modern CLI tools
+brew "ast-grep"         # Structural search/replace tool
+brew "atuin"            # Better shell history with sync
+brew "bat"              # Cat with syntax highlighting
+brew "broot"            # Better tree
+brew "btop"             # Better system monitor
+brew "chafa"            # Terminal graphics
+brew "coreutils"        # GNU core utilities
+brew "difftastic"       # Better git diff
+brew "direnv"           # Per-project environment variables
+brew "eza"              # Better ls
+brew "fd"               # Better find
+brew "foundry"          # Ethereum development toolkit
+brew "fzf"              # Fuzzy finder
+brew "git-delta"        # Better git diff
+brew "hexyl"            # Hex viewer
+brew "jq"               # JSON processor
+brew "procs"            # Better ps
+brew "ripgrep"          # Better grep (rg)
+brew "starship"         # Modern cross-shell prompt
+brew "sudo-touchid"     # Enable Touch ID for sudo
+brew "yq"               # YAML processor
+brew "zoxide"           # Smarter cd command
+
+# Development tools
+brew "actionlint"       # GitHub Actions workflow linter
+brew "direnv"           # Per-project environments
+brew "fnm"              # Fast Node.js version manager
+brew "git"              # Latest Git
+brew "go"               # Go programming language
+brew "mkcert"           # Local HTTPS certificate tool
+brew "neovim"           # Modern Vim
+brew "node"             # Node.js runtime
+brew "python@3.14"      # Python (latest version)
+brew "rsync"            # Fast file transfer
+brew "shellcheck"       # Shell script linting
+brew "tree-sitter"      # Parser for syntax highlighting
+brew "uv"               # Fast Python package installer
+
+# Git UI tools
+brew "lazydocker"       # Terminal UI for Docker
+brew "lazygit"          # Terminal UI for Git
+
+# Cloud & Infrastructure
+brew "awscli"           # AWS CLI
+brew "azure-cli"        # Azure CLI
+brew "chart-testing"    # Helm chart testing/linting
+brew "gh"               # GitHub CLI
+brew "helm"             # Kubernetes package manager
+brew "helm-docs"        # Auto-generate Helm docs
+brew "k9s"              # Kubernetes TUI
+brew "kubectx"          # Switch kubectl contexts
+brew "kubernetes-cli"   # kubectl
+brew "linctl"           # Kubernetes cluster management
+brew "tilt"             # Local Kubernetes development
+
+# Terminal multiplexers
+brew "tmux"             # Terminal multiplexer
+brew "zellij"           # Modern terminal multiplexer
+
+# Neovim dependencies
+brew "luarocks"         # Lua package manager
+
+# AI CLI tools
+brew "gemini-cli"       # Google Gemini AI CLI
+brew "opencode"         # OpenCode AI assistant
