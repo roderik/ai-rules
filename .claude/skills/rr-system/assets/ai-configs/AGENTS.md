@@ -151,6 +151,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>rr-drizzle</name>
+<description>Comprehensive guidance for implementing type-safe database operations with Drizzle ORM and PostgreSQL. Use when working with database schemas, queries, migrations, or performance optimization in TypeScript applications. Automatically triggered when working with Drizzle schema files, database queries, or PostgreSQL operations.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>rr-gitops</name>
 <description>Comprehensive Git and GitHub workflow management using conventional commits, atomic commits, gh CLI for all GitHub operations, and safe git practices. Use this skill for any git operation, commit creation, PR management, CI monitoring, or GitHub interaction. Essential for maintaining clean git history and professional GitHub workflows.</description>
 <location>global</location>
