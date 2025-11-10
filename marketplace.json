@@ -2,7 +2,7 @@
   "marketplace": {
     "name": "Roderik's Skills Collection",
     "version": "2.0.0",
-    "description": "Professional skills collection for AI assistants covering authentication, databases, TypeScript development, RPC APIs, Git workflows, blockchain development, cloud infrastructure, and system setup",
+    "description": "Professional skills collection for AI assistants covering authentication, databases, TypeScript development, RPC APIs, Git workflows, blockchain development, infrastructure as code, cloud infrastructure, and system setup",
     "author": {
       "name": "Roderik van der Veer",
       "namespace": "rr",
@@ -208,6 +208,62 @@
       "status": "active"
     },
     {
+      "id": "rr-nestjs",
+      "name": "NestJS Framework",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-nestjs",
+      "category": "Backend Development",
+      "subcategories": ["Framework", "TypeScript", "REST API", "Microservices"],
+      "description": "Comprehensive NestJS framework skill for building scalable server-side applications. Covers TypeScript backend development with controllers, providers, modules, dependency injection, middleware, guards, interceptors, pipes, database integration (TypeORM), GraphQL, microservices, testing, and API documentation.",
+      "shortDescription": "NestJS framework for scalable server-side TypeScript applications",
+      "tags": [
+        "nestjs",
+        "typescript",
+        "backend",
+        "rest-api",
+        "graphql",
+        "microservices",
+        "typeorm",
+        "dependency-injection",
+        "decorators",
+        "testing"
+      ],
+      "features": [
+        "Controllers and routing with decorators",
+        "Dependency injection and IoC container",
+        "TypeORM database integration",
+        "Guards for authentication and authorization",
+        "Interceptors and middleware",
+        "Pipes for validation and transformation",
+        "Exception filters for error handling",
+        "Swagger/OpenAPI documentation",
+        "Unit and E2E testing patterns",
+        "Microservices support"
+      ],
+      "triggers": {
+        "filePatterns": [
+          "**/nest-cli.json",
+          "**/*.module.ts",
+          "**/*.controller.ts",
+          "**/*.service.ts"
+        ],
+        "keywords": [
+          "nestjs",
+          "nest",
+          "@nestjs",
+          "controller",
+          "injectable",
+          "module"
+        ]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": ["node", "bun", "@nestjs/cli"]
+      },
+      "status": "active"
+    },
+    {
       "id": "rr-orpc",
       "name": "oRPC Type-Safe RPC Framework",
       "version": "1.0.0",
@@ -244,6 +300,58 @@
         "platforms": ["macos", "linux", "windows"],
         "requiredTools": [],
         "optionalTools": ["bun", "node"]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-pulumi",
+      "name": "Pulumi Infrastructure as Code",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-pulumi",
+      "category": "DevOps & Infrastructure",
+      "subcategories": [
+        "Infrastructure as Code",
+        "Cloud Platforms",
+        "Multi-Cloud"
+      ],
+      "description": "Comprehensive Pulumi infrastructure-as-code skill for AWS, Kubernetes, and multi-cloud deployments. Define cloud infrastructure using TypeScript, Python, Go, or other languages. Covers projects, stacks, resources, configuration, state management, Automation API, and CI/CD integration.",
+      "shortDescription": "Infrastructure as Code with Pulumi (AWS, Kubernetes, multi-cloud)",
+      "tags": [
+        "pulumi",
+        "infrastructure-as-code",
+        "iac",
+        "aws",
+        "kubernetes",
+        "multi-cloud",
+        "typescript",
+        "python",
+        "automation-api",
+        "gitops"
+      ],
+      "features": [
+        "AWS resource provisioning (Lambda, EC2, S3, RDS, VPC)",
+        "Kubernetes deployments and Helm charts",
+        "Multi-cloud and multi-region deployments",
+        "Stack references for cross-stack dependencies",
+        "Automation API for embedded infrastructure",
+        "Configuration and secrets management",
+        "CI/CD integration patterns",
+        "Infrastructure testing with automated tests"
+      ],
+      "triggers": {
+        "filePatterns": ["**/Pulumi.yaml", "**/Pulumi.*.yaml"],
+        "keywords": [
+          "pulumi",
+          "infrastructure as code",
+          "iac",
+          "cloud infrastructure",
+          "multi-cloud"
+        ]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": ["pulumi", "node", "python3", "go"]
       },
       "status": "active"
     },
@@ -487,6 +595,11 @@
       "description": "API design, RPC frameworks, and type-safe communication"
     },
     {
+      "id": "backend-development",
+      "name": "Backend Development",
+      "description": "Backend frameworks, server-side development, and API implementations"
+    },
+    {
       "id": "development-tools",
       "name": "Development Tools",
       "description": "Development utilities, tooling, and workflow automation"
@@ -508,9 +621,9 @@
     }
   ],
   "statistics": {
-    "totalSkills": 10,
-    "activeSkills": 10,
-    "categories": 9,
+    "totalSkills": 12,
+    "activeSkills": 12,
+    "categories": 10,
     "lastUpdated": "2025-01-10T00:00:00Z"
   }
 }

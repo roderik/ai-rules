@@ -56,7 +56,9 @@ gemini -p "Use rr-tanstack to setup Query"
 - **[rr-drizzle](./.claude/skills/rr-drizzle/)** - Type-safe Drizzle ORM with PostgreSQL
 - **[rr-gitops](./.claude/skills/rr-gitops/)** - Git workflow & GitHub CLI best practices
 - **[rr-kubernetes](./.claude/skills/rr-kubernetes/)** - K8s, Helm & OpenShift production deployments
+- **[rr-nestjs](./.claude/skills/rr-nestjs/)** - NestJS framework for scalable server-side applications
 - **[rr-orpc](./.claude/skills/rr-orpc/)** - Type-safe RPC APIs with oRPC
+- **[rr-pulumi](./.claude/skills/rr-pulumi/)** - Infrastructure as Code with Pulumi (AWS, Kubernetes, multi-cloud)
 - **[rr-skill-creator](./.claude/skills/rr-skill-creator/)** - Create new skills
 - **[rr-solidity](./.claude/skills/rr-solidity/)** - Security-first Solidity development with Foundry
 - **[rr-system](./.claude/skills/rr-system/)** - System setup & modern CLI tools
