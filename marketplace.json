@@ -1,10 +1,10 @@
 {
   "marketplace": {
-    "name": "RR Skills Collection",
-    "version": "1.0.0",
+    "name": "Roderik's Skills Collection",
+    "version": "2.0.0",
     "description": "Professional skills collection for AI assistants covering authentication, databases, TypeScript development, RPC APIs, Git workflows, blockchain development, cloud infrastructure, and system setup",
     "author": {
-      "name": "Roderik",
+      "name": "Roderik van der Veer",
       "namespace": "rr",
       "url": "https://github.com/roderik/ai-rules",
       "email": "roderik@vanderveer.be"
@@ -15,7 +15,7 @@
       "directory": ".claude/skills"
     },
     "license": "MIT",
-    "updated": "2025-01-10T00:00:00Z"
+    "updated": "2025-11-10T15:00:00Z"
   },
   "skills": [
     {
