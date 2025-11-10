@@ -9,6 +9,17 @@ description: System setup, tool information, and AI configuration management for
 
 Provides comprehensive system setup automation and tool reference for the rr- development environment, including shell-config (Fish/Zsh/Bash + modern CLI tools), ai-rules (AI assistant configurations), and wt (git worktree manager). Use when setting up new machines, explaining installed tools, checking configurations, or troubleshooting environment issues.
 
+**⚠️ IMPORTANT: ALWAYS CHECK OFFICIAL DOCUMENTATION ONLINE**
+
+This skill provides a reference baseline, but tools evolve rapidly. Before making configuration changes or providing usage instructions:
+
+1. **Search online for the latest official documentation** of each tool
+2. **Verify current CLI options and flags** (many tools update frequently)
+3. **Check for breaking changes** in recent versions
+4. **Use official docs as source of truth** - this skill may be outdated
+
+**Official documentation sources are listed in the Tool Reference section below.**
+
 ## When to Use This Skill
 
 - Setting up new macOS, Ubuntu, or Debian development machines
@@ -199,18 +210,32 @@ Load `references/ai-config-schemas.md` for:
 
 ### 4. Tool Reference
 
-Comprehensive reference available in `references/tools-reference.md` covering:
+**⚠️ CRITICAL: Load `references/tools-reference.md` for complete documentation links**
 
-**Modern CLI Tools:**
+The tools reference contains:
+1. **Official documentation URLs** for every tool (ALWAYS check these online)
+2. **Quick usage examples** (verify with official docs before using)
+3. **Configuration locations** and best practices
+
+**Before providing any tool-specific commands:**
+1. Load `references/tools-reference.md`
+2. Find the tool's official documentation URL
+3. Search online for the latest documentation
+4. Verify exact CLI flags and options
+5. Provide commands based on official docs, not just this reference
+
+**Modern CLI Tools Installed:**
 - File operations: bat, eza, fd, ripgrep
-- Development: neovim (LazyVim), lazygit, lazydocker, fzf
+- Development: neovim (LazyVim), lazygit, lazydocker, fzf, ast-grep
 - Navigation: zoxide, atuin, direnv
 - Version managers: fnm (Node.js), uv (Python)
 - System: procs, hexyl, broot, git-delta, difftastic
 - Cloud: kubectl, helm, gh, aws-cli, azure-cli, gcloud
 - Blockchain: foundry (forge, cast, anvil, chisel)
 - Terminal: tmux, zellij
-- Code search: ast-grep
+- AI CLIs: Claude Code, OpenCode, Codex, Gemini CLI
+- Package managers: Homebrew, Bun
+- Skills: openskills
 
 **Configuration Locations:**
 - Fish: `~/.config/fish/` (config.fish + conf.d/)
@@ -223,10 +248,13 @@ Comprehensive reference available in `references/tools-reference.md` covering:
 - Gemini: `~/.gemini/`
 
 **Git Worktree Manager (wt):**
+- **Installation:** Fish shell function at `~/.config/fish/functions/wt.fish`
+- **Availability:** Fish shell only (use `fish -c "wt <cmd>"` from bash/zsh)
 - Commands: new, switch, list, remove, clean, status
 - Auto package manager detection (Bun/NPM/Yarn/PNPM)
 - Storage: `~/.wt/<repo-name>/`
 - Tab completion in Fish shell
+- **Verification:** Check file exists: `ls ~/.config/fish/functions/wt.fish`
 
 **Key Aliases:**
 - `ls` → `eza` (modern ls)
@@ -238,6 +266,12 @@ Comprehensive reference available in `references/tools-reference.md` covering:
 - Tools: `lzg` (lazygit), `lzd` (lazydocker), `ff` (fzf preview)
 
 ## Workflow Guide
+
+**⚠️ BEFORE PROVIDING CONFIGURATION COMMANDS:**
+1. Load `references/tools-reference.md` for official documentation links
+2. Search online for the latest tool documentation
+3. Verify commands match current tool versions
+4. Check for breaking changes or deprecated flags
 
 ### Setting Up New Machine
 
@@ -256,13 +290,24 @@ Comprehensive reference available in `references/tools-reference.md` covering:
    - Homebrew in PATH
    - Fish config exists
    - Claude config exists
-   - wt installed
+   - wt installed (checks for `~/.config/fish/functions/wt.fish`)
 
 4. **Post-Installation:**
    - Restart terminal
    - Run: `fish` (start Fish shell)
-   - Run: `wt help` (verify wt)
+   - Run: `fish -c "wt help"` (verify wt - Fish function only)
    - Optional: `chsh -s $(which fish)` (make Fish default)
+
+5. **Verify Tools (examples - check official docs for current flags):**
+   ```bash
+   # Check versions (flags may vary - verify online)
+   bat --version
+   eza --version
+   fd --version
+   rg --version
+   ```
+
+   **NOTE:** Always verify command syntax with official documentation before using.
 
 ### Updating Existing Installation
 
@@ -305,14 +350,47 @@ source ~/.bashrc                   # Bash
 compaudit | xargs sudo chmod 755
 ```
 
+**wt command not found:**
+```bash
+# wt is a Fish shell function - verify it's installed:
+ls -la ~/.config/fish/functions/wt.fish
+
+# If file exists, switch to Fish shell:
+fish
+wt help
+
+# Or run from bash/zsh:
+fish -c "wt help"
+
+# If file doesn't exist, reinstall:
+curl -sL https://raw.githubusercontent.com/roderik/wt/main/wt.fish > ~/.config/fish/functions/wt.fish
+```
+
 ## Checking System Status
 
 ### Verify Tool Installation
+
+**For regular tools:**
 ```bash
 command -v <tool>  # Check if tool exists
 which <tool>       # Show tool location
 <tool> --version   # Check version
 ```
+
+**For wt (Fish shell function):**
+```bash
+# Check if wt function file exists
+ls -la ~/.config/fish/functions/wt.fish
+
+# Test wt from Fish shell
+fish -c "wt help"
+
+# Or switch to Fish and test
+fish
+wt help
+```
+
+**Note:** `wt` is a Fish shell function installed at `~/.config/fish/functions/wt.fish`. It's only available in Fish shell, not in bash/zsh. Use `fish -c "wt <command>"` to run wt from other shells, or switch to Fish with `fish` command.
 
 ### Check Configurations
 ```bash
@@ -431,10 +509,19 @@ Common config locations:
 
 ### "Tool not working after installation"
 
+**For most tools:**
 1. Check if tool in PATH: `command -v <tool>`
 2. Reload shell config: `source ~/.config/fish/config.fish`
 3. Verify Homebrew: `brew list | grep <tool>`
 4. Reinstall if needed: `brew reinstall <tool>`
+
+**For wt specifically:**
+1. Check if Fish function file exists: `ls ~/.config/fish/functions/wt.fish`
+2. If file exists but command fails: Switch to Fish shell (`fish`) then run `wt help`
+3. If running from bash/zsh: Use `fish -c "wt <command>"`
+4. If file doesn't exist: Reinstall with `curl -sL https://raw.githubusercontent.com/roderik/wt/main/wt.fish > ~/.config/fish/functions/wt.fish`
+
+**Note:** `wt` is **only available in Fish shell** - it won't work in bash or zsh directly.
 
 ### "How do I add an MCP server to all AI assistants?"
 
@@ -474,6 +561,14 @@ Keep command/args identical (e.g., `bun x -y package@latest`) across all platfor
 
 ## Resources
 
+**⚠️ PRIMARY INSTRUCTION: ALWAYS START WITH OFFICIAL DOCUMENTATION**
+
+Before using any information from this skill's resources:
+1. Load `references/tools-reference.md` for official documentation URLs
+2. Search online for the current official documentation
+3. Verify all commands, flags, and configuration with official sources
+4. Use this skill as a reference baseline only - official docs are source of truth
+
 ### scripts/
 Installation and update automation:
 - `install-macos.sh` - Complete macOS setup
@@ -495,13 +590,24 @@ Use assets when:
 - Referencing correct config format
 - Ensuring consistency across installations
 
+**NOTE:** Template configs may be outdated. Check official documentation for current schema.
+
 ### references/
 Comprehensive documentation:
-- `tools-reference.md` - Complete reference for all installed tools, aliases, shortcuts, configuration locations, and environment variables
+- `tools-reference.md` - **START HERE** - Contains official documentation URLs for all tools, plus quick reference (always verify with official docs)
 - `ai-config-schemas.md` - Detailed schemas and formats for AI assistant configuration files (Claude, Codex, Gemini, OpenCode), including MCP server patterns, validation commands, and merge strategies
 
+**CRITICAL WORKFLOW:**
+1. Load `references/tools-reference.md` FIRST
+2. Find official documentation URL for the tool
+3. Search online for current documentation
+4. Provide commands based on official docs
+5. Use reference material as supplement only
+
 Load references when:
-- Providing detailed tool information or explaining specific capabilities
+- Providing detailed tool information (AFTER checking official docs)
 - Editing or validating AI assistant configuration files
 - Adding/removing MCP servers or modifying environment variables
 - Understanding config file structure and options
+
+**REMEMBER:** This skill's information may be outdated. Official documentation online is always the authoritative source.

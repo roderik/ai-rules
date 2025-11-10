@@ -1,5 +1,89 @@
 # System Tools Reference
 
+**⚠️ CRITICAL: ALWAYS VERIFY WITH OFFICIAL DOCUMENTATION**
+
+This reference provides an overview of installed tools. Before providing usage instructions or configuration advice:
+
+1. **Search for the official documentation** of the specific tool online
+2. **Verify the exact CLI flags and options** - tools update frequently
+3. **Check GitHub repositories** for the latest examples and best practices
+4. **Confirm compatibility** with the user's installed version
+
+## Official Documentation Links
+
+**ALWAYS consult these official sources before providing specific commands or configuration:**
+
+### File Operations & Core Tools
+- **bat**: https://github.com/sharkdp/bat
+- **eza**: https://eza.rocks/ | https://github.com/eza-community/eza
+- **fd**: https://github.com/sharkdp/fd
+- **ripgrep (rg)**: https://github.com/BurntSushi/ripgrep
+
+### Development & Editors
+- **neovim**: https://neovim.io/doc/ | https://github.com/neovim/neovim
+- **LazyVim**: https://www.lazyvim.org/ | https://github.com/LazyVim/LazyVim
+- **lazygit**: https://github.com/jesseduffield/lazygit
+- **lazydocker**: https://github.com/jesseduffield/lazydocker
+- **fzf**: https://github.com/junegunn/fzf
+- **ast-grep**: https://ast-grep.github.io/ | https://github.com/ast-grep/ast-grep
+
+### Navigation & Shell Enhancement
+- **zoxide**: https://github.com/ajeetdsouza/zoxide
+- **atuin**: https://atuin.sh/ | https://github.com/atuinsh/atuin
+- **direnv**: https://direnv.net/ | https://github.com/direnv/direnv
+- **starship**: https://starship.rs/ | https://github.com/starship/starship
+- **Fish shell**: https://fishshell.com/docs/current/
+- **Zsh**: https://zsh.sourceforge.io/Doc/
+
+### Version Managers
+- **fnm**: https://github.com/Schniz/fnm
+- **uv**: https://docs.astral.sh/uv/ | https://github.com/astral-sh/uv
+
+### System Tools
+- **procs**: https://github.com/dalance/procs
+- **hexyl**: https://github.com/sharkdp/hexyl
+- **broot**: https://dystroy.org/broot/ | https://github.com/Canop/broot
+- **git-delta**: https://github.com/dandavison/delta
+- **difftastic**: https://difftastic.wilfred.me.uk/ | https://github.com/Wilfred/difftastic
+
+### Cloud & Infrastructure
+- **kubectl**: https://kubernetes.io/docs/reference/kubectl/
+- **kubectx/kubens**: https://github.com/ahmetb/kubectx
+- **helm**: https://helm.sh/docs/
+- **gh (GitHub CLI)**: https://cli.github.com/manual/
+- **aws-cli**: https://docs.aws.amazon.com/cli/
+- **azure-cli**: https://learn.microsoft.com/en-us/cli/azure/
+- **gcloud**: https://cloud.google.com/sdk/gcloud
+
+### Blockchain Development
+- **Foundry**: https://book.getfoundry.sh/ | https://github.com/foundry-rs/foundry
+  - **forge**: https://book.getfoundry.sh/forge/
+  - **cast**: https://book.getfoundry.sh/cast/
+  - **anvil**: https://book.getfoundry.sh/anvil/
+  - **chisel**: https://book.getfoundry.sh/chisel/
+
+### Terminal & Session
+- **tmux**: https://github.com/tmux/tmux/wiki
+- **zellij**: https://zellij.dev/ | https://github.com/zellij-org/zellij
+
+### Package Managers & Runtime
+- **Homebrew**: https://docs.brew.sh/
+- **Bun**: https://bun.sh/docs
+
+### Git Worktree Management
+- **wt**: https://github.com/roderik/wt (Fish shell function)
+
+### AI Assistant CLIs
+- **Claude Code**: https://docs.claude.com/en/docs/claude-code
+- **OpenCode**: https://opencode.ai/ | https://docs.opencode.ai/
+- **Codex**: https://codex.google/docs
+- **Gemini CLI**: https://ai.google.dev/gemini-api/docs
+
+### OpenSkills
+- **openskills**: https://github.com/numman-ali/openskills
+
+---
+
 ## Modern CLI Tools (from shell-config)
 
 ### File Operations

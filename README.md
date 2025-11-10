@@ -140,8 +140,8 @@ Since we don't have a project with `AGENTS.md` yet, we'll use `openskills read` 
 ### Using Claude Code
 
 ```bash
-# Load the skill content and pass to Claude
-claude "$(openskills read rr-system)
+# Load the skill content and pass to Claude (non-interactive)
+claude --print "$(openskills read rr-system)
 
 Complete my system setup following the instructions above."
 ```
@@ -150,7 +150,7 @@ Complete my system setup following the instructions above."
 
 ```bash
 # Load the skill content and pass to OpenCode
-opencode "$(openskills read rr-system)
+opencode run "$(openskills read rr-system)
 
 Complete my system setup following the instructions above."
 ```
@@ -158,8 +158,8 @@ Complete my system setup following the instructions above."
 ### Using Codex
 
 ```bash
-# Load the skill content and pass to Codex
-codex "$(openskills read rr-system)
+# Load the skill content and pass to Codex (non-interactive)
+codex exec "$(openskills read rr-system)
 
 Complete my system setup following the instructions above."
 ```
@@ -168,7 +168,7 @@ Complete my system setup following the instructions above."
 
 ```bash
 # Load the skill content and pass to Gemini
-gemini "$(openskills read rr-system)
+gemini -p "$(openskills read rr-system)
 
 Complete my system setup following the instructions above."
 ```
@@ -204,14 +204,26 @@ openskills read rr-system
 
 # Call an agent with a skill (if AGENTS.md is synced in project)
 claude "Use rr-typescript skill to help me set up a new TypeScript project"
-opencode "Use rr-kubernetes skill to create a production-ready deployment"
+opencode run "Use rr-kubernetes skill to create a production-ready deployment"
 codex "Use rr-solidity skill to write a secure ERC20 contract"
-gemini "Use rr-tanstack skill to set up TanStack Query"
+gemini -p "Use rr-tanstack skill to set up TanStack Query"
 
 # Call an agent with a skill (without AGENTS.md - manual loading)
-claude "$(openskills read rr-typescript)
+claude --print "$(openskills read rr-typescript)
 
 Help me set up a new TypeScript project following the instructions above."
+
+opencode run "$(openskills read rr-kubernetes)
+
+Create a production-ready deployment following the instructions above."
+
+codex exec "$(openskills read rr-solidity)
+
+Write a secure ERC20 contract following the instructions above."
+
+gemini -p "$(openskills read rr-tanstack)
+
+Set up TanStack Query following the instructions above."
 
 # Sync skills to project AGENTS.md
 cd /path/to/your/project
@@ -402,7 +414,19 @@ openskills install your-username/your-skill --global
 openskills read rr-system
 
 # Use with agents (without AGENTS.md synced)
-claude "$(openskills read rr-typescript)
+claude --print "$(openskills read rr-typescript)
+
+Set up a new TypeScript project following the instructions above."
+
+opencode run "$(openskills read rr-typescript)
+
+Set up a new TypeScript project following the instructions above."
+
+codex exec "$(openskills read rr-typescript)
+
+Set up a new TypeScript project following the instructions above."
+
+gemini -p "$(openskills read rr-typescript)
 
 Set up a new TypeScript project following the instructions above."
 ```
@@ -485,9 +509,14 @@ When user mentions a skill, agent invokes: `Bash("openskills read rr-typescript"
 
 ```bash
 # Load skill content directly into prompt
-opencode "$(openskills read rr-typescript)
+opencode run "$(openskills read rr-typescript)
 
 Set up TypeScript project following the instructions above."
+
+# Or with other tools:
+claude --print "$(openskills read rr-typescript) ..."
+codex exec "$(openskills read rr-typescript) ..."
+gemini -p "$(openskills read rr-typescript) ..."
 ```
 
 **Same format, different invocation methods.**
