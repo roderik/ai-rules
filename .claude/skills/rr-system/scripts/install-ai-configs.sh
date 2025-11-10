@@ -33,10 +33,22 @@ Usage: $0
 This script installs AI assistant configuration files from the
 assets/ai-configs/ directory to their system locations:
 
+  Config Files:
   • Claude Code:  ~/.claude/settings.json
   • Codex CLI:    ~/.codex/config.toml
   • Gemini CLI:   ~/.gemini/settings.json
   • OpenCode:     ~/.config/opencode/opencode.json
+
+  Command Files:
+  • Claude Code:  ~/.claude/commands/*.md
+  • Codex CLI:    ~/.codex/prompts/*.md
+  • OpenCode:     ~/.config/opencode/command/*.md
+
+  Agent Instructions:
+  • Claude Code:  ~/.claude/CLAUDE.md
+  • Codex CLI:    ~/.codex/AGENTS.md
+  • Gemini CLI:   ~/.gemini/AGENTS.md
+  • OpenCode:     ~/.config/opencode/AGENTS.md
 
 Existing configurations will be overwritten with the latest versions.
 
@@ -127,6 +139,93 @@ install_config() {
   log_success "Installed: $name"
 }
 
+install_commands() {
+  local source_dir="$1"
+  local target_dir="$2"
+  local name="$3"
+
+  log_step "Installing commands: $name"
+
+  if [[ ! -d "$source_dir" ]]; then
+    log_error "Source directory not found: $source_dir"
+    return 1
+  fi
+
+  # Create target directory
+  mkdir -p "$target_dir"
+
+  # Clear existing .md files from target directory
+  local removed=0
+  if [[ -d "$target_dir" ]]; then
+    for existing in "$target_dir"/*.md; do
+      if [[ -f "$existing" ]]; then
+        rm "$existing"
+        ((removed++))
+      fi
+    done
+    if [[ $removed -gt 0 ]]; then
+      log_info "  Cleared $removed existing command(s)"
+    fi
+  fi
+
+  # Count files to install
+  local file_count=0
+  local installed=0
+  local failed=0
+
+  # Install all .md files
+  for file in "$source_dir"/*.md; do
+    if [[ -f "$file" ]]; then
+      ((file_count++))
+      local basename=$(basename "$file")
+      if cp "$file" "$target_dir/$basename"; then
+        ((installed++))
+      else
+        ((failed++))
+        log_error "  Failed to install: $basename"
+      fi
+    fi
+  done
+
+  if [[ $file_count -eq 0 ]]; then
+    log_warn "  No .md files found in $source_dir"
+    return 0
+  fi
+
+  if [[ $failed -eq 0 ]]; then
+    log_success "  Installed $installed command(s) to $name"
+    return 0
+  else
+    log_error "  Installed $installed/$file_count commands ($failed failed)"
+    return 1
+  fi
+}
+
+install_agents_md() {
+  local source="$1"
+  local target="$2"
+  local name="$3"
+
+  log_step "Installing agent instructions: $name"
+
+  if [[ ! -f "$source" ]]; then
+    log_error "Source file not found: $source"
+    return 1
+  fi
+
+  # Create target directory
+  mkdir -p "$(dirname "$target")"
+
+  # Install file
+  if cp "$source" "$target"; then
+    log_success "  Installed: $(basename "$target")"
+    return 0
+  else
+    log_error "  Failed to install: $(basename "$target")"
+    return 1
+  fi
+}
+
 verify_installation() {
   log_step "Verifying AI configuration installation"
 
@@ -186,6 +285,84 @@ verify_installation() {
     fi
   else
     log_error "  ✗ OpenCode opencode.json - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
+  # Check Claude commands
+  checks=$((checks + 1))
+  if [[ -d "$HOME/.claude/commands" ]]; then
+    local cmd_count=$(find "$HOME/.claude/commands" -name "*.md" 2>/dev/null | wc -l)
+    if [[ $cmd_count -gt 0 ]]; then
+      log_success "  ✓ Claude commands ($cmd_count found)"
+    else
+      log_warn "  ⚠ Claude commands directory exists but no commands found"
+    fi
+  else
+    log_error "  ✗ Claude commands directory - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
+  # Check Codex prompts
+  checks=$((checks + 1))
+  if [[ -d "$HOME/.codex/prompts" ]]; then
+    local prompt_count=$(find "$HOME/.codex/prompts" -name "*.md" 2>/dev/null | wc -l)
+    if [[ $prompt_count -gt 0 ]]; then
+      log_success "  ✓ Codex prompts ($prompt_count found)"
+    else
+      log_warn "  ⚠ Codex prompts directory exists but no prompts found"
+    fi
+  else
+    log_error "  ✗ Codex prompts directory - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
+  # Check OpenCode commands
+  checks=$((checks + 1))
+  if [[ -d "$HOME/.config/opencode/command" ]]; then
+    local oc_cmd_count=$(find "$HOME/.config/opencode/command" -name "*.md" 2>/dev/null | wc -l)
+    if [[ $oc_cmd_count -gt 0 ]]; then
+      log_success "  ✓ OpenCode commands ($oc_cmd_count found)"
+    else
+      log_warn "  ⚠ OpenCode command directory exists but no commands found"
+    fi
+  else
+    log_error "  ✗ OpenCode command directory - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
+  # Check Claude agent instructions
+  checks=$((checks + 1))
+  if [[ -f "$HOME/.claude/CLAUDE.md" ]]; then
+    log_success "  ✓ Claude CLAUDE.md"
+  else
+    log_error "  ✗ Claude CLAUDE.md - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
+  # Check Codex agent instructions
+  checks=$((checks + 1))
+  if [[ -f "$HOME/.codex/AGENTS.md" ]]; then
+    log_success "  ✓ Codex AGENTS.md"
+  else
+    log_error "  ✗ Codex AGENTS.md - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
+  # Check Gemini agent instructions
+  checks=$((checks + 1))
+  if [[ -f "$HOME/.gemini/AGENTS.md" ]]; then
+    log_success "  ✓ Gemini AGENTS.md"
+  else
+    log_error "  ✗ Gemini AGENTS.md - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
+  # Check OpenCode agent instructions
+  checks=$((checks + 1))
+  if [[ -f "$HOME/.config/opencode/AGENTS.md" ]]; then
+    log_success "  ✓ OpenCode AGENTS.md"
+  else
+    log_error "  ✗ OpenCode AGENTS.md - NOT FOUND"
     errors=$((errors + 1))
   fi
 
@@ -254,6 +431,74 @@ main() {
 
   printf "\n"
 
+  # Install commands for all AI tools
+  log_info "Installing commands for AI tools"
+  printf "\n"
+
+  # Install Claude commands
+  if ! install_commands \
+    "$ASSETS_DIR/command" \
+    "$HOME/.claude/commands" \
+    "Claude Code"; then
+    ((failed++))
+  fi
+
+  # Install Codex prompts
+  if ! install_commands \
+    "$ASSETS_DIR/command" \
+    "$HOME/.codex/prompts" \
+    "Codex CLI"; then
+    ((failed++))
+  fi
+
+  # Install OpenCode commands
+  if ! install_commands \
+    "$ASSETS_DIR/command" \
+    "$HOME/.config/opencode/command" \
+    "OpenCode"; then
+    ((failed++))
+  fi
+
+  printf "\n"
+
+  # Install agent instructions for all AI tools
+  log_info "Installing agent instructions for AI tools"
+  printf "\n"
+
+  # Install Claude agent instructions (as CLAUDE.md)
+  if ! install_agents_md \
+    "$ASSETS_DIR/AGENTS.md" \
+    "$HOME/.claude/CLAUDE.md" \
+    "Claude Code"; then
+    ((failed++))
+  fi
+
+  # Install Codex agent instructions
+  if ! install_agents_md \
+    "$ASSETS_DIR/AGENTS.md" \
+    "$HOME/.codex/AGENTS.md" \
+    "Codex CLI"; then
+    ((failed++))
+  fi
+
+  # Install Gemini agent instructions
+  if ! install_agents_md \
+    "$ASSETS_DIR/AGENTS.md" \
+    "$HOME/.gemini/AGENTS.md" \
+    "Gemini CLI"; then
+    ((failed++))
+  fi
+
+  # Install OpenCode agent instructions
+  if ! install_agents_md \
+    "$ASSETS_DIR/AGENTS.md" \
+    "$HOME/.config/opencode/AGENTS.md" \
+    "OpenCode"; then
+    ((failed++))
+  fi
+
+  printf "\n"
+
   # Verify installation
   if ! verify_installation; then
     failed=1
@@ -268,14 +513,16 @@ main() {
   printf "${GREEN}═══════════════════════════════════════${NC}\n\n"
 
   if [[ $failed -eq 0 ]]; then
-    log_success "All configurations installed successfully"
+    log_success "All configurations, commands, and agent instructions installed successfully"
     printf "\n"
     log_info "Next steps:"
     printf "  ${CYAN}1.${NC} Restart your AI assistants to load new configurations\n"
     printf "  ${CYAN}2.${NC} Verify MCP servers are loading correctly\n"
-    printf "  ${CYAN}3.${NC} Check for any errors in AI assistant logs\n"
+    printf "  ${CYAN}3.${NC} Test custom commands are available in each tool\n"
+    printf "  ${CYAN}4.${NC} Verify agent instructions are being read (check CLAUDE.md/AGENTS.md)\n"
+    printf "  ${CYAN}5.${NC} Check for any errors in AI assistant logs\n"
   else
-    log_warn "$failed configuration(s) failed to install"
+    log_warn "$failed item(s) failed to install"
     log_info "Check error messages above for details"
   fi
 

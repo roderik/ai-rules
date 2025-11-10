@@ -53,6 +53,7 @@ gemini -p "Use rr-tanstack to setup Query"
 ## Skills
 
 - **[rr-better-auth](./.claude/skills/rr-better-auth/)** - Better Auth authentication framework
+- **[rr-drizzle](./.claude/skills/rr-drizzle/)** - Type-safe Drizzle ORM with PostgreSQL
 - **[rr-gitops](./.claude/skills/rr-gitops/)** - Git workflow & GitHub CLI best practices
 - **[rr-kubernetes](./.claude/skills/rr-kubernetes/)** - K8s, Helm & OpenShift production deployments
 - **[rr-orpc](./.claude/skills/rr-orpc/)** - Type-safe RPC APIs with oRPC

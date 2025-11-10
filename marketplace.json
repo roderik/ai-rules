@@ -2,7 +2,7 @@
   "marketplace": {
     "name": "RR Skills Collection",
     "version": "1.0.0",
-    "description": "Professional skills collection for AI assistants covering security-first blockchain development (Solidity smart contracts with Foundry) and production-ready cloud-native infrastructure (Kubernetes orchestration, Helm charts, OpenShift operations, security policies, and multi-environment deployment strategies)",
+    "description": "Professional skills collection for AI assistants covering authentication, databases, TypeScript development, RPC APIs, Git workflows, blockchain development, cloud infrastructure, and system setup",
     "author": {
       "name": "Roderik",
       "namespace": "rr",
@@ -18,6 +18,269 @@
     "updated": "2025-01-10T00:00:00Z"
   },
   "skills": [
+    {
+      "id": "rr-better-auth",
+      "name": "Better Auth Implementation",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-better-auth",
+      "category": "Authentication & Security",
+      "subcategories": ["Authentication", "Authorization", "Security"],
+      "description": "Comprehensive guidance for implementing authentication with better-auth and better-auth-ui. Provides TypeScript-first authentication patterns with support for OAuth providers, session management, 2FA, organizations/teams, and passkeys.",
+      "shortDescription": "Better Auth authentication framework for TypeScript applications",
+      "tags": [
+        "authentication",
+        "better-auth",
+        "typescript",
+        "oauth",
+        "2fa",
+        "sessions",
+        "security",
+        "passkeys",
+        "organizations"
+      ],
+      "features": [
+        "OAuth provider integration",
+        "Session management",
+        "Two-factor authentication (2FA)",
+        "Organizations and teams",
+        "Passkey support",
+        "TypeScript-first API"
+      ],
+      "triggers": {
+        "filePatterns": ["**/auth/**", "**/better-auth.ts"],
+        "keywords": ["authentication", "better-auth", "oauth", "session", "2fa"]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": ["bun", "node"]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-drizzle",
+      "name": "Drizzle ORM + PostgreSQL",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-drizzle",
+      "category": "Database & ORM",
+      "subcategories": ["ORM", "Database", "TypeScript", "PostgreSQL"],
+      "description": "Comprehensive guidance for implementing type-safe database operations with Drizzle ORM and PostgreSQL. Covers schema definition, queries, migrations, performance optimization, indexing strategies, and Bun SQL integration for serverless environments.",
+      "shortDescription": "Type-safe Drizzle ORM with PostgreSQL optimization and Bun integration",
+      "tags": [
+        "drizzle",
+        "orm",
+        "postgresql",
+        "postgres",
+        "database",
+        "typescript",
+        "sql",
+        "migrations",
+        "performance",
+        "bun"
+      ],
+      "features": [
+        "Type-safe schema definitions",
+        "Query optimization patterns",
+        "Migration management",
+        "PostgreSQL performance tuning",
+        "Indexing strategies",
+        "Bun SQL integration",
+        "Connection pooling"
+      ],
+      "triggers": {
+        "fileExtensions": [".sql"],
+        "filePatterns": [
+          "**/drizzle.config.ts",
+          "**/schema/**",
+          "**/drizzle/**"
+        ],
+        "keywords": ["drizzle", "postgresql", "database", "schema", "migration"]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": ["bun", "node", "postgresql"]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-gitops",
+      "name": "GitOps Workflow Management",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-gitops",
+      "category": "DevOps & Version Control",
+      "subcategories": ["Git", "GitHub", "CI/CD", "Workflow"],
+      "description": "Professional Git and GitHub workflow management using conventional commits, atomic commits, gh CLI for all operations, and safe git practices. Essential for maintaining clean git history, creating PRs, and managing GitHub workflows.",
+      "shortDescription": "Git workflow and GitHub CLI best practices with conventional commits",
+      "tags": [
+        "git",
+        "github",
+        "gh-cli",
+        "conventional-commits",
+        "workflow",
+        "ci-cd",
+        "pull-requests",
+        "version-control"
+      ],
+      "features": [
+        "Conventional commit patterns",
+        "Atomic commit strategies",
+        "GitHub CLI integration",
+        "Safe git operations",
+        "PR management",
+        "CI monitoring",
+        "Branch workflows"
+      ],
+      "triggers": {
+        "filePatterns": [".git/**", ".github/**"],
+        "keywords": ["git", "github", "commit", "pull request", "branch"]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": ["git"],
+        "optionalTools": ["gh"]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-kubernetes",
+      "name": "Kubernetes, Helm & OpenShift Operations",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-kubernetes",
+      "category": "DevOps & Infrastructure",
+      "subcategories": [
+        "Container Orchestration",
+        "Cloud Native",
+        "Infrastructure as Code"
+      ],
+      "description": "Comprehensive skill for professional Kubernetes operations covering manifest generation, Helm chart development, security policy implementation, and OpenShift-specific patterns. Provides production-ready templates, security-first practices, and multi-environment deployment strategies.",
+      "shortDescription": "Production-ready Kubernetes, Helm, and OpenShift operations with security-first practices",
+      "tags": [
+        "kubernetes",
+        "k8s",
+        "helm",
+        "openshift",
+        "container-orchestration",
+        "devops",
+        "cloud-native",
+        "infrastructure",
+        "security",
+        "rbac",
+        "network-policies",
+        "deployments"
+      ],
+      "features": [
+        "Generate production-ready Kubernetes manifests",
+        "Scaffold Helm charts with best practices",
+        "Implement security policies (PSS, Network Policies, RBAC)",
+        "OpenShift-specific resources (Routes, ImageStreams, BuildConfigs)",
+        "Automated validation and security scanning",
+        "Multi-environment deployment strategies"
+      ],
+      "triggers": {
+        "fileExtensions": [".yaml", ".yml"],
+        "filePatterns": [
+          "**/Chart.yaml",
+          "**/values.yaml",
+          "**/kustomization.yaml"
+        ],
+        "keywords": [
+          "kubernetes",
+          "helm",
+          "openshift",
+          "kubectl",
+          "deployment",
+          "pod"
+        ]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": [
+          "kubectl",
+          "helm",
+          "oc",
+          "kubeval",
+          "kube-linter",
+          "yamllint"
+        ]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-orpc",
+      "name": "oRPC Type-Safe RPC Framework",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-orpc",
+      "category": "API Development",
+      "subcategories": ["RPC", "TypeScript", "API", "Type Safety"],
+      "description": "Comprehensive guidance for implementing type-safe RPC APIs with oRPC framework. Covers procedures, routers, server setup, client usage, streaming, file handling, and framework integrations with Next.js, React Query, and more.",
+      "shortDescription": "Type-safe RPC APIs with oRPC, streaming, and framework integrations",
+      "tags": [
+        "orpc",
+        "rpc",
+        "typescript",
+        "type-safety",
+        "api",
+        "nextjs",
+        "react-query",
+        "streaming",
+        "client-server"
+      ],
+      "features": [
+        "End-to-end type safety",
+        "Server and client setup",
+        "Procedure definitions",
+        "Streaming support",
+        "File handling",
+        "Next.js integration",
+        "React Query integration"
+      ],
+      "triggers": {
+        "filePatterns": ["**/orpc/**", "**/*.orpc.ts"],
+        "keywords": ["orpc", "rpc", "type-safe api", "procedure"]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": ["bun", "node"]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-skill-creator",
+      "name": "Skill Creator",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-skill-creator",
+      "category": "Development Tools",
+      "subcategories": ["Tooling", "Skills", "Templates"],
+      "description": "Guidance for creating effective skills with specialized knowledge, workflows, and tool integrations. Provides templates, validation, packaging, and best practices for skill development.",
+      "shortDescription": "Create and package new skills with validation and best practices",
+      "tags": [
+        "skills",
+        "development",
+        "templates",
+        "validation",
+        "packaging",
+        "tooling"
+      ],
+      "features": [
+        "Skill initialization templates",
+        "Validation and packaging scripts",
+        "Best practices guidance",
+        "Resource organization",
+        "Progressive disclosure patterns"
+      ],
+      "triggers": {
+        "keywords": ["create skill", "new skill", "skill development"]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": ["python3"],
+        "optionalTools": []
+      },
+      "status": "active"
+    },
     {
       "id": "rr-solidity",
       "name": "Solidity Development with Foundry",
@@ -50,7 +313,13 @@
       "triggers": {
         "fileExtensions": [".sol"],
         "filePatterns": ["**/foundry.toml", "**/remappings.txt"],
-        "keywords": ["solidity", "foundry", "smart contract", "blockchain", "ethereum"]
+        "keywords": [
+          "solidity",
+          "foundry",
+          "smart contract",
+          "blockchain",
+          "ethereum"
+        ]
       },
       "compatibility": {
         "platforms": ["macos", "linux", "windows"],
@@ -60,65 +329,188 @@
       "status": "active"
     },
     {
-      "id": "rr-kubernetes",
-      "name": "Kubernetes, Helm & OpenShift Operations",
+      "id": "rr-system",
+      "name": "System Setup & Configuration",
       "version": "1.0.0",
-      "path": ".claude/skills/rr-kubernetes",
-      "category": "DevOps & Infrastructure",
-      "subcategories": ["Container Orchestration", "Cloud Native", "Infrastructure as Code"],
-      "description": "Comprehensive skill for professional Kubernetes operations covering manifest generation, Helm chart development, security policy implementation, and OpenShift-specific patterns. Provides production-ready templates, security-first practices, and multi-environment deployment strategies.",
-      "shortDescription": "Production-ready Kubernetes, Helm, and OpenShift operations with security-first practices",
+      "path": ".claude/skills/rr-system",
+      "category": "Development Tools",
+      "subcategories": ["System Setup", "Configuration", "CLI Tools"],
+      "description": "Comprehensive system setup automation and tool reference for development environments. Includes shell-config (Fish/Zsh/Bash + modern CLI tools), AI assistant configurations (Claude/Codex/Gemini/OpenCode), and git worktree manager. Provides installation scripts and configuration management workflows.",
+      "shortDescription": "System setup, modern CLI tools, and AI configuration management",
       "tags": [
-        "kubernetes",
-        "k8s",
-        "helm",
-        "openshift",
-        "container-orchestration",
-        "devops",
-        "cloud-native",
-        "infrastructure",
-        "security",
-        "rbac",
-        "network-policies",
-        "deployments"
+        "system-setup",
+        "configuration",
+        "cli-tools",
+        "shell",
+        "ai-config",
+        "automation",
+        "environment"
       ],
       "features": [
-        "Generate production-ready Kubernetes manifests",
-        "Scaffold Helm charts with best practices",
-        "Implement security policies (PSS, Network Policies, RBAC)",
-        "OpenShift-specific resources (Routes, ImageStreams, BuildConfigs)",
-        "Automated validation and security scanning",
-        "Multi-environment deployment strategies"
+        "Automated system setup",
+        "Modern CLI tool installation",
+        "Shell configuration (Fish/Zsh/Bash)",
+        "AI assistant configuration management",
+        "Git worktree management",
+        "Environment troubleshooting"
       ],
       "triggers": {
-        "fileExtensions": [".yaml", ".yml"],
-        "filePatterns": ["**/Chart.yaml", "**/values.yaml", "**/kustomization.yaml"],
-        "keywords": ["kubernetes", "helm", "openshift", "kubectl", "deployment", "pod"]
+        "keywords": [
+          "system setup",
+          "install tools",
+          "configuration",
+          "shell config"
+        ]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux"],
+        "requiredTools": [],
+        "optionalTools": ["fish", "zsh", "bash", "brew"]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-tanstack",
+      "name": "TanStack Suite",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-tanstack",
+      "category": "Frontend Development",
+      "subcategories": [
+        "React",
+        "State Management",
+        "Data Fetching",
+        "Routing"
+      ],
+      "description": "Comprehensive guidance for implementing TanStack libraries (Query, Table, Router, Form, Start, Virtual, Store, DB) in modern web applications. Provides patterns for data fetching, state management, routing, forms, tables, virtualization, and full-stack React development with type safety.",
+      "shortDescription": "TanStack ecosystem (Query, Router, Table, Form, Virtual, Store)",
+      "tags": [
+        "tanstack",
+        "react-query",
+        "tanstack-router",
+        "tanstack-table",
+        "tanstack-form",
+        "state-management",
+        "data-fetching",
+        "typescript",
+        "react"
+      ],
+      "features": [
+        "TanStack Query for data fetching",
+        "TanStack Router for type-safe routing",
+        "TanStack Table for headless tables",
+        "TanStack Form for form management",
+        "TanStack Virtual for virtualization",
+        "TanStack Store for state management",
+        "Server-side rendering patterns"
+      ],
+      "triggers": {
+        "filePatterns": ["**/@tanstack/**"],
+        "keywords": [
+          "tanstack",
+          "react-query",
+          "tanstack router",
+          "tanstack table"
+        ]
       },
       "compatibility": {
         "platforms": ["macos", "linux", "windows"],
         "requiredTools": [],
-        "optionalTools": ["kubectl", "helm", "oc", "kubeval", "kube-linter", "yamllint"]
+        "optionalTools": ["bun", "node"]
+      },
+      "status": "active"
+    },
+    {
+      "id": "rr-typescript",
+      "name": "TypeScript with Ultracite Standards",
+      "version": "1.0.0",
+      "path": ".claude/skills/rr-typescript",
+      "category": "Programming Languages",
+      "subcategories": ["TypeScript", "Code Quality", "Best Practices"],
+      "description": "Comprehensive guidance for writing high-quality TypeScript code following Ultracite standards—a zero-config Biome preset that enforces strict code quality. Includes patterns for React, type safety, accessibility, performance, and comprehensive linting/formatting rules.",
+      "shortDescription": "TypeScript best practices with Ultracite quality standards",
+      "tags": [
+        "typescript",
+        "javascript",
+        "code-quality",
+        "linting",
+        "formatting",
+        "best-practices",
+        "react",
+        "type-safety",
+        "accessibility"
+      ],
+      "features": [
+        "TypeScript best practices",
+        "Ultracite code quality standards",
+        "React patterns and anti-patterns",
+        "Type safety guidelines",
+        "Accessibility standards",
+        "Performance optimization",
+        "Automated linting and formatting"
+      ],
+      "triggers": {
+        "fileExtensions": [".ts", ".tsx", ".js", ".jsx"],
+        "keywords": ["typescript", "javascript", "code quality", "linting"]
+      },
+      "compatibility": {
+        "platforms": ["macos", "linux", "windows"],
+        "requiredTools": [],
+        "optionalTools": ["bun", "node", "biome"]
       },
       "status": "active"
     }
   ],
   "categories": [
     {
-      "id": "blockchain-web3",
-      "name": "Blockchain & Web3",
-      "description": "Smart contracts, DeFi, and blockchain development"
+      "id": "authentication-security",
+      "name": "Authentication & Security",
+      "description": "Authentication, authorization, and security implementations"
+    },
+    {
+      "id": "database-orm",
+      "name": "Database & ORM",
+      "description": "Database operations, ORMs, and data persistence"
+    },
+    {
+      "id": "devops-version-control",
+      "name": "DevOps & Version Control",
+      "description": "Git workflows, CI/CD, and version control practices"
     },
     {
       "id": "devops-infrastructure",
       "name": "DevOps & Infrastructure",
       "description": "Container orchestration, cloud platforms, and infrastructure automation"
+    },
+    {
+      "id": "api-development",
+      "name": "API Development",
+      "description": "API design, RPC frameworks, and type-safe communication"
+    },
+    {
+      "id": "development-tools",
+      "name": "Development Tools",
+      "description": "Development utilities, tooling, and workflow automation"
+    },
+    {
+      "id": "blockchain-web3",
+      "name": "Blockchain & Web3",
+      "description": "Smart contracts, DeFi, and blockchain development"
+    },
+    {
+      "id": "frontend-development",
+      "name": "Frontend Development",
+      "description": "Frontend frameworks, state management, and UI development"
+    },
+    {
+      "id": "programming-languages",
+      "name": "Programming Languages",
+      "description": "Language-specific best practices and coding standards"
     }
   ],
   "statistics": {
-    "totalSkills": 2,
-    "activeSkills": 2,
-    "categories": 2,
+    "totalSkills": 10,
+    "activeSkills": 10,
+    "categories": 9,
     "lastUpdated": "2025-01-10T00:00:00Z"
   }
 }

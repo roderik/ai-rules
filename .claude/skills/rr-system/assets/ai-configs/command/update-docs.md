@@ -1,6 +1,5 @@
 ---
 description: Craft or enhance documentation efficiently
-agent: content-writer
 ---
 
 Current branch:
