@@ -30,10 +30,10 @@ claude login
 # Or: export GOOGLE_API_KEY="your-key"  # Get from https://aistudio.google.com/app/apikey
 
 # 7. Setup system (optional - installs modern CLI tools)
-claude --dangerously-skip-permissions --print "$(openskills read rr-system) Complete system setup."
-# Or: opencode run "$(openskills read rr-system) Complete system setup."
-# Or: codex exec "$(openskills read rr-system) Complete system setup."  # Note: codex may have --dangerously-bypass-approvals-and-sandbox aliased
-# Or: gemini -p "$(openskills read rr-system) Complete system setup."
+claude --dangerously-skip-permissions --print "$(openskills read rr-system)\nInstall all tools and configurations from the skill above."
+# Or: opencode run ""$(openskills read rr-system)\nInstall all tools and configurations from the skill above."
+# Or: codex exec ""$(openskills read rr-system)\nInstall all tools and configurations from the skill above."
+# Or: gemini -p "$(openskills read rr-system)\nInstall all tools and configurations from the skill above."
 ```
 
 ## In Projects

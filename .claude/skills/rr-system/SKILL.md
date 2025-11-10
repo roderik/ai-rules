@@ -32,13 +32,62 @@ This skill provides a reference baseline, but tools evolve rapidly. Before makin
 - Updating existing installations
 - Guiding users through system configuration
 
+## Progress Reporting Requirements
+
+**CRITICAL: When performing system setup tasks, you MUST provide continuous progress updates.**
+
+**Before ANY installation or configuration task:**
+1. Use TodoWrite tool to create a task list with all steps
+2. Mark current task as in_progress before starting
+3. Explain what you're about to do in plain language
+4. Show the exact command you'll run
+
+**During execution:**
+1. Report what's happening in real-time
+2. Show command output when relevant
+3. Explain any warnings or errors immediately
+
+**After each step:**
+1. Mark the task as completed in TodoWrite
+2. Summarize what was accomplished
+3. Note any issues or next steps
+
+**Example workflow:**
+```
+I'm going to set up your development environment. Let me create a task list first.
+
+[Creates todo: "Install development tools", "Upgrade Homebrew packages", "Install shell configs", "Install AI configs", "Verify installation"]
+
+Step 1: Installing development tools (includes Homebrew)...
+[Marks "Install development tools" as in_progress]
+
+Running: bash scripts/install-tools.sh
+[Shows installation and verification output]
+
+Development tools and Homebrew installed successfully!
+[Marks "Install development tools" as completed]
+
+Step 2: Upgrading all Homebrew packages...
+[Marks "Upgrade Homebrew packages" as in_progress]
+
+Running: brew upgrade
+[Shows output summary]
+
+All Homebrew packages upgraded to latest versions!
+[Marks "Upgrade Homebrew packages" as completed]
+
+[Continues with progress updates for each remaining step]
+```
+
+**Never run commands silently** - always inform the user what you're doing and why.
+
 ## Core Capabilities
 
 ### 1. Complete System Setup (3-Step Installation)
 
 Install complete development environment on **macOS or Linux** using three automated scripts:
 
-**Step 1: Install Development Tools**
+**Step 1: Install Development Tools (includes Homebrew)**
 
 ```bash
 bash scripts/install-tools.sh
@@ -52,7 +101,15 @@ Installs and verifies:
 - **Verification:** Checks all critical tools are present and working
 - **Linux support:** Shared CLI tools work on Linux; macOS-only apps are automatically skipped
 
-**Step 2: Install Shell Configurations**
+**Step 2: Upgrade All Homebrew Packages**
+
+```bash
+brew upgrade
+```
+
+**MANDATORY** - After installing Homebrew and tools, upgrade all packages to latest versions.
+
+**Step 3: Install Shell Configurations**
 
 ```bash
 bash scripts/install-shell-config.sh
@@ -70,7 +127,7 @@ Installs and verifies:
   - Enables Touch ID for sudo (macOS only, requires sudo)
 - **Verification:** Confirms all config files exist and are valid
 
-**Step 3: Install AI Configurations**
+**Step 4: Install AI Configurations**
 
 ```bash
 bash scripts/install-ai-configs.sh
@@ -380,9 +437,7 @@ The tools reference contains:
 
 ### Setting Up New Machine
 
-**Modern Approach (Recommended):**
-
-1. **Install Development Tools:**
+1. **Install Development Tools (includes Homebrew):**
 
    ```bash
    cd .claude/skills/rr-system
@@ -391,7 +446,15 @@ The tools reference contains:
 
    This installs Homebrew (if needed) and all development tools via Brewfile.
 
-2. **Install Shell Configurations:**
+2. **Upgrade All Homebrew Packages:**
+
+   ```bash
+   brew upgrade
+   ```
+
+   **MANDATORY:** Upgrade all packages to latest versions after Homebrew installation.
+
+3. **Install Shell Configurations:**
 
    ```bash
    bash scripts/install-shell-config.sh
@@ -399,7 +462,7 @@ The tools reference contains:
 
    This installs Fish, Zsh, Bash configs with wt git worktree manager.
 
-3. **Install AI Assistant Configurations:**
+4. **Install AI Assistant Configurations:**
 
    ```bash
    bash scripts/install-ai-configs.sh
@@ -407,12 +470,12 @@ The tools reference contains:
 
    This installs Claude, Codex, Gemini, OpenCode configurations.
 
-4. **Post-Installation:**
+5. **Post-Installation:**
    - Restart terminal to load new tools and configs
    - Run: `fish` (start Fish shell)
    - Optional: `chsh -s $(which fish)` (make Fish default)
 
-5. **Verify Installation:**
+6. **Verify Installation:**
 
    ```bash
    # Check tools installed
@@ -430,22 +493,25 @@ The tools reference contains:
    ls ~/.codex/config.toml
    ```
 
-**Legacy Approach:**
-
-- macOS: `install-macos.sh` (comprehensive but being phased out)
-- Ubuntu/Debian: `install-ubuntu.sh` (comprehensive but being phased out)
-
 ### Updating Existing Installation
 
-1. **Update Development Tools:**
+1. **Upgrade All Homebrew Packages:**
+
+   ```bash
+   brew upgrade
+   ```
+
+   **MANDATORY FIRST STEP:** Always upgrade all packages to latest versions first.
+
+2. **Update Development Tools:**
 
    ```bash
    bash scripts/install-tools.sh
    ```
 
-   Updates Homebrew and reinstalls/upgrades all tools.
+   Reinstalls/upgrades all tools from Brewfile.
 
-2. **Update Shell Configurations:**
+3. **Update Shell Configurations:**
 
    ```bash
    bash scripts/install-shell-config.sh
@@ -453,7 +519,7 @@ The tools reference contains:
 
    Overwrites shell configs with latest versions.
 
-3. **Update AI Configurations:**
+4. **Update AI Configurations:**
 
    ```bash
    bash scripts/install-ai-configs.sh
@@ -461,7 +527,7 @@ The tools reference contains:
 
    Overwrites AI configs with latest versions.
 
-4. **Restart Terminal:**
+5. **Restart Terminal:**
    Load updated configurations
 
 ### Troubleshooting Common Issues
@@ -650,8 +716,9 @@ Refer to `references/tools-reference.md` for comprehensive list organized by cat
 ### "How do I install this on a new machine?"
 
 1. Clone the ai-rules repository
-2. Run three scripts in order:
-   - `bash scripts/install-tools.sh` (installs all tools)
+2. Run scripts in order:
+   - `bash scripts/install-tools.sh` (installs Homebrew and all tools)
+   - `brew upgrade` (upgrade all packages to latest)
    - `bash scripts/install-shell-config.sh` (installs shell configs)
    - `bash scripts/install-ai-configs.sh` (installs AI configs)
 3. Restart terminal
@@ -659,10 +726,11 @@ Refer to `references/tools-reference.md` for comprehensive list organized by cat
 
 ### "How do I update everything?"
 
-Run all three scripts in order:
+**CRITICAL: Always run `brew upgrade` first, then run the installation scripts:**
 
 ```bash
-bash scripts/install-tools.sh       # Update all Homebrew tools
+brew upgrade                          # MANDATORY FIRST STEP - upgrade all Homebrew packages
+bash scripts/install-tools.sh         # Update all Homebrew tools
 bash scripts/install-shell-config.sh  # Update shell configs
 bash scripts/install-ai-configs.sh    # Update AI configs
 ```
