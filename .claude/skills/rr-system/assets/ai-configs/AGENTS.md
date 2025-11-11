@@ -169,8 +169,20 @@ Usage notes:
 </skill>
 
 <skill>
+<name>rr-nestjs</name>
+<description>Comprehensive NestJS framework skill for building scalable server-side applications. Use for TypeScript backend development with controllers, providers, modules, dependency injection, middleware, guards, interceptors, pipes, database integration (MikroORM + MongoDB), GraphQL, microservices, testing, and API documentation. Automatically triggered when working with NestJS projects.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>rr-orpc</name>
 <description>Use when implementing type-safe RPC APIs with oRPC framework. Covers procedures, routers, server setup, client usage, streaming, file handling, and framework integrations (Next.js, React Query, etc.).</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>rr-pulumi</name>
+<description>Comprehensive Pulumi infrastructure-as-code skill for AWS, Kubernetes, and multi-cloud deployments. Use for defining cloud infrastructure using TypeScript, Python, Go, or other languages. Covers projects, stacks, resources, configuration, state management, Automation API, and CI/CD integration. Automatically triggered when working with Pulumi projects or infrastructure-as-code tasks.</description>
 <location>global</location>
 </skill>
 
