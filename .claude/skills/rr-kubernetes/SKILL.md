@@ -1,6 +1,6 @@
 ---
 name: rr-kubernetes
-description: Comprehensive Kubernetes, Helm, and OpenShift operations skill. Use for creating production-ready K8s manifests, Helm charts, security policies, RBAC configurations, and OpenShift-specific resources. Automatically triggered when working with .yaml/.yml K8s files, Helm charts, or mentioning Kubernetes/OpenShift/container orchestration.
+description: Comprehensive Kubernetes, Helm, and OpenShift operations skill. Use for creating production-ready K8s manifests, Helm charts, security policies, RBAC configurations, and OpenShift-specific resources. Also triggers when working with Kubernetes YAML files (.yaml, .yml), Helm chart files (Chart.yaml, values.yaml), or container orchestration configuration. Example triggers: "Create Kubernetes deployment", "Write Helm chart", "Set up RBAC", "Create K8s manifest", "Deploy to Kubernetes", "Configure OpenShift", "Add security policy"
 ---
 
 # Kubernetes, Helm & OpenShift Operations

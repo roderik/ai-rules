@@ -1,6 +1,6 @@
 ---
 name: rr-typescript
-description: Guidance for writing TypeScript code following Ultracite code quality standards. Use when writing or reviewing TypeScript/JavaScript code, implementing type-safe patterns, working with advanced types (generics, conditional types, mapped types), or ensuring code quality and accessibility. Includes comprehensive standards for React, type safety, accessibility, and performance.
+description: Guidance for writing TypeScript code following Ultracite code quality standards. Use when writing or reviewing TypeScript/JavaScript code, implementing type-safe patterns, working with advanced types (generics, conditional types, mapped types), or ensuring code quality and accessibility. Also triggers when working with TypeScript files (.ts, .tsx), JavaScript files (.js, .jsx), tsconfig.json, or when reviewing code quality. Example triggers: "Write TypeScript code", "Fix type errors", "Review code quality", "Implement type-safe patterns", "Add type definitions", "Refactor to TypeScript", "Check accessibility", "Run Ultracite"
 ---
 
 # TypeScript with Ultracite Standards

@@ -41,7 +41,27 @@ skill-name/
 
 #### SKILL.md (required)
 
-**Metadata Quality:** The `name` and `description` in YAML frontmatter determine when Claude will use the skill. Be specific about what the skill does and when to use it. Use the third-person (e.g. "This skill should be used when..." instead of "Use this skill when...").
+**Metadata Quality:** The `name` and `description` in YAML frontmatter determine when Claude will use the skill. Be super explicit about when it should trigger.
+
+**Description Format Requirements:**
+
+1. **Start with what the skill does** - Brief, clear statement of purpose
+2. **Explicit trigger conditions** - Use "Use when..." to clearly state when the skill should activate
+3. **File type triggers** - Include relevant file types/extensions that should trigger the skill
+4. **Example trigger phrases** - Add exact phrases users might say that should activate it
+
+**Example Description Pattern:**
+
+```yaml
+description: Create PowerPoint presentations. Use when user asks to create slides, make a deck, or build presentations. Also triggers when working with .pptx files or presentation templates. Example triggers: "Create a presentation about...", "Make slides for...", "Build a deck with..."
+```
+
+**Key Requirements:**
+- Be super explicit about trigger conditions
+- Include file types/extensions when relevant (e.g., ".pptx", ".sql", ".tsx")
+- List exact example phrases users might use
+- Use third-person (e.g., "This skill should be used when..." instead of "Use this skill when...")
+- Enforce that the type of file the agent is working on is a relevant trigger to use a skill
 
 #### Bundled Resources (optional)
 
@@ -166,10 +186,26 @@ Also, delete any example files and directories not needed for the skill. The ini
 
 **Writing Style:** Write the entire skill using **imperative/infinitive form** (verb-first instructions), not second person. Use objective, instructional language (e.g., "To accomplish X, do Y" rather than "You should do X" or "If you need to do X"). This maintains consistency and clarity for AI consumption.
 
+**Critical: Description Field Must Include Explicit Triggers**
+
+The YAML `description` field is the most important part for skill activation. It must be super explicit about when the skill should trigger:
+
+1. **What the skill does** - Brief statement of purpose
+2. **Explicit trigger conditions** - "Use when..." with specific scenarios
+3. **File type triggers** - Relevant file extensions (e.g., ".pptx", ".sql", ".tsx", ".yaml")
+4. **Example trigger phrases** - Exact phrases users might say, in quotes
+
+**Example:**
+```yaml
+description: Create PowerPoint presentations. Use when user asks to create slides, make a deck, or build presentations. Also triggers when working with .pptx files or presentation templates. Example triggers: "Create a presentation about...", "Make slides for...", "Build a deck with..."
+```
+
+**Enforce file type triggers:** If the skill is relevant to specific file types, the description MUST mention those file types/extensions. The type of file the agent is working on should be a relevant trigger to use the skill.
+
 To complete SKILL.md, answer the following questions:
 
 1. What is the purpose of the skill, in a few sentences?
-2. When should the skill be used?
+2. When should the skill be used? (Be super explicit - include file types and example phrases)
 3. In practice, how should Claude use the skill? All reusable skill contents developed above should be referenced so that Claude knows how to use them.
 
 ### Step 5: Packaging a Skill

@@ -1,6 +1,6 @@
 ---
 name: rr-orpc
-description: Use when implementing type-safe RPC APIs with oRPC framework. Covers procedures, routers, server setup, client usage, streaming, file handling, and framework integrations (Next.js, React Query, etc.).
+description: Guidance for implementing type-safe RPC APIs with oRPC framework. Use when implementing type-safe RPC APIs, building server procedures, setting up routers, or integrating oRPC with frameworks like Next.js or React Query. Also triggers when working with oRPC-related TypeScript files (.ts, .tsx), files importing from @orpc packages, or RPC server/client code. Example triggers: "Set up oRPC server", "Create RPC procedure", "Implement type-safe API", "Add oRPC router", "Integrate with Next.js", "Set up streaming", "Create RPC client"
 ---
 
 # oRPC

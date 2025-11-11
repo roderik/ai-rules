@@ -1,6 +1,6 @@
 ---
 name: rr-gitops
-description: Comprehensive Git and GitHub workflow management using conventional commits, atomic commits, gh CLI for all GitHub operations, and safe git practices. Use this skill for any git operation, commit creation, PR management, CI monitoring, or GitHub interaction. Essential for maintaining clean git history and professional GitHub workflows.
+description: Comprehensive Git and GitHub workflow management using conventional commits, atomic commits, gh CLI for all GitHub operations, and safe git practices. Use this skill for any git operation, commit creation, PR management, CI monitoring, or GitHub interaction. Also triggers when working with .git files, GitHub Actions workflows (.yml, .yaml in .github/workflows/), or when performing git operations. Example triggers: "Create a commit", "Make a pull request", "Check CI status", "Watch GitHub Actions", "Create PR", "Fix commit message", "Monitor CI run", "Get PR comments"
 ---
 
 # GitOps Skill
@@ -24,12 +24,7 @@ Use this skill for:
 
 ### 1. Always Use GitHub CLI (gh)
 
-**NEVER use web UI or raw API calls**. Use `gh` for all GitHub operations:
-
-- Pull requests: `gh pr create`, `gh pr view`, `gh pr edit`
-- Issues: `gh issue create`, `gh issue list`
-- CI monitoring: `gh run watch`, `gh pr checks`
-- Comments and reviews: `gh pr comment`, `gh pr review`
+**NEVER use web UI or raw API calls**. Use `gh` for all GitHub operations.
 
 See `references/gh-cli-reference.md` for comprehensive command reference.
 
@@ -45,7 +40,7 @@ All commits MUST follow conventional commit format:
 
 **Common types**: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
 
-Use HEREDOC format for proper formatting:
+Example with HEREDOC:
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -88,13 +83,6 @@ git commit -m "message" -- "src/app/[id]/page.tsx" "src/(auth)/login.tsx"
 - ❌ `git restore` on files authored by others
 - ❌ Editing `.env` or secrets files
 
-**Always safe:**
-
-- ✓ `git status`, `git log`, `git diff`
-- ✓ Creating branches
-- ✓ Regular commits
-- ✓ Pushing to feature branches
-
 See `references/git-safety.md` for comprehensive safety guidelines.
 
 ### 5. Monitor CI After PR
@@ -105,34 +93,74 @@ See `references/git-safety.md` for comprehensive safety guidelines.
 # Create PR
 gh pr create --title "Title" --body "Description"
 
-# Get run ID
-RUN_ID=$(gh run list --limit=1 --json databaseId --jq '.[0].databaseId')
-
 # Watch CI run
-gh run watch $RUN_ID
+gh run watch
 ```
 
 See `references/github-actions.md` for monitoring workflows.
 
-## Standard Workflows
+## Development Workflow
 
-### Creating a Commit
+### Plan → Validate → Execute Pattern
+
+#### Phase 1: PLAN
+
+Before any git operation, validate:
+
+**Pre-Commit Checklist:**
+
+- [ ] Not on main/master branch
+- [ ] Reviewed changes with `git status` and `git diff`
+- [ ] All tests and linting passed
+- [ ] Conventional commit format prepared
+- [ ] Explicit file paths identified
+- [ ] GitHub Actions workflows linted (if modified)
+
+**Pre-PR Checklist:**
+
+- [ ] Feature branch created and pushed
+- [ ] All commits follow conventions
+- [ ] PR body drafted with Summary and Test plan
+- [ ] Tests added/updated for changes
+
+#### Phase 2: VALIDATE
+
+**For Commits:**
 
 ```bash
-# 1. Check status
-git status
-
-# 2. Verify branch (never commit to main)
+# 1. Verify branch
 BRANCH=$(git branch --show-current)
 if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   echo "ERROR: Never commit directly to main/master"
   exit 1
 fi
 
-# 3. Review changes
+# 2. Review changes
+git status
 git diff
 
-# 4. Commit with explicit file list
+# 3. Lint workflows if needed
+if git diff --staged --name-only | grep -q '.github/workflows/'; then
+  actionlint
+fi
+```
+
+**For PRs:**
+
+```bash
+# 1. Verify branch is pushed
+git push -u origin $(git branch --show-current)
+
+# 2. Check PR doesn't already exist
+gh pr list --head $(git branch --show-current)
+```
+
+#### Phase 3: EXECUTE
+
+**For Commits:**
+
+```bash
+# Commit with explicit files
 git commit -m "$(cat <<'EOF'
 feat(feature): add new functionality
 
@@ -141,13 +169,10 @@ EOF
 )" -- src/file1.ts src/file2.ts
 ```
 
-### Creating a Pull Request
+**For PRs:**
 
 ```bash
-# 1. Ensure branch is pushed
-git push -u origin $(git branch --show-current)
-
-# 2. Create PR with formatted body
+# Create PR
 gh pr create --title "feat: title" --body "$(cat <<'EOF'
 ## Summary
 - Change 1
@@ -161,341 +186,161 @@ gh pr create --title "feat: title" --body "$(cat <<'EOF'
 EOF
 )"
 
-# 3. Watch CI
+# Watch CI
 gh run watch
+```
+
+## Standard Workflows
+
+### Creating a Commit
+
+```bash
+git status  # Check status and verify branch
+git diff    # Review changes
+git commit -m "$(cat <<'EOF'
+feat(feature): add new functionality
+
+Detailed description of changes.
+EOF
+)" -- src/file1.ts src/file2.ts
+```
+
+### Creating a Pull Request
+
+```bash
+git push -u origin $(git branch --show-current)
+gh pr create --title "feat: title" --body "$(cat <<'EOF'
+## Summary
+- Changes made
+
+## Test plan
+- [x] Tests pass
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+EOF
+)"
+gh run watch  # Monitor CI
 ```
 
 ### Updating a PR
 
 ```bash
-# 1. Make changes and commit
-git add file.ts
 git commit -m "fix: address review feedback" -- file.ts
-
-# 2. Push changes
 git push
-
-# 3. Update PR description
-gh pr edit --body "$(cat <<'EOF'
-## Updated Summary
-New changes added based on feedback
-EOF
-)"
-
-# 4. Watch new CI run
+gh pr edit --body "Updated changes"  # Optional
 gh run watch
 ```
 
-### Monitoring CI/CD
+### Common Operations
 
 ```bash
-# Check PR status
+# Monitoring CI/CD
 gh pr status
-
-# Watch PR checks
 gh pr checks --watch
-
-# View specific run
-gh run view 123456 --log
-
-# Watch run live
-gh run watch 123456
-
-# View failed logs
 gh run view 123456 --log-failed
-```
 
-### Linting GitHub Actions Workflows
-
-**ALWAYS lint workflows before committing:**
-
-```bash
-# Lint all workflows
+# Linting workflows (ALWAYS before committing)
 actionlint
 
-# Lint specific workflow
-actionlint .github/workflows/ci.yml
-
-# Run in strict mode (fail on warnings)
-actionlint -verbose
-
-# Auto-fix issues (when available)
-actionlint -format '{{json .}}'
-```
-
-**Common issues detected:**
-
-- Invalid action versions or references
-- Missing required inputs
-- Deprecated syntax
-- Shell script errors in run steps
-- Invalid YAML structure
-- Security issues (e.g., script injection)
-
-**Integration with pre-commit:**
-Actionlint runs automatically during pre-commit validation when workflow files are staged.
-
-### Getting Review Comments
-
-```bash
-# View PR with comments
+# Review comments
 gh pr view 123 --comments
-
-# View PR in browser
 gh pr view 123 --web
 
-# Check PR reviews
-gh pr view 123 --json reviews --jq '.reviews[].state'
-
-# List PR comments
-gh api repos/:owner/:repo/pulls/123/comments
-```
-
-### Merging a PR
-
-```bash
-# 1. Verify all checks pass
-gh pr checks
-
-# 2. Verify reviews
-gh pr view --json reviews
-
-# 3. Merge (squash recommended)
+# Merging
+gh pr checks              # Verify all pass
+gh pr view --json reviews # Check approvals
 gh pr merge --squash --delete-branch
 ```
 
 ## Branch Management
 
-### Create Feature Branch
-
 ```bash
-# Branch naming: feat/, fix/, chore/, docs/
-git checkout -b feat/new-feature
-```
+# Create feature branch
+git checkout -b feat/new-feature  # or fix/, chore/, docs/
 
-### Never Commit to Main
-
-```bash
-# Always check current branch
+# Never commit to main
 CURRENT=$(git branch --show-current)
-if [ "$CURRENT" = "main" ] || [ "$CURRENT" = "master" ]; then
-  echo "Create a feature branch first"
-  exit 1
-fi
-```
+[ "$CURRENT" = "main" ] && echo "Create feature branch first" && exit 1
 
-### Rebase Safely
-
-```bash
-# Avoid editor prompts
+# Rebase safely
 export GIT_EDITOR=:
 export GIT_SEQUENCE_EDITOR=:
-
-# Rebase feature branch
-git rebase main --no-edit
-
-# Never rebase public/main branches
+git rebase main --no-edit  # Never rebase public/main branches
 ```
 
-## Pre-Commit Validation
+## Essential Patterns
 
-Before ANY commit, run these checks:
+### Pre-Commit Validation
 
 ```bash
-# 1. Verify not on main
-[ "$(git branch --show-current)" != "main" ] || exit 1
-
-# 2. Check status
-git status
-
-# 3. Review diff
-git diff --staged
-
-# 4. Run tests/lint (via test-runner agent)
-# Quality checks MUST pass before commit
-
-# 5. Lint GitHub Actions workflows (if modified)
-if git diff --staged --name-only | grep -q '.github/workflows/'; then
-  actionlint
-fi
-
-# 6. Then commit
-git commit -m "message" -- explicit-files.ts
+[ "$(git branch --show-current)" != "main" ] || exit 1  # Verify not on main
+git status && git diff --staged                          # Review changes
+git diff --staged --name-only | grep -q '.github/workflows/' && actionlint  # Lint workflows
+git commit -m "message" -- explicit-files.ts             # Commit with explicit files
 ```
 
-## PR Content Standards
-
-### PR Body Structure
+### PR Body Template
 
 ```markdown
 ## Summary
 
-- What changed
-- Why it changed
-- How it changed
+- What changed and why
 
 ## Test plan
 
-- [ ] Unit tests added/updated
-- [ ] Integration tests pass
+- [ ] Tests added/updated
 - [ ] Manual testing performed
-
-## Breaking changes
-
-- List any breaking changes
-- Include migration steps
-
-## Screenshots
-
-(if UI changes)
 
 ## Related
 
-- Fixes #123
-- Related to #456
+Fixes #123
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
-### Re-run PR Edit After Changes
-
-Whenever commits or context change, update the PR:
+### Quick gh Commands
 
 ```bash
-gh pr edit --body "Updated description based on changes"
-```
-
-## GitHub CLI Usage Patterns
-
-### Common PR Operations
-
-```bash
-# Create PR
+# PRs: create, view, edit, list, check, merge
 gh pr create --title "Title" --body "Body"
-
-# View PR
-gh pr view 123
-
-# Edit PR
-gh pr edit 123 --title "New title"
-
-# List PRs
-gh pr list --state open
-
-# Check PR status
-gh pr status
-
-# Check PR checks
-gh pr checks 123
-
-# Review PR
-gh pr review 123 --approve
-gh pr review 123 --comment --body "LGTM"
-
-# Merge PR
+gh pr view 123 && gh pr checks 123
 gh pr merge 123 --squash
 
-# Close PR
-gh pr close 123
-```
-
-### Common Issue Operations
-
-```bash
-# Create issue
+# Issues: create, view, list
 gh issue create --title "Title" --body "Body"
 
-# View issue
-gh issue view 456
-
-# List issues
-gh issue list
-
-# Comment on issue
-gh issue comment 456 --body "Comment"
-
-# Close issue
-gh issue close 456
-```
-
-### Common Workflow Operations
-
-```bash
-# List runs
-gh run list
-
-# View run
-gh run view 123456
-
-# Watch run
+# Runs: list, view, watch, rerun
 gh run watch 123456
-
-# Rerun failed jobs
-gh run rerun 123456
-
-# Cancel run
-gh run cancel 123456
 ```
+
+See `references/gh-cli-reference.md` for complete command reference.
 
 ## Multi-Agent Coordination
 
-### Before Deleting/Reverting Files
-
 ```bash
-# Check if other agents modified the file
-git log -1 --format='%an' -- path/to/file
+# Before deleting/reverting: check authorship
+git log -1 --format='%an' -- path/to/file  # If not you, STOP
 
-# If not you, STOP and coordinate
-# Never delete others' work
-```
-
-### Atomic Commits in Shared Work
-
-```bash
-# Only commit your changes
-git commit -m "message" -- your-file1.ts your-file2.ts
-
-# NOT: git add . && git commit
+# Atomic commits: only your changes
+git commit -m "message" -- your-file1.ts your-file2.ts  # NOT: git add .
 ```
 
 ## Error Handling
 
-### CI Failures
-
 ```bash
-# View failed jobs
+# CI failures
 gh run view --log-failed
-
-# Investigate specific job
 gh run view --job=test --log
-
-# Fix and push
-git add fixed-file.ts
-git commit -m "fix(test): resolve test failures" -- fixed-file.ts
-git push
-
-# Monitor new run
+git commit -m "fix(test): resolve failures" -- fixed-file.ts && git push
 gh run watch
+
+# PR conflicts
+git fetch origin main && git rebase origin/main
+git add resolved-files.ts && git rebase --continue
+git push --force-with-lease  # With approval only
 ```
 
-### PR Conflicts
-
-```bash
-# Update branch from main
-git fetch origin main
-git rebase origin/main
-
-# Resolve conflicts
-# ... manual resolution ...
-
-git add resolved-files.ts
-git rebase --continue
-
-# Force push (with approval)
-git push --force-with-lease
-```
-
-## Quick Reference
+## Quick Reference Checklists
 
 ### Commit Checklist
 
@@ -527,14 +372,15 @@ git push --force-with-lease
 - [ ] Reviewed changes before commit
 - [ ] Coordinated with other agents
 
-## Reference Files
+## Reference Documentation
 
-This skill includes comprehensive reference documentation:
+Comprehensive reference documentation is available:
 
 - **`references/conventional-commits.md`** - Detailed commit format guide with examples
 - **`references/gh-cli-reference.md`** - Complete GitHub CLI command reference
 - **`references/github-actions.md`** - CI/CD monitoring and interaction guide
 - **`references/git-safety.md`** - Comprehensive safety guidelines and recovery commands
 - **`references/pr-best-practices.md`** - PR quality guidelines, templates, and review practices
+- **`references/git-commands.md`** - Complete git command reference with safety notes
 
 Load these references when detailed information is needed for specific operations.

@@ -1,6 +1,6 @@
 ---
 name: rr-tanstack
-description: This skill provides comprehensive guidance for implementing TanStack libraries (Query, Table, Router, Form, Start, Virtual, Store, DB) in modern web applications. Use this skill when working with data fetching, state management, routing, forms, tables, virtualization, or full-stack React development. Triggers on mentions of TanStack libraries, TypeScript type-safe routing/forms/queries, headless UI components, server-side rendering with type safety, or when building data-heavy applications requiring caching, pagination, filtering, or real-time synchronization.
+description: Comprehensive guidance for implementing TanStack libraries (Query, Table, Router, Form, Start, Virtual, Store, DB) in modern web applications. Use when working with data fetching, state management, routing, forms, tables, virtualization, or full-stack React development. Also triggers when working with TanStack-related TypeScript files (.ts, .tsx), files importing from @tanstack packages, or React components using TanStack hooks. Example triggers: "Implement data fetching", "Create a data table", "Set up routing", "Build a form", "Add server-side rendering", "Implement virtual scrolling", "Set up state management", "Use TanStack Query"
 ---
 
 # TanStack Suite

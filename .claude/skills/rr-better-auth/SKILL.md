@@ -1,6 +1,6 @@
 ---
 name: rr-better-auth
-description: Guidance for implementing authentication with better-auth and better-auth-ui. Use when implementing user authentication, OAuth providers, session management, 2FA, organizations/teams, passkeys, or any authentication-related features in TypeScript applications.
+description: Guidance for implementing authentication with better-auth and better-auth-ui. Use when implementing user authentication, OAuth providers, session management, 2FA, organizations/teams, passkeys, or any authentication-related features in TypeScript applications. Also triggers when working with authentication-related TypeScript files (.ts, .tsx), auth configuration files, or session management code. Example triggers: "Implement user authentication", "Add OAuth login", "Set up 2FA", "Create login page", "Add session management", "Implement passwordless auth", "Build multi-tenant auth"
 ---
 
 # Better Auth Implementation Skill
