@@ -1,46 +1,157 @@
-# NestJS Database Integration with TypeORM
+# NestJS Database Integration with MikroORM + MongoDB
 
 ## Overview
 
-Comprehensive guide for TypeORM integration with NestJS, covering entity relationships, advanced queries, transactions, migrations, and best practices.
+Comprehensive guide for MikroORM integration with NestJS and MongoDB, covering entity definition, repository patterns, EntityManager usage, queries, transactions, migrations, and best practices.
 
 ## Setup and Configuration
 
 ### Install Dependencies
 
 ```bash
-npm install @nestjs/typeorm typeorm pg
-# Or for MySQL
-npm install @nestjs/typeorm typeorm mysql2
+npm install @mikro-orm/core @mikro-orm/nestjs @mikro-orm/mongodb
+npm install --save-dev @mikro-orm/cli
 ```
 
-### Configure TypeORM Module
+### Configure MikroORM Module
 
 ```typescript
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
+    MikroOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: "postgres",
-        host: configService.get("DB_HOST"),
-        port: configService.get("DB_PORT"),
-        username: configService.get("DB_USERNAME"),
-        password: configService.get("DB_PASSWORD"),
-        database: configService.get("DB_DATABASE"),
-        entities: [__dirname + "/**/*.entity{.ts,.js}"],
-        synchronize: configService.get("NODE_ENV") !== "production",
-        logging: configService.get("NODE_ENV") === "development",
+        type: "mongo",
+        clientUrl: configService.get("MONGODB_URI"),
+        dbName: configService.get("DB_NAME"),
+        entities: ["./dist/**/*.entity.js"],
+        entitiesTs: ["./src/**/*.entity.ts"],
+        debug: configService.get("NODE_ENV") === "development",
       }),
       inject: [ConfigService],
     }),
   ],
 })
 export class AppModule {}
+```
+
+### mikro-orm.config.ts
+
+```typescript
+import { defineConfig } from "@mikro-orm/mongodb";
+import { Migrator } from "@mikro-orm/migrations-mongodb";
+import { SeedManager } from "@mikro-orm/seeder";
+
+export default defineConfig({
+  type: "mongo",
+  clientUrl: process.env.MONGODB_URI,
+  dbName: process.env.DB_NAME,
+  entities: ["./dist/**/*.entity.js"],
+  entitiesTs: ["./src/**/*.entity.ts"],
+  debug: process.env.NODE_ENV === "development",
+  extensions: [Migrator, SeedManager],
+  migrations: {
+    path: "./dist/migrations",
+    pathTs: "./src/migrations",
+  },
+  seeder: {
+    path: "./dist/seeders",
+    pathTs: "./src/seeders",
+  },
+});
+```
+
+## Entity Definition
+
+### Basic Entity
+
+```typescript
+import { Entity, Property, PrimaryKey, Unique } from "@mikro-orm/core";
+import { ObjectId } from "@mikro-orm/mongodb";
+
+@Entity()
+export class User {
+  @PrimaryKey()
+  _id!: ObjectId;
+
+  @Property()
+  id!: string;
+
+  @Property()
+  @Unique()
+  email!: string;
+
+  @Property()
+  name!: string;
+
+  @Property({ hidden: true })
+  password!: string;
+
+  @Property({ nullable: true })
+  role?: string;
+
+  @Property()
+  isActive = true;
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
+
+  constructor(email: string, name: string, password: string) {
+    this.email = email;
+    this.name = name;
+    this.password = password;
+  }
+}
+```
+
+### Entity with Embedded Objects
+
+```typescript
+import {
+  Embedded,
+  Embeddable,
+  Entity,
+  Property,
+  PrimaryKey,
+} from "@mikro-orm/core";
+import { ObjectId } from "@mikro-orm/mongodb";
+
+@Embeddable()
+export class Address {
+  @Property()
+  street!: string;
+
+  @Property()
+  city!: string;
+
+  @Property()
+  state!: string;
+
+  @Property()
+  zipCode!: string;
+
+  @Property()
+  country!: string;
+}
+
+@Entity()
+export class User {
+  @PrimaryKey()
+  _id!: ObjectId;
+
+  @Property()
+  name!: string;
+
+  @Embedded(() => Address, { nullable: true })
+  address?: Address;
+}
 ```
 
 ## Entity Relationships
@@ -50,42 +161,42 @@ export class AppModule {}
 ```typescript
 import {
   Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
+  Property,
+  PrimaryKey,
   ManyToOne,
-  JoinColumn,
-} from "typeorm";
+  OneToMany,
+  Collection,
+} from "@mikro-orm/core";
+import { ObjectId } from "@mikro-orm/mongodb";
 
-@Entity("users")
+@Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryKey()
+  _id!: ObjectId;
 
-  @Column()
-  name: string;
+  @Property()
+  name!: string;
 
   @OneToMany(() => Post, (post) => post.author)
-  posts: Post[];
+  posts = new Collection<Post>(this);
 }
 
-@Entity("posts")
+@Entity()
 export class Post {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryKey()
+  _id!: ObjectId;
 
-  @Column()
-  title: string;
+  @Property()
+  title!: string;
 
-  @Column()
-  content: string;
+  @Property()
+  content!: string;
 
-  @ManyToOne(() => User, (user) => user.posts)
-  @JoinColumn({ name: "author_id" })
-  author: User;
+  @ManyToOne(() => User)
+  author!: User;
 
-  @Column({ name: "author_id" })
-  authorId: number;
+  @Property()
+  createdAt = new Date();
 }
 ```
 
@@ -94,39 +205,35 @@ export class Post {
 ```typescript
 import {
   Entity,
-  Column,
-  PrimaryGeneratedColumn,
+  Property,
+  PrimaryKey,
   ManyToMany,
-  JoinTable,
-} from "typeorm";
+  Collection,
+} from "@mikro-orm/core";
+import { ObjectId } from "@mikro-orm/mongodb";
 
-@Entity("users")
+@Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryKey()
+  _id!: ObjectId;
 
-  @Column()
-  name: string;
+  @Property()
+  name!: string;
 
-  @ManyToMany(() => Role, (role) => role.users)
-  @JoinTable({
-    name: "user_roles",
-    joinColumn: { name: "user_id", referencedColumnName: "id" },
-    inverseJoinColumn: { name: "role_id", referencedColumnName: "id" },
-  })
-  roles: Role[];
+  @ManyToMany(() => Role, (role) => role.users, { owner: true })
+  roles = new Collection<Role>(this);
 }
 
-@Entity("roles")
+@Entity()
 export class Role {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryKey()
+  _id!: ObjectId;
 
-  @Column({ unique: true })
-  name: string;
+  @Property({ unique: true })
+  name!: string;
 
   @ManyToMany(() => User, (user) => user.roles)
-  users: User[];
+  users = new Collection<User>(this);
 }
 ```
 
@@ -135,61 +242,64 @@ export class Role {
 ```typescript
 import {
   Entity,
-  Column,
-  PrimaryGeneratedColumn,
+  Property,
+  PrimaryKey,
   ManyToOne,
   OneToMany,
-  JoinColumn,
-} from "typeorm";
+  Collection,
+} from "@mikro-orm/core";
+import { ObjectId } from "@mikro-orm/mongodb";
 
-@Entity("categories")
+@Entity()
 export class Category {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryKey()
+  _id!: ObjectId;
 
-  @Column()
-  name: string;
+  @Property()
+  name!: string;
 
-  @ManyToOne(() => Category, (category) => category.children)
-  @JoinColumn({ name: "parent_id" })
-  parent: Category;
+  @ManyToOne(() => Category, { nullable: true })
+  parent?: Category;
 
   @OneToMany(() => Category, (category) => category.parent)
-  children: Category[];
+  children = new Collection<Category>(this);
 }
 ```
 
 ## Repository Operations
 
-### Basic CRUD
+### Basic CRUD with Repository
 
 ```typescript
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { InjectRepository } from "@mikro-orm/nestjs";
+import { EntityRepository } from "@mikro-orm/mongodb";
 import { User } from "./entities/user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private readonly usersRepository: EntityRepository<User>,
   ) {}
 
   // Create
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create(createUserDto);
-    return this.usersRepository.save(user);
+    await this.usersRepository.persistAndFlush(user);
+    return user;
   }
 
   // Read all
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.usersRepository.findAll();
   }
 
   // Read one
-  async findOne(id: number): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
+  async findOne(id: string): Promise<User> {
+    const user = await this.usersRepository.findOne(id);
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
@@ -197,17 +307,44 @@ export class UsersService {
   }
 
   // Update
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.usersRepository.update(id, updateUserDto);
-    return this.findOne(id);
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
+    Object.assign(user, updateUserDto);
+    await this.usersRepository.flush();
+    return user;
   }
 
   // Delete
-  async remove(id: number): Promise<void> {
-    const result = await this.usersRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`User #${id} not found`);
-    }
+  async remove(id: string): Promise<void> {
+    const user = await this.findOne(id);
+    await this.usersRepository.removeAndFlush(user);
+  }
+}
+```
+
+### Using EntityManager
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { EntityManager } from "@mikro-orm/mongodb";
+import { User } from "./entities/user.entity";
+
+@Injectable()
+export class UsersService {
+  constructor(private readonly em: EntityManager) {}
+
+  async create(data: CreateUserDto): Promise<User> {
+    const user = this.em.create(User, data);
+    await this.em.persistAndFlush(user);
+    return user;
+  }
+
+  async findAll(): Promise<User[]> {
+    return this.em.find(User, {});
+  }
+
+  async findOne(id: string): Promise<User> {
+    return this.em.findOneOrFail(User, id);
   }
 }
 ```
@@ -215,173 +352,159 @@ export class UsersService {
 ### Loading Relations
 
 ```typescript
-// Eager loading with relations
-async findUserWithPosts(id: number): Promise<User> {
-  return this.usersRepository.findOne({
-    where: { id },
-    relations: ['posts', 'roles'],
-  });
-}
+// Populate single relation
+const user = await this.usersRepository.findOne(id, {
+  populate: ["posts"],
+});
 
-// Select specific fields
-async findUserEmails(): Promise<{ id: number; email: string }[]> {
-  return this.usersRepository.find({
-    select: ['id', 'email'],
-  });
-}
+// Populate multiple relations
+const user = await this.usersRepository.findOne(id, {
+  populate: ["posts", "roles"],
+});
 
-// Nested relations
-async findUserWithPostsAndComments(id: number): Promise<User> {
-  return this.usersRepository.findOne({
-    where: { id },
-    relations: ['posts', 'posts.comments', 'posts.comments.author'],
-  });
-}
+// Populate nested relations
+const user = await this.usersRepository.findOne(id, {
+  populate: ["posts", "posts.comments", "posts.comments.author"],
+});
+
+// Populate all relations
+const user = await this.usersRepository.findOne(id, {
+  populate: ["*"],
+});
 ```
 
-### Query Builder
+### Query Filtering
 
 ```typescript
-// Basic query builder
-async findActiveUsers(): Promise<User[]> {
-  return this.usersRepository
-    .createQueryBuilder('user')
-    .where('user.isActive = :isActive', { isActive: true })
-    .orderBy('user.createdAt', 'DESC')
-    .getMany();
-}
+// Simple filtering
+const activeUsers = await this.usersRepository.find({ isActive: true });
 
-// Complex queries with joins
-async findUsersWithPosts(): Promise<User[]> {
-  return this.usersRepository
-    .createQueryBuilder('user')
-    .leftJoinAndSelect('user.posts', 'post')
-    .where('post.published = :published', { published: true })
-    .andWhere('user.isActive = :isActive', { isActive: true })
-    .orderBy('post.createdAt', 'DESC')
-    .getMany();
-}
+// Multiple conditions (AND)
+const users = await this.usersRepository.find({
+  isActive: true,
+  role: "admin",
+});
 
+// OR conditions
+const users = await this.usersRepository.find({
+  $or: [{ role: "admin" }, { role: "moderator" }],
+});
+
+// Comparison operators
+const users = await this.usersRepository.find({
+  age: { $gte: 18, $lt: 65 },
+  createdAt: { $gte: new Date("2024-01-01") },
+});
+
+// Array operations
+const users = await this.usersRepository.find({
+  tags: { $in: ["premium", "verified"] },
+});
+
+// Text search (MongoDB)
+const users = await this.usersRepository.find({
+  $text: { $search: "john" },
+});
+
+// Regex search
+const users = await this.usersRepository.find({
+  email: { $re: ".*@example.com" },
+});
+```
+
+### Pagination and Sorting
+
+```typescript
 // Pagination
-async findWithPagination(
-  page: number,
-  limit: number,
-): Promise<{ data: User[]; total: number }> {
-  const [data, total] = await this.usersRepository
-    .createQueryBuilder('user')
-    .skip((page - 1) * limit)
-    .take(limit)
-    .getManyAndCount();
+const [users, total] = await this.usersRepository.findAndCount(
+  { isActive: true },
+  {
+    limit: 10,
+    offset: 0,
+    orderBy: { createdAt: "DESC" },
+  },
+);
 
-  return { data, total };
-}
+// Cursor-based pagination
+const users = await this.usersRepository.find(
+  { _id: { $gt: lastSeenId } },
+  {
+    limit: 10,
+    orderBy: { _id: "ASC" },
+  },
+);
+```
 
-// Search
-async search(query: string): Promise<User[]> {
-  return this.usersRepository
-    .createQueryBuilder('user')
-    .where('user.name ILIKE :query', { query: `%${query}%` })
-    .orWhere('user.email ILIKE :query', { query: `%${query}%` })
-    .getMany();
-}
+### Aggregation
 
-// Aggregation
-async getUserStats(): Promise<any> {
-  return this.usersRepository
-    .createQueryBuilder('user')
-    .select('COUNT(user.id)', 'totalUsers')
-    .addSelect('COUNT(CASE WHEN user.isActive THEN 1 END)', 'activeUsers')
-    .getRawOne();
-}
+```typescript
+// Count
+const count = await this.usersRepository.count({ isActive: true });
+
+// Aggregation pipeline (MongoDB)
+const result = await this.em.aggregate(User, [
+  { $match: { isActive: true } },
+  { $group: { _id: "$role", count: { $sum: 1 } } },
+  { $sort: { count: -1 } },
+]);
 ```
 
 ## Transactions
 
-### Using QueryRunner
+### Using EntityManager fork
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, DataSource } from "typeorm";
+import { EntityManager } from "@mikro-orm/mongodb";
 import { User } from "./entities/user.entity";
 import { Post } from "./entities/post.entity";
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-    @InjectRepository(Post)
-    private postsRepository: Repository<Post>,
-    private dataSource: DataSource,
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
   async createUserWithPosts(
     userData: CreateUserDto,
     postsData: CreatePostDto[],
   ): Promise<User> {
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
+    // Fork the EntityManager for transaction
+    return this.em.transactional(async (em) => {
       // Create user
-      const user = queryRunner.manager.create(User, userData);
-      await queryRunner.manager.save(user);
+      const user = em.create(User, userData);
+      await em.persist(user).flush();
 
       // Create posts
       const posts = postsData.map((postData) =>
-        queryRunner.manager.create(Post, {
-          ...postData,
-          author: user,
-        }),
+        em.create(Post, { ...postData, author: user }),
       );
-      await queryRunner.manager.save(posts);
+      await em.persist(posts).flush();
 
-      await queryRunner.commitTransaction();
       return user;
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+    });
   }
 }
 ```
 
-### Using Transaction Decorator
+### Manual Transaction Control
 
 ```typescript
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Transactional } from "typeorm-transactional";
-import { User } from "./entities/user.entity";
+async transferCredits(fromId: string, toId: string, amount: number): Promise<void> {
+  const em = this.em.fork();
 
-@Injectable()
-export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+  await em.begin();
 
-  @Transactional()
-  async transferBalance(
-    fromId: number,
-    toId: number,
-    amount: number,
-  ): Promise<void> {
-    const fromUser = await this.usersRepository.findOne({
-      where: { id: fromId },
-    });
-    const toUser = await this.usersRepository.findOne({ where: { id: toId } });
+  try {
+    const fromUser = await em.findOneOrFail(User, fromId);
+    const toUser = await em.findOneOrFail(User, toId);
 
-    fromUser.balance -= amount;
-    toUser.balance += amount;
+    fromUser.credits -= amount;
+    toUser.credits += amount;
 
-    await this.usersRepository.save([fromUser, toUser]);
+    await em.flush();
+    await em.commit();
+  } catch (error) {
+    await em.rollback();
+    throw error;
   }
 }
 ```
@@ -389,32 +512,37 @@ export class UsersService {
 ## Custom Repositories
 
 ```typescript
-import { Injectable } from "@nestjs/common";
-import { DataSource, Repository } from "typeorm";
+import { EntityRepository } from "@mikro-orm/mongodb";
 import { User } from "./entities/user.entity";
 
-@Injectable()
-export class UsersRepository extends Repository<User> {
-  constructor(private dataSource: DataSource) {
-    super(User, dataSource.createEntityManager());
-  }
-
+export class UsersRepository extends EntityRepository<User> {
   async findByEmail(email: string): Promise<User | null> {
-    return this.findOne({
-      where: { email },
-      relations: ["roles"],
-    });
+    return this.findOne({ email }, { populate: ["roles"] });
   }
 
   async findActiveUsers(): Promise<User[]> {
-    return this.createQueryBuilder("user")
-      .where("user.isActive = :isActive", { isActive: true })
-      .orderBy("user.createdAt", "DESC")
-      .getMany();
+    return this.find(
+      { isActive: true },
+      {
+        orderBy: { createdAt: "DESC" },
+      },
+    );
   }
 
-  async softDelete(id: number): Promise<void> {
-    await this.update(id, { deletedAt: new Date() });
+  async searchUsers(query: string): Promise<User[]> {
+    return this.find({
+      $or: [
+        { name: { $re: query, $options: "i" } },
+        { email: { $re: query, $options: "i" } },
+      ],
+    });
+  }
+
+  async softDelete(id: string): Promise<void> {
+    const user = await this.findOneOrFail(id);
+    user.isActive = false;
+    user.deletedAt = new Date();
+    await this.flush();
   }
 }
 ```
@@ -423,15 +551,22 @@ export class UsersRepository extends Repository<User> {
 
 ```typescript
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
+import { User } from "./entities/user.entity";
 import { UsersRepository } from "./users.repository";
 import { UsersService } from "./users.service";
-import { User } from "./entities/user.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
-  providers: [UsersRepository, UsersService],
-  exports: [UsersRepository],
+  imports: [
+    MikroOrmModule.forFeature({
+      entities: [User],
+      customRepositories: {
+        User: UsersRepository,
+      },
+    }),
+  ],
+  providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}
 ```
@@ -441,58 +576,23 @@ export class UsersModule {}
 ### Generate Migration
 
 ```bash
-npm run typeorm migration:generate -- -n CreateUsersTable
+npx mikro-orm migration:create
 ```
 
 ### Create Migration Manually
 
 ```typescript
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { Migration } from "@mikro-orm/migrations-mongodb";
 
-export class CreateUsersTable1234567890 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.createTable(
-      new Table({
-        name: "users",
-        columns: [
-          {
-            name: "id",
-            type: "int",
-            isPrimary: true,
-            isGenerated: true,
-            generationStrategy: "increment",
-          },
-          {
-            name: "email",
-            type: "varchar",
-            isUnique: true,
-          },
-          {
-            name: "name",
-            type: "varchar",
-          },
-          {
-            name: "password",
-            type: "varchar",
-          },
-          {
-            name: "created_at",
-            type: "timestamp",
-            default: "now()",
-          },
-          {
-            name: "updated_at",
-            type: "timestamp",
-            default: "now()",
-          },
-        ],
-      }),
-      true,
-    );
+export class Migration20240101120000 extends Migration {
+  async up(): Promise<void> {
+    this.getCollection("users").createIndex({ email: 1 }, { unique: true });
+    this.getCollection("users").createIndex({ createdAt: -1 });
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable("users");
+  async down(): Promise<void> {
+    this.getCollection("users").dropIndex("email_1");
+    this.getCollection("users").dropIndex("createdAt_-1");
   }
 }
 ```
@@ -500,8 +600,47 @@ export class CreateUsersTable1234567890 implements MigrationInterface {
 ### Run Migrations
 
 ```bash
-npm run typeorm migration:run
-npm run typeorm migration:revert
+npx mikro-orm migration:up       # Run pending migrations
+npx mikro-orm migration:down     # Revert last migration
+npx mikro-orm migration:list     # List all migrations
+```
+
+## Seeders
+
+### Create Seeder
+
+```typescript
+import { EntityManager } from "@mikro-orm/mongodb";
+import { Seeder } from "@mikro-orm/seeder";
+import { User } from "../entities/user.entity";
+
+export class UserSeeder extends Seeder {
+  async run(em: EntityManager): Promise<void> {
+    const users = [
+      em.create(User, {
+        email: "admin@example.com",
+        name: "Admin User",
+        password: "hashed_password",
+        role: "admin",
+      }),
+      em.create(User, {
+        email: "user@example.com",
+        name: "Regular User",
+        password: "hashed_password",
+        role: "user",
+      }),
+    ];
+
+    await em.persistAndFlush(users);
+  }
+}
+```
+
+### Run Seeders
+
+```bash
+npx mikro-orm seeder:run          # Run all seeders
+npx mikro-orm seeder:run --class=UserSeeder  # Run specific seeder
 ```
 
 ## Advanced Patterns
@@ -509,75 +648,89 @@ npm run typeorm migration:revert
 ### Soft Delete
 
 ```typescript
-import { Entity, Column, DeleteDateColumn } from "typeorm";
+import { Entity, Property, Filter } from "@mikro-orm/core";
+import { ObjectId } from "@mikro-orm/mongodb";
 
-@Entity("users")
+@Entity()
+@Filter({ name: "active", cond: { deletedAt: null }, default: true })
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryKey()
+  _id!: ObjectId;
 
-  @Column()
-  name: string;
+  @Property()
+  name!: string;
 
-  @DeleteDateColumn()
-  deletedAt: Date;
+  @Property({ nullable: true })
+  deletedAt?: Date;
 }
 
 // Usage
-await this.usersRepository.softDelete(id);
-await this.usersRepository.restore(id);
-
-// Find including soft-deleted
-await this.usersRepository.find({ withDeleted: true });
+const activeUsers = await this.usersRepository.findAll(); // Only active users
+const allUsers = await this.usersRepository.findAll({
+  filters: { active: false },
+}); // All users
 ```
 
-### Optimistic Locking
+### Virtual Properties
 
 ```typescript
-import { Entity, Column, VersionColumn } from "typeorm";
+import { Entity, Property } from "@mikro-orm/core";
 
-@Entity("products")
-export class Product {
-  @PrimaryGeneratedColumn()
-  id: number;
+@Entity()
+export class User {
+  @Property()
+  firstName!: string;
 
-  @Column()
-  name: string;
+  @Property()
+  lastName!: string;
 
-  @Column()
-  stock: number;
-
-  @VersionColumn()
-  version: number;
+  @Property({ persist: false })
+  get fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
 }
-
-// TypeORM will throw error if version doesn't match
 ```
 
-### Listeners and Subscribers
+### Lifecycle Hooks
 
 ```typescript
-import { Entity, Column, BeforeInsert, BeforeUpdate, AfterLoad } from "typeorm";
+import { Entity, Property, BeforeCreate, BeforeUpdate } from "@mikro-orm/core";
 import * as bcrypt from "bcrypt";
 
-@Entity("users")
+@Entity()
 export class User {
-  @Column()
-  password: string;
+  @Property({ hidden: true })
+  password!: string;
 
-  private tempPassword: string;
-
-  @AfterLoad()
-  private loadTempPassword(): void {
-    this.tempPassword = this.password;
-  }
-
-  @BeforeInsert()
+  @BeforeCreate()
   @BeforeUpdate()
-  async hashPassword(): Promise<void> {
-    if (this.password !== this.tempPassword) {
+  async hashPassword() {
+    if (this.password && !this.password.startsWith("$2")) {
       this.password = await bcrypt.hash(this.password, 10);
     }
+  }
+}
+```
+
+### Subscribers (Event Listeners)
+
+```typescript
+import { EventArgs, EventSubscriber, Subscriber } from "@mikro-orm/core";
+import { User } from "./entities/user.entity";
+
+@Subscriber()
+export class UserSubscriber implements EventSubscriber<User> {
+  getSubscribedEntities() {
+    return [User];
+  }
+
+  async afterCreate(args: EventArgs<User>): Promise<void> {
+    console.log(`User ${args.entity.email} was created`);
+    // Send welcome email
+  }
+
+  async afterUpdate(args: EventArgs<User>): Promise<void> {
+    console.log(`User ${args.entity.email} was updated`);
   }
 }
 ```
@@ -587,70 +740,156 @@ export class User {
 ### Indexing
 
 ```typescript
-import { Entity, Column, Index } from "typeorm";
+import { Entity, Property, Index, Unique } from "@mikro-orm/core";
 
-@Entity("users")
-@Index(["email", "isActive"])
+@Entity()
+@Index({ properties: ["email", "isActive"] })
 export class User {
-  @Column()
-  @Index()
-  email: string;
+  @Property()
+  @Unique()
+  email!: string;
 
-  @Column()
+  @Property()
   @Index()
-  isActive: boolean;
+  isActive!: boolean;
+
+  @Property()
+  @Index()
+  createdAt = new Date();
 }
 ```
 
-### Query Caching
+### Query Optimization
 
 ```typescript
-// Cache query results
-async findActiveUsers(): Promise<User[]> {
-  return this.usersRepository.find({
-    where: { isActive: true },
-    cache: {
-      id: 'active_users',
-      milliseconds: 60000, // 1 minute
-    },
-  });
-}
+// Use select to fetch only needed fields
+const users = await this.usersRepository.find(
+  { isActive: true },
+  { fields: ["name", "email"] },
+);
 
-// Clear cache
-await this.usersRepository.manager.connection.queryResultCache.remove([
-  'active_users',
-]);
+// Use pagination
+const [users, total] = await this.usersRepository.findAndCount(
+  {},
+  {
+    limit: 20,
+    offset: 0,
+  },
+);
+
+// Use populate strategically
+const users = await this.usersRepository.find(
+  {},
+  {
+    populate: ["posts"], // Only populate what you need
+    populateWhere: { posts: { published: true } }, // Filter populated entities
+  },
+);
 ```
 
 ### Batch Operations
 
 ```typescript
 // Bulk insert
-async bulkCreate(users: CreateUserDto[]): Promise<User[]> {
-  const entities = this.usersRepository.create(users);
-  return this.usersRepository.save(entities);
-}
+const users = userDtos.map((dto) => this.usersRepository.create(dto));
+await this.usersRepository.persistAndFlush(users);
 
-// Bulk update
-async bulkUpdate(ids: number[], updates: Partial<User>): Promise<void> {
-  await this.usersRepository
-    .createQueryBuilder()
-    .update(User)
-    .set(updates)
-    .whereInIds(ids)
-    .execute();
-}
+// Bulk update (MongoDB)
+await this.em.nativeUpdate(User, { role: "user" }, { isActive: true });
+
+// Bulk delete
+await this.em.nativeDelete(User, { isActive: false });
 ```
 
 ## Best Practices
 
-1. **Always use transactions** for operations affecting multiple tables
-2. **Disable synchronize in production** - use migrations instead
-3. **Use query builder** for complex queries instead of raw SQL
-4. **Index frequently queried columns** for performance
-5. **Avoid N+1 queries** by eagerly loading relations when needed
-6. **Use pagination** for large result sets
-7. **Validate data** at both DTO and entity level
-8. **Handle errors** properly with try-catch or filters
-9. **Use connection pooling** for better performance
-10. **Monitor query performance** with logging in development
+1. **Use EntityManager.fork() for transactions** to ensure proper isolation
+2. **Always call flush()** after making changes to persist them
+3. **Use populate wisely** to avoid N+1 queries
+4. **Leverage MongoDB indexes** for frequently queried fields
+5. **Use filters** for soft deletes and tenant isolation
+6. **Implement custom repositories** for complex queries
+7. **Use migrations** in production, not schema synchronization
+8. **Test with in-memory MongoDB** using mongodb-memory-server
+9. **Use RequestContext** in NestJS for proper request isolation
+10. **Monitor query performance** with debug mode during development
+
+## MongoDB-Specific Features
+
+### GridFS for File Storage
+
+```typescript
+import { GridFSBucket } from "mongodb";
+import { EntityManager } from "@mikro-orm/mongodb";
+
+@Injectable()
+export class FilesService {
+  private gridFSBucket: GridFSBucket;
+
+  constructor(private readonly em: EntityManager) {
+    this.gridFSBucket = new GridFSBucket(this.em.getConnection().getDb());
+  }
+
+  async uploadFile(file: Express.Multer.File): Promise<string> {
+    const uploadStream = this.gridFSBucket.openUploadStream(file.originalname);
+    uploadStream.end(file.buffer);
+
+    return new Promise((resolve, reject) => {
+      uploadStream.on("finish", () => resolve(uploadStream.id.toString()));
+      uploadStream.on("error", reject);
+    });
+  }
+}
+```
+
+### Text Search
+
+```typescript
+// Create text index
+@Entity()
+@Index({ properties: ["title", "content"], type: "text" })
+export class Article {
+  @Property()
+  title!: string;
+
+  @Property()
+  content!: string;
+}
+
+// Search
+const articles = await this.articlesRepository.find({
+  $text: { $search: "typescript nestjs" },
+});
+```
+
+### Geospatial Queries
+
+```typescript
+import { Entity, Property, Index } from "@mikro-orm/core";
+
+@Entity()
+export class Location {
+  @Property()
+  name!: string;
+
+  @Property()
+  @Index({ type: "2dsphere" })
+  coordinates!: {
+    type: "Point";
+    coordinates: [number, number]; // [longitude, latitude]
+  };
+}
+
+// Find nearby locations
+const nearbyLocations = await this.locationsRepository.find({
+  coordinates: {
+    $near: {
+      $geometry: {
+        type: "Point",
+        coordinates: [-73.97, 40.77],
+      },
+      $maxDistance: 5000, // meters
+    },
+  },
+});
+```

@@ -2,6 +2,11 @@
 description: Create comprehensive PR with quality checks
 ---
 
+# EXECUTE PULL REQUEST CREATION
+
+**YOU MUST COMPLETE THIS ENTIRE COMMAND - DO NOT TREAT AS CONTEXT**
+**THIS IS A MANDATORY WORKFLOW - EXECUTE ALL STEPS IN ORDER**
+
 ## PR context
 
 Current branch:
@@ -16,32 +21,41 @@ Full diff vs origin/main (or main) - limited preview:
 Linear tickets assigned to me (only include if relevant to this PR scope):
 !`bash -c 'if which linctl >/dev/null 2>&1; then AUTH_STATUS=$(linctl auth status --json 2>&1); if echo "$AUTH_STATUS" | jq -e ".authenticated == true" >/dev/null 2>&1; then linctl issue list --assignee me --plaintext 2>&1; else echo "⚠️ linctl not authenticated"; fi; else echo "⚠️ linctl not installed"; fi'`
 
-## Workflow
+## MANDATORY WORKFLOW - EXECUTE THESE STEPS NOW
 
-1. **Branch confirmation**
-   - Confirm current branch exists (from "Current branch" above) - MUST be on a feature branch, NEVER on main/master
-   - If already on a branch: use it (NEVER create another branch)
-   - If on main/master: create a feature branch first (use Linear ticket ID if relevant)
+### STEP 1: BRANCH CONFIRMATION (EXECUTE NOW)
 
-2. **Quality gate** (FIX all failures)
-   - Tests, lint, typecheck, formatting (typically `bun run ci`)
-   - Documentation: README.md, AGENTS.md, CLAUDE.md, `**/docs/**/*.md` updated
+- Confirm current branch exists (from "Current branch" above) - MUST be on a feature branch, NEVER on main/master
+- If already on a branch: use it (NEVER create another branch)
+- If on main/master: YOU MUST create a feature branch first (use Linear ticket ID if relevant)
 
-3. **Commit all changes**: Create multiple small targeted commits combining related changes
-   - Group related files together (e.g., feature + tests, docs + code, config + implementation)
-   - Use conventional commit format: `type(scope): description`
-   - Commit ALL uncommitted changes - nothing should remain uncommitted
-   - Examples:
-     - `feat(auth): add OAuth2 login flow`
-     - `test(auth): add OAuth2 tests`
-     - `docs(readme): update auth documentation`
-     - `chore(config): update auth configuration`
+### STEP 2: QUALITY GATE (EXECUTE NOW - FIX ALL FAILURES)
 
-4. **Create PR**
-   ```bash
-   git push
-   gh pr create --title "TITLE" --body "BODY" --assignee "@me"
-   ```
+- RUN tests, lint, typecheck, formatting (typically `bun run ci`)
+- VERIFY documentation: README.md, AGENTS.md, CLAUDE.md, `**/docs/**/*.md` updated
+- DO NOT PROCEED until all checks pass
+
+### STEP 3: COMMIT ALL CHANGES (EXECUTE NOW)
+
+Create multiple small targeted commits combining related changes
+
+- Group related files together (e.g., feature + tests, docs + code, config + implementation)
+- Use conventional commit format: `type(scope): description`
+- Commit ALL uncommitted changes - nothing should remain uncommitted
+- Examples:
+  - `feat(auth): add OAuth2 login flow`
+  - `test(auth): add OAuth2 tests`
+  - `docs(readme): update auth documentation`
+  - `chore(config): update auth configuration`
+
+### STEP 4: CREATE PULL REQUEST (EXECUTE NOW)
+
+YOU MUST execute these commands:
+
+```bash
+git push
+gh pr create --title "TITLE" --body "BODY" --assignee "@me"
+```
 
 ## Title Format
 
@@ -79,30 +93,39 @@ Linear tickets assigned to me (only include if relevant to this PR scope):
 
 ```markdown
 ## What
+
 [Summary based on ALL changed files - list key files/features affected across the entire PR]
 
 ## Why
+
 [Business/technical rationale that explains the overall change - what problem does the FULL PR solve?]
 
 ## How
+
 [Key implementation details covering ALL major changes - organize by theme/area, not chronologically]
 
 ## Files Changed
+
 [List or summarize the main files/areas changed - use the "Full PR scope analysis" data]
 
 ## Breaking Changes
+
 [List changes, or "None"]
 
 ## Related Linear Issues
+
 [Use the tickets fetched above which MIGHT be involved in the context of this PR. This is NOT a given and should be evaluated closely. Only include tickets that relate to the FULL scope of changes, not just recent edits]
 ```
 
-## Exit Criteria
+## EXIT CRITERIA - YOU MUST VERIFY ALL BEFORE COMPLETION
 
-- All quality checks passing
-- Critical issues fixed
-- ALL changes committed (no uncommitted files)
-- Multiple small targeted commits created
-- PR created with well-formatted body covering ALL changes
-- PR URL displayed
-- Watch the CI build to ensure it all works, if not iterate and fix: `gh run watch <run-id>`
+**DO NOT MARK THIS COMMAND COMPLETE UNTIL:**
+
+- ✓ All quality checks PASSING
+- ✓ ALL critical issues FIXED
+- ✓ ALL changes COMMITTED (zero uncommitted files)
+- ✓ Multiple small targeted commits CREATED
+- ✓ PR CREATED with well-formatted body covering ALL changes
+- ✓ PR URL DISPLAYED to user
+- ✓ CI build WATCHED and PASSING (execute: `gh run watch <run-id>`)
+  - If CI fails: YOU MUST iterate and fix until passing

@@ -1,6 +1,6 @@
 ---
 name: rr-nestjs
-description: Comprehensive NestJS framework skill for building scalable server-side applications. Use for TypeScript backend development with controllers, providers, modules, dependency injection, middleware, guards, interceptors, pipes, database integration (TypeORM), GraphQL, microservices, testing, and API documentation. Automatically triggered when working with NestJS projects.
+description: Comprehensive NestJS framework skill for building scalable server-side applications. Use for TypeScript backend development with controllers, providers, modules, dependency injection, middleware, guards, interceptors, pipes, database integration (MikroORM + MongoDB), GraphQL, microservices, testing, and API documentation. Automatically triggered when working with NestJS projects.
 ---
 
 # NestJS Framework
@@ -18,7 +18,7 @@ Automatically activate when:
 - Building REST APIs, GraphQL APIs, or microservices with TypeScript
 - Using decorators like `@Controller()`, `@Injectable()`, `@Module()`
 - User requests backend architecture, API development, or server-side TypeScript
-- Working with TypeORM, Prisma, or database integration in NestJS
+- Working with MikroORM, MongoDB, or database integration in NestJS
 - Implementing authentication, authorization, or API documentation
 
 ## Core Workflows
@@ -161,8 +161,8 @@ export class ExampleController {
 
 ```typescript
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { InjectRepository } from "@mikro-orm/nestjs";
+import { EntityRepository } from "@mikro-orm/mongodb";
 import { User } from "./entities/user.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -171,35 +171,37 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly usersRepository: EntityRepository<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create(createUserDto);
-    return this.usersRepository.save(user);
+    await this.usersRepository.persistAndFlush(user);
+    return user;
   }
 
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.usersRepository.findAll();
   }
 
-  async findOne(id: number): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
+  async findOne(id: string): Promise<User> {
+    const user = await this.usersRepository.findOne(id);
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
     Object.assign(user, updateUserDto);
-    return this.usersRepository.save(user);
+    await this.usersRepository.flush();
+    return user;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const user = await this.findOne(id);
-    await this.usersRepository.remove(user);
+    await this.usersRepository.removeAndFlush(user);
   }
 }
 ```
@@ -210,13 +212,13 @@ export class UsersService {
 
 ```typescript
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
 import { User } from "./entities/user.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [MikroOrmModule.forFeature([User])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService], // Export for use in other modules
@@ -228,7 +230,7 @@ export class UsersModule {}
 
 ```typescript
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UsersModule } from "./users/users.module";
 import { AuthModule } from "./auth/auth.module";
@@ -239,17 +241,15 @@ import { AuthModule } from "./auth/auth.module";
       isGlobal: true,
       envFilePath: ".env",
     }),
-    TypeOrmModule.forRootAsync({
+    MikroOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: "postgres",
-        host: configService.get("DB_HOST"),
-        port: configService.get("DB_PORT"),
-        username: configService.get("DB_USERNAME"),
-        password: configService.get("DB_PASSWORD"),
-        database: configService.get("DB_DATABASE"),
-        entities: [__dirname + "/**/*.entity{.ts,.js}"],
-        synchronize: configService.get("NODE_ENV") !== "production",
+        type: "mongo",
+        clientUrl: configService.get("MONGODB_URI"),
+        dbName: configService.get("DB_NAME"),
+        entities: ["./dist/**/*.entity.js"],
+        entitiesTs: ["./src/**/*.entity.ts"],
+        debug: configService.get("NODE_ENV") === "development",
       }),
       inject: [ConfigService],
     }),
@@ -532,42 +532,40 @@ async function bootstrap() {
 bootstrap();
 ```
 
-### 10. Database Integration (TypeORM)
+### 10. Database Integration (MikroORM + MongoDB)
 
 **Entity definition:**
 
 ```typescript
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-} from "typeorm";
+import { Entity, Property, PrimaryKey, Unique } from "@mikro-orm/core";
+import { ObjectId } from "@mikro-orm/mongodb";
 
-@Entity("users")
+@Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryKey()
+  _id!: ObjectId;
 
-  @Column({ unique: true })
-  email: string;
+  @Property()
+  id!: string;
 
-  @Column()
-  name: string;
+  @Property()
+  @Unique()
+  email!: string;
 
-  @Column({ select: false })
-  password: string;
+  @Property()
+  name!: string;
 
-  @Column({ nullable: true })
-  role: string;
+  @Property({ hidden: true })
+  password!: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Property({ nullable: true })
+  role?: string;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 }
 ```
 
@@ -576,10 +574,10 @@ export class User {
 See `references/nestjs-database.md` for comprehensive database patterns including:
 
 - Entity relationships (OneToMany, ManyToOne, ManyToMany)
-- Query builders and advanced queries
-- Transactions and query runners
-- Custom repositories
-- Database migrations
+- EntityManager and Repository patterns
+- Query builder and filtering
+- Transactions and unit of work
+- Migrations and seeders
 
 ### 11. Testing
 
@@ -587,21 +585,22 @@ See `references/nestjs-database.md` for comprehensive database patterns includin
 
 ```typescript
 import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { getRepositoryToken } from "@mikro-orm/nestjs";
+import { EntityRepository } from "@mikro-orm/mongodb";
 import { UsersService } from "./users.service";
 import { User } from "./entities/user.entity";
 
 describe("UsersService", () => {
   let service: UsersService;
-  let repository: Repository<User>;
+  let repository: EntityRepository<User>;
 
   const mockRepository = {
     create: jest.fn(),
-    save: jest.fn(),
-    find: jest.fn(),
+    persistAndFlush: jest.fn(),
+    findAll: jest.fn(),
     findOne: jest.fn(),
-    remove: jest.fn(),
+    removeAndFlush: jest.fn(),
+    flush: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -616,7 +615,7 @@ describe("UsersService", () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    repository = module.get<Repository<User>>(getRepositoryToken(User));
+    repository = module.get<EntityRepository<User>>(getRepositoryToken(User));
   });
 
   it("should create a user", async () => {
@@ -625,10 +624,10 @@ describe("UsersService", () => {
       name: "Test",
       password: "pass",
     };
-    const user = { id: 1, ...createUserDto };
+    const user = { id: "1", ...createUserDto };
 
     mockRepository.create.mockReturnValue(user);
-    mockRepository.save.mockResolvedValue(user);
+    mockRepository.persistAndFlush.mockResolvedValue(undefined);
 
     expect(await service.create(createUserDto)).toEqual(user);
   });
@@ -809,30 +808,13 @@ npm run test:e2e                 # Run E2E tests
 
 ### Repository Pattern
 
-See `references/nestjs-database.md` for complete repository pattern implementation.
-
-### CQRS Pattern
-
-See `references/nestjs-advanced.md` for Command Query Responsibility Segregation.
-
-### Microservices Pattern
-
-See `references/nestjs-microservices.md` for microservices architecture.
-
-### GraphQL API
-
-See `references/nestjs-graphql.md` for GraphQL implementation patterns.
+See `references/nestjs-database.md` for complete MikroORM repository and EntityManager patterns.
 
 ## Resources
 
 ### references/
 
-- `nestjs-fundamentals.md` - Core concepts, DI, lifecycle, and architecture
-- `nestjs-database.md` - TypeORM integration, entities, queries, transactions
-- `nestjs-testing.md` - Unit testing, E2E testing, mocking strategies
-- `nestjs-advanced.md` - CQRS, Event Sourcing, custom decorators
-- `nestjs-microservices.md` - Microservices, message patterns, transport layers
-- `nestjs-graphql.md` - GraphQL setup, resolvers, subscriptions
+- `nestjs-database.md` - MikroORM + MongoDB integration, entities, queries, transactions
 
 ## Workflow Example
 

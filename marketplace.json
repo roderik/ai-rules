@@ -214,7 +214,7 @@
       "path": ".claude/skills/rr-nestjs",
       "category": "Backend Development",
       "subcategories": ["Framework", "TypeScript", "REST API", "Microservices"],
-      "description": "Comprehensive NestJS framework skill for building scalable server-side applications. Covers TypeScript backend development with controllers, providers, modules, dependency injection, middleware, guards, interceptors, pipes, database integration (TypeORM), GraphQL, microservices, testing, and API documentation.",
+      "description": "Comprehensive NestJS framework skill for building scalable server-side applications. Covers TypeScript backend development with controllers, providers, modules, dependency injection, middleware, guards, interceptors, pipes, database integration (MikroORM + MongoDB), GraphQL, microservices, testing, and API documentation.",
       "shortDescription": "NestJS framework for scalable server-side TypeScript applications",
       "tags": [
         "nestjs",
@@ -223,7 +223,8 @@
         "rest-api",
         "graphql",
         "microservices",
-        "typeorm",
+        "mikro-orm",
+        "mongodb",
         "dependency-injection",
         "decorators",
         "testing"
@@ -231,7 +232,7 @@
       "features": [
         "Controllers and routing with decorators",
         "Dependency injection and IoC container",
-        "TypeORM database integration",
+        "MikroORM + MongoDB database integration",
         "Guards for authentication and authorization",
         "Interceptors and middleware",
         "Pipes for validation and transformation",
