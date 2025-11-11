@@ -16,7 +16,7 @@ Full PR scope analysis (ALL changes in this branch):
 !`bash -c 'STAT=$(git diff --stat origin/main 2>&1); if [ $? -ne 0 ]; then STAT=$(git diff --stat main 2>&1); BASE="main"; else BASE="origin/main"; fi; echo "=== Changed files (top 25) ==="; echo "$STAT" | head -26; FILE_COUNT=$(echo "$STAT" | grep -c "^ " || echo "0"); if [ "$FILE_COUNT" -gt 25 ]; then echo "... ($FILE_COUNT total files)"; fi; echo ""; echo "=== Commits (last 15) ==="; git log "$BASE"..HEAD --format="%h %s" --no-decorate 2>&1 | head -15; COMMIT_COUNT=$(git rev-list --count "$BASE"..HEAD 2>/dev/null || echo "0"); if [ "$COMMIT_COUNT" -gt 15 ]; then echo "... ($COMMIT_COUNT total commits)"; fi; echo ""; echo "=== File types changed ==="; git diff --name-status "$BASE" 2>&1 | head -30 | awk "{print \$2}" | sed "s|.*\.||" | sort | uniq -c | sort -rn | head -10'`
 
 Full diff vs origin/main (or main) - limited preview:
-!`bash -c 'STAT=$(git diff --stat origin/main 2>&1); if [ $? -ne 0 ]; then STAT=$(git diff --stat main 2>&1); BASE="main"; else BASE="origin/main"; fi; LAST_LINE=$(echo "$STAT" | tail -1); TOTAL=$(echo "$LAST_LINE" | awk "{print \$4+\$6}" 2>/dev/null || echo "0"); if [ -z "$TOTAL" ] || [ "$TOTAL" = "0" ]; then FILE_COUNT=$(echo "$STAT" | grep -c "^ " || echo "0"); TOTAL=$FILE_COUNT; fi; if [ "$TOTAL" -gt 100 ]; then echo "=== Summary (diff too large: $TOTAL+ lines) ==="; echo "$STAT" | head -30; if [ "$(echo "$STAT" | grep -c "^ ")" -gt 30 ]; then echo "... (see full diff with: git diff $BASE)"; fi; echo ""; echo "=== Commit messages ==="; git log "$BASE"..HEAD --format="%s" --no-decorate 2>&1 | head -10; else echo "=== Full diff vs $BASE ==="; GIT_PAGER=cat git diff --no-ext-diff "$BASE" 2>&1 | head -500; fi'`
+!`bash -c 'STAT=$(git diff --stat origin/main 2>&1); if [ $? -ne 0 ]; then STAT=$(git diff --stat main 2>&1); BASE="main"; else BASE="origin/main"; fi; LAST_LINE=$(echo "$STAT" | tail -1); TOTAL=$(echo "$LAST_LINE" | awk "{print \$4+\$6}" 2>/dev/null || echo "0"); if [ -z "$TOTAL" ] || [ "$TOTAL" = "0" ]; then FILE_COUNT=$(echo "$STAT" | grep -c "^ " || echo "0"); TOTAL=$FILE_COUNT; fi; if [ "$TOTAL" -gt 100 ]; then echo "=== Overview (diff too large: $TOTAL+ lines) ==="; echo "$STAT" | head -30; if [ "$(echo "$STAT" | grep -c "^ ")" -gt 30 ]; then echo "... (see full diff with: git diff $BASE)"; fi; echo ""; echo "=== Commit messages ==="; git log "$BASE"..HEAD --format="%s" --no-decorate 2>&1 | head -10; else echo "=== Full diff vs $BASE ==="; GIT_PAGER=cat git diff --no-ext-diff "$BASE" 2>&1 | head -500; fi'`
 
 Linear tickets assigned to me (only include if relevant to this PR scope):
 !`bash -c 'if which linctl >/dev/null 2>&1; then AUTH_STATUS=$(linctl auth status --json 2>&1); if echo "$AUTH_STATUS" | jq -e ".authenticated == true" >/dev/null 2>&1; then linctl issue list --assignee me --plaintext 2>&1; else echo "⚠️ linctl not authenticated"; fi; else echo "⚠️ linctl not installed"; fi'`
@@ -94,7 +94,7 @@ gh pr create --title "TITLE" --body "BODY" --assignee "@me"
 ```markdown
 ## What
 
-[Summary based on ALL changed files - list key files/features affected across the entire PR]
+[Overview based on ALL changed files - list key files/features affected across the entire PR]
 
 ## Why
 
@@ -106,7 +106,7 @@ gh pr create --title "TITLE" --body "BODY" --assignee "@me"
 
 ## Files Changed
 
-[List or summarize the main files/areas changed - reference the git diff output from the PR context section]
+[List the main files/areas changed - reference the git diff output from the PR context section]
 
 ## Breaking Changes
 

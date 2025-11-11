@@ -46,8 +46,8 @@ Before processing threads individually:
 3. **FIX NOW**: Edit code at `path:line`, maintain style consistency
 4. **TEST NOW**: Run test-runner agent on changed files, also lint!
 5. **REVIEW NOW**: Run reviewer agent to verify fix quality
-6. **COMMIT NOW**: Execute `git add <files> && git commit -m "fix(pr-review): address <summary>"`
-7. **REPLY NOW**: Post reply to thread with fix summary + commit SHA + test results (see Reply command below)
+6. **COMMIT NOW**: Execute `git add <files> && git commit -m "fix(pr-review): address <description>"`
+7. **REPLY NOW**: Post reply to thread with fix description + commit SHA + test results (see Reply command below)
 8. **RESOLVE IN GITHUB NOW**: **MANDATORY STEP** - Execute the Resolve command IMMEDIATELY after replying. **DO NOT SKIP THIS STEP!**
    - Copy the thread ID from the thread info (it's the `Thread: PRRT_...` value from the unresolved threads list)
    - Run: `gh api graphql --field threadId="<threadId>" --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'`
@@ -63,7 +63,7 @@ Reply format:
 Fixed in commit <SHA>.
 
 **Changes:**
-- <summary of fix>
+- <description of fix>
 
 **Tests:**
 - ✓ All tests passing
