@@ -125,7 +125,7 @@ gh pr view --comments | grep -i "outstanding\|pending\|unresolved" || echo "✓ 
 - ✓ ALL threads have been REPLIED to
 - ✓ ALL threads have been RESOLVED in GitHub (gh api command executed for each)
 - ✓ ALL commits have been PUSHED
-- ✓ NO unresolved threads remain (verified with gh command above)
+- ✓ NO unresolved threads remain (verified with the gh pr view command executed in the previous step)
 
 **If ANY threads remain unresolved: GO BACK and execute the Resolve command for EACH ONE.**
 

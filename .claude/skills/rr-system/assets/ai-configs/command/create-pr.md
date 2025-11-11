@@ -25,7 +25,7 @@ Linear tickets assigned to me (only include if relevant to this PR scope):
 
 ### STEP 1: BRANCH CONFIRMATION (EXECUTE NOW)
 
-- Confirm current branch exists (from "Current branch" above) - MUST be on a feature branch, NEVER on main/master
+- Confirm current branch exists (from the "Current branch" bash command output in the PR context section) - MUST be on a feature branch, NEVER on main/master
 - If already on a branch: use it (NEVER create another branch)
 - If on main/master: YOU MUST create a feature branch first (use Linear ticket ID if relevant)
 
@@ -62,13 +62,13 @@ gh pr create --title "TITLE" --body "BODY" --assignee "@me"
 **CRITICAL: Analyze ALL changed files and commits to determine the main theme/topic of the ENTIRE PR**
 
 1. **Analyze the full PR scope first:**
-   - Review ALL changed files from "Full PR scope analysis" above
-   - Review ALL commits in this branch
+   - Review ALL changed files from the "Full PR scope analysis" bash command output in the PR context section
+   - Review ALL commits in this branch from the bash command output
    - Identify the PRIMARY theme that unifies all changes
    - Ignore the current agent session context - focus ONLY on what files actually changed
 
 2. **Generate title from the main theme:**
-   - Use `$ARGUMENTS` if provided, OR generate from the PRIMARY theme identified above
+   - Use `$ARGUMENTS` if provided, OR generate from the PRIMARY theme you just identified
    - Format: `type(scope): description`
    - The scope should reflect the main area affected across ALL changes
    - The description should capture the overall change, not just recent edits
@@ -84,7 +84,7 @@ gh pr create --title "TITLE" --body "BODY" --assignee "@me"
 **CRITICAL: Base the PR description on ALL changed files, not just recent context**
 
 1. **Analyze the full PR scope:**
-   - Review "Full PR scope analysis" section above
+   - Review the "Full PR scope analysis" bash command output in the PR context section at the top of this command
    - List ALL changed files and their purposes
    - Identify the unifying theme across all changes
    - Determine what the PR accomplishes as a whole
@@ -106,7 +106,7 @@ gh pr create --title "TITLE" --body "BODY" --assignee "@me"
 
 ## Files Changed
 
-[List or summarize the main files/areas changed - use the "Full PR scope analysis" data]
+[List or summarize the main files/areas changed - reference the git diff output from the PR context section]
 
 ## Breaking Changes
 
@@ -114,7 +114,7 @@ gh pr create --title "TITLE" --body "BODY" --assignee "@me"
 
 ## Related Linear Issues
 
-[Use the tickets fetched above which MIGHT be involved in the context of this PR. This is NOT a given and should be evaluated closely. Only include tickets that relate to the FULL scope of changes, not just recent edits]
+[Reference the Linear tickets from the bash command output in the PR context section. These tickets MIGHT be involved in this PR - evaluate carefully. Only include tickets that relate to the FULL scope of changes, not just recent edits]
 ```
 
 ## EXIT CRITERIA - YOU MUST VERIFY ALL BEFORE COMPLETION
