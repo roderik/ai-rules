@@ -429,6 +429,18 @@ main() {
     ((failed++))
   fi
 
+  # Clean up OpenCode plugin caches
+  log_step "Cleaning up OpenCode plugin caches"
+  if [[ -d "$HOME/.cache/opencode" ]]; then
+    if rm -rf "$HOME/.cache/opencode"; then
+      log_success "  Cleared OpenCode cache"
+    else
+      log_warn "  Failed to clear OpenCode cache (may not exist)"
+    fi
+  else
+    log_info "  OpenCode cache directory not found (nothing to clean)"
+  fi
+
   printf "\n"
 
   # Install commands for all AI tools
