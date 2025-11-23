@@ -44,7 +44,13 @@
       "command": "bun",
       "args": ["x", "-y", "chrome-devtools-mcp@latest"],
       "env": {}
-    }
+    },
+    "oracle": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@steipete/oracle@latest", "oracle-mcp"],
+      "env": {}
+  }
   },
   "confirmationMode": "none"
 }

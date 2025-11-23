@@ -183,6 +183,18 @@ configure_tools() {
     log_success "GitHub CLI completions generated"
   fi
 
+  # Install @steipete/oracle globally with bun
+  if command -v npm &>/dev/null; then
+    log_info "Installing @steipete/oracle globally..."
+    if npm install -g @steipete/oracle@latest 2>/dev/null; then
+      log_success "@steipete/oracle installed globally"
+    else
+      log_warn "Could not install @steipete/oracle (this may be normal if already installed)"
+    fi
+  else
+    log_warn "npm not found, skipping @steipete/oracle installation"
+  fi
+
   log_success "Tool configuration complete"
 }
 

@@ -48,6 +48,16 @@
       ],
       "enabled": true
     },
+    "oracle": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@steipete/oracle@latest",
+        "oracle-mcp"
+      ],
+      "enabled": true
+    },
     "chrome-devtools": {
       "type": "local",
       "command": [

@@ -56,6 +56,10 @@ args = ["x", "-y", "shadcn@latest", "mcp"]
 command = "bun"
 args = ["x", "-y", "chrome-devtools-mcp@latest"]
 
+[mcp_servers.oracle]
+command = "npx"
+args = ["-y", "@steipete/oracle@latest", "oracle-mcp"]
+
 [tui]
 notifications = true
 show_raw_agent_reasoning = true
