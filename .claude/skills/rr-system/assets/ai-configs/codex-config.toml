@@ -3,17 +3,17 @@ profile = "full-auto"
 
 [features]
 web_search_request = true
-unified_exec = false
-streamable_shell = false
-rmcp_client = false
-apply_patch_freeform = false
+unified_exec = true
+streamable_shell = true
+rmcp_client = true
+apply_patch_freeform = true
 view_image_tool = true
 experimental_sandbox_command_assessment = false
 ghost_commit = false
 enable_experimental_windows_sandbox = false
 
 [profiles.full-auto]
-model = "gpt-5.1-codex"
+model = "gpt-5.1-codex-max"
 model_provider = "openai"
 model_reasoning_effort = "medium"
 full-auto = true
@@ -25,7 +25,7 @@ sandbox_mode = "danger-full-access"
 tool_output_token_limit = 25000
 
 [profiles.safe]
-model = "gpt-5.1-codex"
+model = "gpt-5.1-codex-max"
 model_provider = "openai"
 model_reasoning_effort = "medium"
 full-auto = false
