@@ -59,6 +59,7 @@ args = ["x", "-y", "chrome-devtools-mcp@latest"]
 [mcp_servers.oracle]
 command = "npx"
 args = ["-y", "@steipete/oracle@latest", "oracle-mcp"]
+startup_timeout_sec = 120
 
 [tui]
 notifications = true
