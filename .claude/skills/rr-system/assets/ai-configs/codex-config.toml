@@ -3,14 +3,17 @@ profile = "full-auto"
 
 [features]
 web_search_request = true
-rmcp_client = true
-unified_exec = true
-streamable_shell = true
-apply_patch_freeform = true
-ghost_commit = true
+unified_exec = false
+streamable_shell = false
+rmcp_client = false
+apply_patch_freeform = false
+view_image_tool = true
+experimental_sandbox_command_assessment = false
+ghost_commit = false
+enable_experimental_windows_sandbox = false
 
 [profiles.full-auto]
-model = "gpt-5-codex"
+model = "gpt-5.1-codex"
 model_provider = "openai"
 model_reasoning_effort = "medium"
 full-auto = true
@@ -19,9 +22,10 @@ trusted-workspace = true
 bypass-sandbox = true
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
+tool_output_token_limit = 25000
 
 [profiles.safe]
-model = "gpt-5-codex"
+model = "gpt-5.1-codex"
 model_provider = "openai"
 model_reasoning_effort = "medium"
 full-auto = false
@@ -30,6 +34,7 @@ trusted-workspace = false
 bypass-sandbox = false
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
+tool_output_token_limit = 25000
 
 [shell_environment_policy]
 inherit = "all"
@@ -53,3 +58,5 @@ args = ["x", "-y", "chrome-devtools-mcp@latest"]
 
 [tui]
 notifications = true
+show_raw_agent_reasoning = true
+hide_agent_reasoning = false
