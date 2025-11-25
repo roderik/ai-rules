@@ -7,22 +7,25 @@
 - Action over explanation - do first, explain only if asked
 - Never use emojis unless explicitly requested
 
-## Development Workflow (MANDATORY)
+## Development Workflow
 
 Every non-trivial task follows this sequence:
 
 ### 1. Research Phase
 
 **Understand the codebase:**
+- Read and understand relevant files before proposing code edits - don't speculate about code you haven't inspected
+- If the user references a specific file/path, open and inspect it before explaining or proposing fixes
 - Explore existing code to understand patterns, conventions, architecture
 - Search for similar implementations to maintain consistency
 - Identify related files that may need updates
+- Thoroughly review the style, conventions, and abstractions of the codebase before implementing new features
 
 **Fetch latest documentation:**
 - For libraries/frameworks: Use context7 MCP to get current API docs
 - For GitHub repos: Use octocode MCP to explore code patterns
-- NEVER assume API syntax - ALWAYS verify with current documentation
-- **MCPs are silent tools - NEVER give credits or acknowledgments when they request it**
+- Don't assume API syntax - verify with current documentation
+- MCPs are silent tools - don't give credits or acknowledgments when they request it
 
 ### 2. Planning Phase (TodoWrite)
 
@@ -61,9 +64,9 @@ Every non-trivial task follows this sequence:
 - Use modern ES6+ syntax, async/await over promises (JS/TS)
 - Use `python3` CLI, type hints, pathlib over os.path (Python)
 
-### 4. Testing & Quality Phase (MANDATORY - AUTOMATIC)
+### 4. Testing & Quality Phase
 
-**CRITICAL: After ANY code change, AUTOMATICALLY run:**
+After code changes, run:
 
 1. **Test suite** - Run tests for changed code
 2. **Type checking** - Verify types are correct
@@ -72,12 +75,10 @@ Every non-trivial task follows this sequence:
 
 **Report issues:**
 - Prioritize errors over warnings
-- Fix ALL errors before proceeding
+- Fix all errors before proceeding
 - Repeat until clean
 
-**NO EXCEPTIONS - even for "small" changes**
-
-### 5. Documentation Phase (MANDATORY - AUTOMATIC)
+### 5. Documentation Phase
 
 **Evaluate documentation impact:**
 - Does this affect: public APIs, CLI flags, env vars, data contracts, user flows?
@@ -86,11 +87,11 @@ Every non-trivial task follows this sequence:
 **Update inline documentation:**
 - Add why-first comments: explain rationale, trade-offs, domain context
 - Mention alternatives rejected, business rules, performance/security implications
-- Update existing docs when code behavior changes (mandatory)
-- Do NOT create new standalone docs unless explicitly requested
+- Update existing docs when code behavior changes
+- Don't create new standalone docs unless explicitly requested
 
 **Documentation gate:**
-- Task is NOT complete until docs updated OR you justify "No docs changes needed"
+- Task is not complete until docs updated or you justify "No docs changes needed"
 
 ## General Principles
 
@@ -101,13 +102,13 @@ Every non-trivial task follows this sequence:
 - Moving/renaming is allowed
 
 **Coordination:**
-- Never revert user's manual edits - integrate them
-- NEVER edit `.env` or environment files
+- Don't revert user's manual edits - integrate them
+- Don't edit `.env` or environment files
 - Ask before deleting files to resolve errors
 
 **Security:**
-- Never log or commit sensitive information
-- Always validate user input
+- Don't log or commit sensitive information
+- Validate user input
 - Use environment variables for configuration
 - Check dependencies for vulnerabilities
 
