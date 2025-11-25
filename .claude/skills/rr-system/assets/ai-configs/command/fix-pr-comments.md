@@ -1,5 +1,6 @@
 ---
 description: Handle and resolve every PR review thread
+allowed-tools: Bash(gh pr view:*), Bash(gh api graphql:*), Bash(gh repo view:*), Bash(git log:*), Bash(git diff:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(bash -c:*), Bash(jq:*), Bash(grep:*), Bash(mktemp:*), Bash(head:*), Bash(sort:*)
 ---
 
 # PR Review Resolution

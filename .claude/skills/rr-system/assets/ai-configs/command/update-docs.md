@@ -1,5 +1,6 @@
 ---
 description: Craft or enhance documentation efficiently
+allowed-tools: Bash(git branch:*), Bash(bash -c:*), Bash(fd:*)
 ---
 
 # Documentation Update

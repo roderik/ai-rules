@@ -1,5 +1,6 @@
 ---
 description: Create comprehensive PR with quality checks
+allowed-tools: Bash(git branch:*), Bash(git diff:*), Bash(git log:*), Bash(git push:*), Bash(gh pr create:*), Bash(bash -c:*), Bash(linctl:*), Bash(jq:*), Bash(head:*), Bash(tail:*), Bash(awk:*), Bash(sed:*), Bash(sort:*), Bash(uniq:*), Bash(grep:*), Bash(rev-list:*), Bash(which:*)
 ---
 
 # Pull Request Creation
