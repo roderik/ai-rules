@@ -17,10 +17,6 @@
     }
   },
   "mcpServers": {
-    "linear": {
-      "type": "sse",
-      "url": "https://mcp.linear.app/sse"
-    },
     "context7": {
       "type": "stdio",
       "command": "bun",
@@ -32,25 +28,7 @@
       "command": "bun",
       "args": ["x", "-y", "octocode-mcp@latest"],
       "env": {}
-    },
-    "shadcn": {
-      "type": "stdio",
-      "command": "bun",
-      "args": ["x", "-y", "shadcn@latest", "mcp"],
-      "env": {}
-    },
-    "chrome-devtools": {
-      "type": "stdio",
-      "command": "bun",
-      "args": ["x", "-y", "chrome-devtools-mcp@latest"],
-      "env": {}
-    },
-    "oracle": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@steipete/oracle@latest", "oracle-mcp"],
-      "env": {}
-  }
+    }
   },
   "confirmationMode": "none"
 }

@@ -1,8 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": [
-    "opencode-openai-codex-auth@latest"
-  ],
+  "plugin": ["opencode-openai-codex-auth@latest"],
   "permission": {
     "edit": "allow",
     "bash": {
@@ -19,65 +17,18 @@
   "mcp": {
     "context7": {
       "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "@upstash/context7-mcp@latest"
-      ],
+      "command": ["bun", "x", "-y", "@upstash/context7-mcp@latest"],
       "enabled": true
     },
     "octocode": {
       "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "octocode-mcp@latest"
-      ],
-      "enabled": true
-    },
-    "shadcn": {
-      "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "shadcn@latest",
-        "mcp"
-      ],
-      "enabled": true
-    },
-    "oracle": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@steipete/oracle@latest",
-        "oracle-mcp"
-      ],
-      "enabled": true
-    },
-    "chrome-devtools": {
-      "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "chrome-devtools-mcp@latest"
-      ],
+      "command": ["bun", "x", "-y", "octocode-mcp@latest"],
       "enabled": true
     }
   },
   "lsp": {
     "biome": {
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "biome",
-        "lsp-proxy"
-      ],
+      "command": ["bun", "x", "-y", "biome", "lsp-proxy"],
       "extensions": [
         ".js",
         ".jsx",
@@ -100,9 +51,7 @@
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": [
-          "reasoning.encrypted_content"
-        ],
+        "include": ["reasoning.encrypted_content"],
         "store": false
       },
       "models": {
@@ -116,9 +65,7 @@
             "reasoningEffort": "low",
             "reasoningSummary": "auto",
             "textVerbosity": "medium",
-            "include": [
-              "reasoning.encrypted_content"
-            ],
+            "include": ["reasoning.encrypted_content"],
             "store": false
           }
         },
@@ -132,9 +79,7 @@
             "reasoningEffort": "medium",
             "reasoningSummary": "auto",
             "textVerbosity": "medium",
-            "include": [
-              "reasoning.encrypted_content"
-            ],
+            "include": ["reasoning.encrypted_content"],
             "store": false
           }
         },
@@ -148,9 +93,7 @@
             "reasoningEffort": "high",
             "reasoningSummary": "detailed",
             "textVerbosity": "medium",
-            "include": [
-              "reasoning.encrypted_content"
-            ],
+            "include": ["reasoning.encrypted_content"],
             "store": false
           }
         },
@@ -164,9 +107,7 @@
             "reasoningEffort": "medium",
             "reasoningSummary": "auto",
             "textVerbosity": "medium",
-            "include": [
-              "reasoning.encrypted_content"
-            ],
+            "include": ["reasoning.encrypted_content"],
             "store": false
           }
         },
@@ -180,9 +121,7 @@
             "reasoningEffort": "high",
             "reasoningSummary": "detailed",
             "textVerbosity": "medium",
-            "include": [
-              "reasoning.encrypted_content"
-            ],
+            "include": ["reasoning.encrypted_content"],
             "store": false
           }
         },
@@ -196,9 +135,7 @@
             "reasoningEffort": "low",
             "reasoningSummary": "auto",
             "textVerbosity": "low",
-            "include": [
-              "reasoning.encrypted_content"
-            ],
+            "include": ["reasoning.encrypted_content"],
             "store": false
           }
         },
@@ -212,9 +149,7 @@
             "reasoningEffort": "medium",
             "reasoningSummary": "auto",
             "textVerbosity": "medium",
-            "include": [
-              "reasoning.encrypted_content"
-            ],
+            "include": ["reasoning.encrypted_content"],
             "store": false
           }
         },
@@ -228,9 +163,7 @@
             "reasoningEffort": "high",
             "reasoningSummary": "detailed",
             "textVerbosity": "high",
-            "include": [
-              "reasoning.encrypted_content"
-            ],
+            "include": ["reasoning.encrypted_content"],
             "store": false
           }
         }
