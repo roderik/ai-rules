@@ -1,10 +1,7 @@
-#!/usr/bin/env zsh
 # UV - Fast Python package installer configuration
+# Completions are provided by Homebrew in site-functions
 
-# Enable UV completion if available
 if command -v uv &> /dev/null; then
-  eval "$(uv generate-shell-completion zsh)"
-  
   # Useful UV aliases
   alias uvs='uv sync'
   alias uvi='uv pip install'

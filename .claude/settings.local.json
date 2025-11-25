@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(fzf:*)",
+      "Bash(fish:*)",
+      "Bash(time fish:*)",
+      "Bash(/opt/homebrew/bin/brew shellenv:*)",
+      "Bash(/opt/homebrew/bin/brew:*)",
+      "Bash(time /opt/homebrew/bin/brew:*)",
+      "Bash(time fnm env:*)",
+      "Bash(time zoxide init:*)",
+      "Bash(time direnv hook fish:*)",
+      "Bash(time atuin init:*)",
+      "Bash(time starship init:*)",
+      "Bash(time kubectl completion fish:*)",
+      "Bash(time op completion:*)",
+      "Bash(time uv generate-shell-completion:*)",
+      "Bash(xargs:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

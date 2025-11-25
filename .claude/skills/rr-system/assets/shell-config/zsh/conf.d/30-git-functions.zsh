@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 # Git Functions
 # Custom git utilities and helper functions
 
@@ -18,11 +17,14 @@ gfg() {
     echo "fzf is required for this function"
     return 1
   fi
-  
+
   local branch
   branch=$(git branch -a | grep -v HEAD | sed 's/^[[:space:]]*//' | fzf --height 20% --reverse --info=inline)
   if [[ -n "$branch" ]]; then
-    git checkout "$(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")"
+    # Clean up branch name
+    branch="${branch##* }"
+    branch="${branch#remotes/*/}"
+    git checkout "$branch"
   fi
 }
 
@@ -31,12 +33,25 @@ glog() {
   git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 }
 
+glogf() {
+  # Interactive git log with fzf
+  if ! command -v fzf &> /dev/null; then
+    echo "fzf is required for this function"
+    return 1
+  fi
+
+  git log --oneline --decorate --color=always | \
+    fzf --ansi --no-sort --reverse \
+        --preview 'git show --color=always {1}' \
+        --bind 'enter:execute(git show --color=always {1} | less -R)+abort'
+}
+
 gdm() {
   # Delete all local branches except main/master (force delete)
   local current_branch
   current_branch=$(git branch --show-current)
   local protected_branches=("main" "master")
-  
+
   # Check if we're on a branch that will be deleted
   if [[ ! " ${protected_branches[@]} " =~ " ${current_branch} " ]]; then
     echo "Switching to main/master first..."
@@ -49,7 +64,7 @@ gdm() {
       return 1
     fi
   fi
-  
+
   # Delete all branches except protected ones
   local branches_to_delete
   branches_to_delete=$(git branch | sed 's/^[* ]*//' | grep -v '^main$' | grep -v '^master$')

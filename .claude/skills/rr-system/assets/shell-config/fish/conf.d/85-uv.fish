@@ -1,10 +1,7 @@
-#!/usr/bin/env fish
 # UV - Fast Python package installer configuration
+# Completions are provided by Homebrew in vendor_completions.d
 
-# Enable UV completion if available
 if type -q uv
-    uv generate-shell-completion fish | source
-    
     # Useful UV aliases
     alias uvs='uv sync'
     alias uvi='uv pip install'

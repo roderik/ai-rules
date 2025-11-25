@@ -1,26 +1,31 @@
 #!/usr/bin/env bash
 # Homebrew setup
-# Detects and configures Homebrew for M-series vs Intel Macs
+# Uses static paths to avoid expensive eval/subshell calls
 
 if [[ -e /opt/homebrew/bin/brew ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -e /usr/local/bin/brew ]]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-fi
+  # Apple Silicon Mac
+  export HOMEBREW_PREFIX="/opt/homebrew"
+  export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+  export HOMEBREW_REPOSITORY="/opt/homebrew"
+  export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}"
+  export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:"
+  export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}"
 
-# Homebrew completions
-if command -v brew &> /dev/null; then
-  BREW_PREFIX=$(brew --prefix)
-  
-  # Bash completions from Homebrew
-  if [[ -r "$BREW_PREFIX/etc/profile.d/bash_completion.sh" ]]; then
-    source "$BREW_PREFIX/etc/profile.d/bash_completion.sh"
+  # Bash completions from Homebrew (static paths)
+  if [[ -r /opt/homebrew/etc/profile.d/bash_completion.sh ]]; then
+    source /opt/homebrew/etc/profile.d/bash_completion.sh
   fi
-  
-  # Additional completion paths
-  if [[ -d "$BREW_PREFIX/etc/bash_completion.d" ]]; then
-    for comp in "$BREW_PREFIX"/etc/bash_completion.d/*; do
-      [[ -r "$comp" ]] && source "$comp"
-    done
+elif [[ -e /usr/local/bin/brew ]]; then
+  # Intel Mac
+  export HOMEBREW_PREFIX="/usr/local"
+  export HOMEBREW_CELLAR="/usr/local/Cellar"
+  export HOMEBREW_REPOSITORY="/usr/local/Homebrew"
+  export PATH="/usr/local/bin:/usr/local/sbin${PATH+:$PATH}"
+  export MANPATH="/usr/local/share/man${MANPATH+:$MANPATH}:"
+  export INFOPATH="/usr/local/share/info:${INFOPATH:-}"
+
+  # Bash completions from Homebrew (static paths)
+  if [[ -r /usr/local/etc/profile.d/bash_completion.sh ]]; then
+    source /usr/local/etc/profile.d/bash_completion.sh
   fi
 fi

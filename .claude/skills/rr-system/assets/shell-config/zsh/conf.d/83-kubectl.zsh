@@ -1,11 +1,8 @@
-#!/usr/bin/env zsh
 # Kubernetes CLI (kubectl) configuration
+# Completions are provided by Homebrew in site-functions
 
-# Enable kubectl completion if available
 if command -v kubectl &> /dev/null; then
-  source <(kubectl completion zsh)
-  
-  # Add useful kubectl aliases
+  # Useful kubectl aliases
   alias k='kubectl'
   alias kgp='kubectl get pods'
   alias kgs='kubectl get services'
@@ -14,7 +11,7 @@ if command -v kubectl &> /dev/null; then
   alias kdel='kubectl delete'
   alias klog='kubectl logs'
   alias kexec='kubectl exec -it'
-  
+
   # Enable completion for the 'k' alias
   compdef k=kubectl
 fi

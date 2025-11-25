@@ -1,11 +1,8 @@
-#!/usr/bin/env fish
 # Kubernetes CLI (kubectl) configuration
+# Completions are provided by Homebrew in vendor_completions.d
 
-# Enable kubectl completion if available
 if type -q kubectl
-    kubectl completion fish | source
-    
-    # Add useful kubectl aliases
+    # Useful kubectl aliases
     alias k='kubectl'
     alias kgp='kubectl get pods'
     alias kgs='kubectl get services'

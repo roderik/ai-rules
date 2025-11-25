@@ -5,17 +5,14 @@ alias ls='eza'
 alias ll='eza -alh'
 alias la='eza -a'
 alias lt='eza --tree'
-alias cat='bat'
+# Note: cat=bat and lzg/lzd are defined in 86-additional-tools.fish with guards
 
 # Git shortcuts (in addition to abbreviations)
 alias g='git'
-alias lzg='lazygit'
-alias lzd='lazydocker'
 
 # Tool shortcuts
 alias ff='fzf --preview "bat --color=always {}"'
-alias cd='z'
-alias cdi='zi'
+# Note: cd/cdi are defined as functions in 60-modern-tools.fish
 
 # Common operations
 alias ..='cd ..'

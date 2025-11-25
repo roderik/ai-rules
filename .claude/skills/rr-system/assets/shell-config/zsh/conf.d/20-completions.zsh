@@ -1,8 +1,14 @@
 # Zsh Completions
+# Single compinit call for the entire configuration
 
-# Initialize completion system
+# Initialize completion system (only once)
 autoload -Uz compinit
-compinit -d ~/.zcompdump
+# Use cache file and only regenerate once per day
+if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+  compinit -d ~/.zcompdump
+else
+  compinit -C -d ~/.zcompdump
+fi
 
 # Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'  # Case insensitive
@@ -25,12 +31,4 @@ zstyle ':completion:*' cache-path ~/.zsh/cache
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
-# Git completion
-zstyle ':completion:*:*:git:*' script ~/.config/zsh/git-completion.bash
-
-# fzf completions
-if [[ -f /opt/homebrew/opt/fzf/shell/completion.zsh ]]; then
-  source /opt/homebrew/opt/fzf/shell/completion.zsh
-elif [[ -f /usr/local/opt/fzf/shell/completion.zsh ]]; then
-  source /usr/local/opt/fzf/shell/completion.zsh
-fi
+# Note: fzf completions are loaded in 20-fzf.zsh
