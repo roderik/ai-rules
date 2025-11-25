@@ -148,6 +148,7 @@ Manage AI assistant configs with automated installation or manual editing.
 - Codex CLI (`~/.codex/config.toml`)
 - Gemini CLI (`~/.gemini/settings.json`)
 - OpenCode (`~/.config/opencode/opencode.json`)
+- Cursor (`~/.cursor/mcp.json`)
 
 **Quick install (recommended):**
 
@@ -210,6 +211,7 @@ Modern CLI tools installed:
 - Claude: `~/.claude/`
 - Codex: `~/.codex/`
 - Gemini: `~/.gemini/`
+- Cursor: `~/.cursor/`
 
 **Git Worktree Manager (wt):**
 

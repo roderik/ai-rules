@@ -18,16 +18,20 @@ Only deviate when features are genuinely unavailable on a specific platform.
 ## Configuration File Locations
 
 ### macOS/Linux
+
 - **Claude Code**: `~/.claude/settings.json` (was `~/.claude.json`)
 - **Codex CLI**: `~/.codex/config.toml`
 - **Gemini CLI**: `~/.gemini/settings.json`
 - **OpenCode**: `~/.config/opencode/opencode.json`
+- **Cursor**: `~/.cursor/mcp.json`
 
 ### Windows
+
 - **Claude Code**: `%USERPROFILE%\.claude\settings.json`
 - **Codex CLI**: `%USERPROFILE%\.codex\config.toml`
 - **Gemini CLI**: `%USERPROFILE%\.gemini\settings.json`
 - **OpenCode**: `%USERPROFILE%\.config\opencode\opencode.json`
+- **Cursor**: `%USERPROFILE%\.cursor\mcp.json`
 
 ## Claude Code Configuration
 
@@ -106,19 +110,23 @@ Only deviate when features are genuinely unavailable on a specific platform.
 ### Key Sections
 
 **env**: Environment variables for Claude Code behavior
+
 - Timeouts, token limits, feature flags
 - All values are strings
 
 **statusLine**: Custom status line configuration
+
 - `type`: "command" or "text"
 - `command`: Shell command to execute
 - `padding`: Spacing around status line
 
 **mcpServers**: MCP server configurations
+
 - Each server has `type`, `command`, `args`, `env`
 - Types: "stdio" (local) or "sse" (remote)
 
 **hooks**: Post-tool-use automation
+
 - `PostToolUse`: Array of hook configurations
 - `matcher`: Regex pattern for tool names
 - `hooks`: Array of commands to execute
@@ -203,6 +211,7 @@ notifications = true
 ### Key Sections
 
 **profiles**: Named configuration profiles
+
 - `full-auto`: Unrestricted automation mode
 - `safe`: Limited permissions mode
 - Switch with `profile = "name"`
@@ -210,11 +219,13 @@ notifications = true
 **features**: Feature flags for experimental capabilities
 
 **mcp_servers**: MCP server configurations
+
 - Each server is a `[mcp_servers.name]` section
 - `command`: Executable path
 - `args`: Array of arguments
 
 **shell_environment_policy**: Environment variable handling
+
 - `inherit`: "all", "none", or specific vars
 - `set`: Dictionary of vars to set
 
@@ -293,19 +304,24 @@ bat ~/.codex/config.toml
 ### Key Sections
 
 **model**: Gemini model identifier
+
 - Example: "gemini-2.5-pro"
 
 **context**: Files to include in context
+
 - `fileName`: Array of markdown files
 
 **tools**: Tool permission settings
+
 - `requireConfirmation`: Global setting
 - Per-tool overrides: `shellCommand`, `fileSystem`
 
 **mcpServers**: MCP server configurations
+
 - Same format as Claude Code
 
 **checkpointing**: Conversation state management
+
 - `enabled`: Boolean for checkpoint saving
 
 ### Validation
@@ -330,9 +346,7 @@ jq '.mcpServers | keys' ~/.gemini/settings.json
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": [
-    "opencode-openai-codex-auth@3.0.0"
-  ],
+  "plugin": ["opencode-openai-codex-auth@3.0.0"],
   "permission": {
     "edit": "allow",
     "bash": {
@@ -349,55 +363,28 @@ jq '.mcpServers | keys' ~/.gemini/settings.json
   "mcp": {
     "context7": {
       "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "@upstash/context7-mcp@latest"
-      ],
+      "command": ["bun", "x", "-y", "@upstash/context7-mcp@latest"],
       "enabled": true
     },
     "octocode": {
       "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "octocode-mcp@latest"
-      ],
+      "command": ["bun", "x", "-y", "octocode-mcp@latest"],
       "enabled": true
     },
     "shadcn": {
       "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "shadcn@latest",
-        "mcp"
-      ],
+      "command": ["bun", "x", "-y", "shadcn@latest", "mcp"],
       "enabled": true
     },
     "chrome-devtools": {
       "type": "local",
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "chrome-devtools-mcp@latest"
-      ],
+      "command": ["bun", "x", "-y", "chrome-devtools-mcp@latest"],
       "enabled": true
     }
   },
   "lsp": {
     "biome": {
-      "command": [
-        "bun",
-        "x",
-        "-y",
-        "biome",
-        "lsp-proxy"
-      ],
+      "command": ["bun", "x", "-y", "biome", "lsp-proxy"],
       "extensions": [
         ".js",
         ".jsx",
@@ -420,9 +407,7 @@ jq '.mcpServers | keys' ~/.gemini/settings.json
         "reasoningEffort": "medium",
         "reasoningSummary": "auto",
         "textVerbosity": "medium",
-        "include": [
-          "reasoning.encrypted_content"
-        ],
+        "include": ["reasoning.encrypted_content"],
         "store": false
       },
       "models": {
@@ -445,24 +430,29 @@ jq '.mcpServers | keys' ~/.gemini/settings.json
 ### Key Sections
 
 **plugin**: Array of OpenCode plugins
+
 - Format: "plugin-name@version"
 
 **permission**: Fine-grained permission control
+
 - `edit`: "allow" or "deny"
 - `bash`: Pattern-based command filtering
 - `webfetch`: Network access control
 
 **mcp**: MCP server configurations
+
 - `type`: "local" (stdio)
 - `command`: Array of command parts
 - `enabled`: Boolean flag
 
 **lsp**: Language Server Protocol integrations
+
 - Per-language server configuration
 - `command`: Executable and args
 - `extensions`: File extensions to handle
 
 **provider**: Model provider configurations
+
 - OpenAI, Anthropic, etc.
 - Per-model settings and limits
 
@@ -483,11 +473,83 @@ curl -s https://opencode.ai/config.json | jq . > /tmp/schema.json
 # Then validate using a JSON schema validator
 ```
 
+## Cursor Configuration
+
+**File**: `~/.cursor/mcp.json` (JSON format)
+
+### Structure
+
+```json
+{
+  "mcpServers": {
+    "Context7": {
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {}
+    },
+    "Octocode": {
+      "command": "bunx octocode-mcp@latest",
+      "env": {},
+      "args": []
+    }
+  }
+}
+```
+
+### Key Sections
+
+**mcpServers**: MCP server configurations
+
+- Supports two formats: URL-based (remote) and command-based (local)
+- URL-based: `url` for remote MCP endpoints, optional `headers`
+- Command-based: `command` string, `args` array, optional `env`
+
+### Server Types
+
+**Remote MCP (URL-based):**
+
+```json
+"ServerName": {
+  "url": "https://mcp.example.com/endpoint",
+  "headers": {}
+}
+```
+
+**Local MCP (command-based):**
+
+```json
+"ServerName": {
+  "command": "bunx package-name@latest",
+  "env": {},
+  "args": []
+}
+```
+
+### Validation
+
+```bash
+# Validate JSON syntax
+jq empty ~/.cursor/mcp.json
+
+# Pretty print
+jq . ~/.cursor/mcp.json
+
+# Check MCP servers
+jq '.mcpServers | keys' ~/.cursor/mcp.json
+```
+
+### Notes
+
+- Cursor uses a simpler MCP configuration format compared to other AI assistants
+- Command-based servers use a single `command` string (not separate command + args like Claude)
+- Remote servers use `url` field (not `type: "sse"` like Claude)
+- Restart Cursor after modifying the configuration
+
 ## Common Configuration Patterns
 
 ### Adding MCP Server
 
 **Claude Code** (`~/.claude/settings.json`):
+
 ```json
 "mcpServers": {
   "new-server": {
@@ -500,6 +562,7 @@ curl -s https://opencode.ai/config.json | jq . > /tmp/schema.json
 ```
 
 **Codex** (`~/.codex/config.toml`):
+
 ```toml
 [mcp_servers.new_server]
 command = "bun"
@@ -507,6 +570,7 @@ args = ["x", "-y", "server-package@latest"]
 ```
 
 **Gemini** (`~/.gemini/settings.json`):
+
 ```json
 "mcpServers": {
   "new-server": {
@@ -519,6 +583,7 @@ args = ["x", "-y", "server-package@latest"]
 ```
 
 **OpenCode** (`~/.config/opencode/opencode.json`):
+
 ```json
 "mcp": {
   "new-server": {
@@ -529,9 +594,22 @@ args = ["x", "-y", "server-package@latest"]
 }
 ```
 
+**Cursor** (`~/.cursor/mcp.json`):
+
+```json
+"mcpServers": {
+  "new-server": {
+    "command": "bunx server-package@latest",
+    "env": {},
+    "args": []
+  }
+}
+```
+
 ### Environment Variables
 
 **Claude Code**: Use `env` section in `settings.json`:
+
 ```json
 "env": {
   "MY_VAR": "value"
@@ -539,12 +617,14 @@ args = ["x", "-y", "server-package@latest"]
 ```
 
 **Codex**: Use `shell_environment_policy`:
+
 ```toml
 [shell_environment_policy]
 set = { MY_VAR = "value" }
 ```
 
 **Gemini**: Per-MCP server:
+
 ```json
 "mcpServers": {
   "server": {
@@ -560,6 +640,7 @@ set = { MY_VAR = "value" }
 ### Hooks (Claude Code)
 
 Add post-tool-use automation:
+
 ```json
 "hooks": {
   "PostToolUse": [
@@ -581,6 +662,7 @@ Add post-tool-use automation:
 When updating configurations, preserve existing settings while adding new ones:
 
 ### JSON Files (Claude, Gemini, OpenCode)
+
 ```bash
 # Merge using jq
 jq -s '.[0] * .[1]' existing.json new.json > merged.json
@@ -590,6 +672,7 @@ jq -s '.[0] * .[1] | .mcpServers = .[1].mcpServers' existing.json new.json > mer
 ```
 
 ### TOML Files (Codex)
+
 ```bash
 # Manual merge recommended
 # Or use Python with toml library
@@ -608,6 +691,7 @@ with open('merged.toml', 'wb') as f:
 ## Backup Strategy
 
 Before editing configuration files:
+
 ```bash
 # Backup with timestamp
 cp ~/.claude/settings.json ~/.claude/settings.json.backup-$(date +%Y%m%d-%H%M%S)
@@ -621,6 +705,7 @@ cd ~/.config-backups && git add . && git commit -m "Backup before changes"
 ## Troubleshooting
 
 ### Invalid JSON
+
 ```bash
 # Find syntax errors
 jq empty config.json 2>&1
@@ -632,6 +717,7 @@ jq empty config.json 2>&1
 ```
 
 ### Invalid TOML
+
 ```bash
 # Validate
 python3 -c "import tomllib; tomllib.load(open('config.toml', 'rb'))"
@@ -643,6 +729,7 @@ python3 -c "import tomllib; tomllib.load(open('config.toml', 'rb'))"
 ```
 
 ### MCP Server Not Loading
+
 ```bash
 # Test command manually
 bun x -y @upstash/context7-mcp@latest
@@ -656,6 +743,7 @@ ls -la ~/.claude/settings.json
 ```
 
 ### Config Not Taking Effect
+
 ```bash
 # Restart the AI assistant
 # Verify file location

@@ -3,7 +3,7 @@ set -euo pipefail
 
 # AI Configuration Installer
 # Installs AI assistant configuration files from assets/ to system locations
-# Supports: Claude Code, Codex CLI, Gemini CLI, OpenCode
+# Supports: Claude Code, Codex CLI, Gemini CLI, OpenCode, Cursor
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -38,6 +38,7 @@ assets/ai-configs/ directory to their system locations:
   • Codex CLI:    ~/.codex/config.toml
   • Gemini CLI:   ~/.gemini/settings.json
   • OpenCode:     ~/.config/opencode/opencode.json
+  • Cursor:       ~/.cursor/mcp.json
 
   Command Files:
   • Claude Code:  ~/.claude/commands/*.md
@@ -288,6 +289,20 @@ verify_installation() {
     errors=$((errors + 1))
   fi
 
+  # Check Cursor config
+  checks=$((checks + 1))
+  if [[ -f "$HOME/.cursor/mcp.json" ]]; then
+    if validate_json "$HOME/.cursor/mcp.json" 2>/dev/null; then
+      log_success "  ✓ Cursor mcp.json (valid)"
+    else
+      log_error "  ✗ Cursor mcp.json (invalid JSON)"
+      errors=$((errors + 1))
+    fi
+  else
+    log_error "  ✗ Cursor mcp.json - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
   # Check Claude commands
   checks=$((checks + 1))
   if [[ -d "$HOME/.claude/commands" ]]; then
@@ -425,6 +440,15 @@ main() {
     "$ASSETS_DIR/opencode-config.json" \
     "$HOME/.config/opencode/opencode.json" \
     "opencode-config.json" \
+    "json"; then
+    ((failed++))
+  fi
+
+  # Install Cursor config
+  if ! install_config \
+    "$ASSETS_DIR/cursor-settings.json" \
+    "$HOME/.cursor/mcp.json" \
+    "cursor-settings.json" \
     "json"; then
     ((failed++))
   fi
