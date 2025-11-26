@@ -1,24 +1,18 @@
-#!/usr/bin/env zsh
 # Google Cloud SDK shell integration
+# Static path setup - avoids expensive path.zsh.inc script
 
-# Detect Google Cloud SDK installation path
+# Detect and set up Google Cloud SDK (static paths, no subprocess)
 if [[ -d "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk" ]]; then
   # Apple Silicon Mac
-  GCLOUD_SDK_PATH="/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk"
+  export GCLOUD_SDK_PATH="/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk"
+  path=("$GCLOUD_SDK_PATH/bin" $path)
 elif [[ -d "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk" ]]; then
   # Intel Mac
-  GCLOUD_SDK_PATH="/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk"
+  export GCLOUD_SDK_PATH="/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk"
+  path=("$GCLOUD_SDK_PATH/bin" $path)
 fi
 
-# Source Google Cloud SDK if available
-if [[ -n "$GCLOUD_SDK_PATH" ]]; then
-  # The path.zsh.inc file adds gcloud to PATH
-  if [[ -f "$GCLOUD_SDK_PATH/path.zsh.inc" ]]; then
-    source "$GCLOUD_SDK_PATH/path.zsh.inc"
-  fi
-  
-  # The completion.zsh.inc file adds shell command completion for gcloud
-  if [[ -f "$GCLOUD_SDK_PATH/completion.zsh.inc" ]]; then
-    source "$GCLOUD_SDK_PATH/completion.zsh.inc"
-  fi
+# Load completions if SDK is available (completion file is lightweight)
+if [[ -n "$GCLOUD_SDK_PATH" && -f "$GCLOUD_SDK_PATH/completion.zsh.inc" ]]; then
+  source "$GCLOUD_SDK_PATH/completion.zsh.inc"
 fi

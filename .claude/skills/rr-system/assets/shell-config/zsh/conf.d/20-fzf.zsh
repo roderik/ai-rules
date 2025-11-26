@@ -2,15 +2,14 @@
 # Fuzzy finder setup and defaults
 
 if command -v fzf &> /dev/null; then
-  # Set up fzf key bindings and completion (use static paths)
+  # Set up fzf key bindings and completion (use static Homebrew paths)
+  # These files are lightweight, no caching needed
   if [[ -f /opt/homebrew/opt/fzf/shell/key-bindings.zsh ]]; then
     source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
     source /opt/homebrew/opt/fzf/shell/completion.zsh
   elif [[ -f /usr/local/opt/fzf/shell/key-bindings.zsh ]]; then
     source /usr/local/opt/fzf/shell/key-bindings.zsh
     source /usr/local/opt/fzf/shell/completion.zsh
-  elif [[ -f ~/.fzf.zsh ]]; then
-    source ~/.fzf.zsh
   fi
 
   # Custom FZF defaults

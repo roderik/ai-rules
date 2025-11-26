@@ -1,13 +1,24 @@
 # Zsh Completions
 # Single compinit call for the entire configuration
 
-# Initialize completion system (only once)
+# Initialize completion system with aggressive caching
+# Only regenerate completion dump if it's older than 24 hours
 autoload -Uz compinit
-# Use cache file and only regenerate once per day
-if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
-  compinit -d ~/.zcompdump
+
+# Check if .zcompdump needs regeneration (older than 24h or doesn't exist)
+local zcompdump="${HOME}/.zcompdump"
+if [[ -f "$zcompdump" ]]; then
+  local zcompdump_age=$(( $(date +%s) - $(stat -f %m "$zcompdump" 2>/dev/null || echo 0) ))
+  if (( zcompdump_age > 86400 )); then
+    # Older than 24 hours, regenerate
+    compinit -d "$zcompdump"
+  else
+    # Use cached version without checking (much faster)
+    compinit -C -d "$zcompdump"
+  fi
 else
-  compinit -C -d ~/.zcompdump
+  # No cache, generate it
+  compinit -d "$zcompdump"
 fi
 
 # Completion styling

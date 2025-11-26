@@ -1,9 +1,17 @@
 # FZF Configuration
-# Fuzzy finder setup and defaults
+# Fuzzy finder setup and defaults (cached)
 
 if command -q fzf
-    # Official fzf fish integration
-    fzf --fish | source
+    set -l cache_dir ~/.cache/fish/hooks
+    set -l cache_file "$cache_dir/fzf.fish"
+    set -l tool_path (command -v fzf)
+
+    if not test -f "$cache_file"; or test "$tool_path" -nt "$cache_file"
+        mkdir -p "$cache_dir"
+        fzf --fish > "$cache_file" 2>/dev/null
+    end
+
+    test -f "$cache_file" && source "$cache_file"
 
     # Custom FZF defaults
     set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'

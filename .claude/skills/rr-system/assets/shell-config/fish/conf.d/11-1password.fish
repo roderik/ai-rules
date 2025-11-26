@@ -1,16 +1,18 @@
 # 1Password CLI configuration
-# Completions are cached for performance
+# Cache op completions and patch out the eager `complete --do-complete` call
+# that triggers `op __complete` at load time (adds ~70ms to shell startup)
 
 if command -q op
-    set -l cache_dir ~/.cache/fish/completions
-    set -l cache_file "$cache_dir/op.fish"
+    set -l user_completions ~/.config/fish/completions
+    set -l completion_file "$user_completions/op.fish"
     set -l op_path (command -v op)
 
-    # Regenerate cache if it doesn't exist or op binary is newer
-    if not test -f "$cache_file"; or test "$op_path" -nt "$cache_file"
-        mkdir -p "$cache_dir"
-        op completion fish > "$cache_file" 2>/dev/null
+    # Generate patched completion file that removes eager completion trigger
+    if not test -f "$completion_file"; or test "$op_path" -nt "$completion_file"
+        mkdir -p "$user_completions"
+        # Generate completions and remove the `complete --do-complete` block
+        # that causes op __complete to run at shell startup
+        op completion fish 2>/dev/null | sed '/^if type -q "op"/,/^end$/d' > "$completion_file"
     end
-
-    test -f "$cache_file" && source "$cache_file"
+    # Fish loads from ~/.config/fish/completions/ which takes precedence over vendor completions
 end
