@@ -51,6 +51,9 @@ assets/ai-configs/ directory to their system locations:
   • Gemini CLI:   ~/.gemini/AGENTS.md
   • OpenCode:     ~/.config/opencode/AGENTS.md
 
+  Agent Files:
+  • Claude Code:  ~/.claude/agents/*.md
+
 Existing configurations will be overwritten with the latest versions.
 
 EOF
@@ -354,6 +357,20 @@ verify_installation() {
     errors=$((errors + 1))
   fi
 
+  # Check Claude agents
+  checks=$((checks + 1))
+  if [[ -d "$HOME/.claude/agents" ]]; then
+    local agent_count=$(find "$HOME/.claude/agents" -name "*.md" 2>/dev/null | wc -l)
+    if [[ $agent_count -gt 0 ]]; then
+      log_success "  ✓ Claude agents ($agent_count found)"
+    else
+      log_warn "  ⚠ Claude agents directory exists but no agents found"
+    fi
+  else
+    log_error "  ✗ Claude agents directory - NOT FOUND"
+    errors=$((errors + 1))
+  fi
+
   # Check Codex agent instructions
   checks=$((checks + 1))
   if [[ -f "$HOME/.codex/AGENTS.md" ]]; then
@@ -530,6 +547,19 @@ main() {
     "$ASSETS_DIR/AGENTS.md" \
     "$HOME/.config/opencode/AGENTS.md" \
     "OpenCode"; then
+    ((failed++))
+  fi
+
+  printf "\n"
+
+  # Install Claude agents
+  log_info "Installing Claude agents"
+  printf "\n"
+
+  if ! install_commands \
+    "$ASSETS_DIR/agents" \
+    "$HOME/.claude/agents" \
+    "Claude Code agents"; then
     ((failed++))
   fi
 
