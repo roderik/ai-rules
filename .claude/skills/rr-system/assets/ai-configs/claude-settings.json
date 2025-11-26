@@ -33,6 +33,20 @@
       "env": {}
     }
   },
+  "defaultMode": "plan",
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Grep(*)",
+      "Bash(*)",
+      "MCP(*)"
+    ],
+    "deny": [
+      "Write(*)",
+      "Edit(*)",
+      "MultiEdit(*)"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -40,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path // empty' | while read file_path; do if [[ -f \"$file_path\" ]]; then if [[ \"$file_path\" == *.sol ]]; then if command -v forge >/dev/null 2>&1; then forge fmt \"$file_path\" 2>/dev/null || true; fi; else bunx prettier --write \"$file_path\" --ignore-unknown 2>/dev/null || true; fi; fi; done"
+            "command": "jq -r '.tool_input.file_path // empty' | while read file_path; do if [[ -f \"$file_path\" ]]; then dir=$(dirname \"$file_path\"); biome_config=\"\"; while [[ \"$dir\" != \"/\" ]] && [[ -z \"$biome_config\" ]]; do if [[ -f \"$dir/biome.json\" ]] || [[ -f \"$dir/biome.jsonc\" ]] || [[ -f \"$dir/.biome.json\" ]]; then biome_config=\"$dir\"; fi; dir=$(dirname \"$dir\"); done; if [[ \"$file_path\" == *.sol ]]; then if command -v forge >/dev/null 2>&1; then forge fmt \"$file_path\" 2>/dev/null || true; fi; else if [[ -n \"$biome_config\" ]] && command -v ultracite >/dev/null 2>&1; then ultracite fix \"$file_path\" 2>/dev/null || true; fi; bunx prettier --write \"$file_path\" --ignore-unknown 2>/dev/null || true; fi; fi; done"
           }
         ]
       }
