@@ -128,6 +128,8 @@ After code changes, run:
 
 ## Available Skills
 
+Important: when you used a skill, tell the user in your final message.
+
 <!-- SKILLS_TABLE_START -->
 <usage>
 When users ask you to perform tasks, check if any of the available skills below can help complete the task more effectively. Skills provide specialized capabilities and domain knowledge.
@@ -136,7 +138,6 @@ How to use skills:
 - Invoke: Bash("openskills read <skill-name>")
 - The skill content will load with detailed instructions on how to complete the task
 - Base directory provided in output for resolving bundled resources (references/, scripts/, assets/)
-- When you used a skill, tell the user in your final message
 
 Usage notes:
 - Only use skills listed in <available_skills> below
@@ -148,43 +149,61 @@ Usage notes:
 
 <skill>
 <name>rr-better-auth</name>
-<description>Guidance for implementing authentication with better-auth and better-auth-ui. Use when implementing user authentication, OAuth providers, session management, 2FA, organizations/teams, passkeys, or any authentication-related features in TypeScript applications.</description>
+<description>Guidance for implementing authentication with better-auth and better-auth-ui. Use when implementing user authentication, OAuth providers, session management, 2FA, organizations/teams, passkeys, or any authentication-related features in TypeScript applications. Also triggers when working with authentication-related TypeScript files (.ts, .tsx), auth configuration files, or session management code. Example triggers: "Implement user authentication", "Add OAuth login", "Set up 2FA", "Create login page", "Add session management", "Implement passwordless auth", "Build multi-tenant auth"</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>rr-chrome-devtools</name>
+<description>Chrome DevTools browser automation with on-demand MCP server loading. Use when automating browser interactions, taking screenshots, debugging web pages, monitoring network requests, or performance profiling. Example triggers: "Take screenshot", "Click button", "Fill form", "Debug webpage", "Check network requests", "Profile performance", "Enable browser automation"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-drizzle</name>
-<description>Comprehensive guidance for implementing type-safe database operations with Drizzle ORM and PostgreSQL. Use when working with database schemas, queries, migrations, or performance optimization in TypeScript applications. Automatically triggered when working with Drizzle schema files, database queries, or PostgreSQL operations.</description>
+<description>Comprehensive guidance for implementing type-safe database operations with Drizzle ORM and PostgreSQL. Use when working with database schemas, queries, migrations, or performance optimization in TypeScript applications. Also triggers when working with Drizzle schema files (.ts files with pgTable, drizzle imports), migration files, database query code, or drizzle.config.ts files. Example triggers: "Create database schema", "Write Drizzle query", "Generate migration", "Optimize database query", "Set up Drizzle ORM", "Add database table", "Fix query performance"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-gitops</name>
-<description>Comprehensive Git and GitHub workflow management using conventional commits, atomic commits, gh CLI for all GitHub operations, and safe git practices. Use this skill for any git operation, commit creation, PR management, CI monitoring, or GitHub interaction. Essential for maintaining clean git history and professional GitHub workflows.</description>
+<description>Comprehensive Git and GitHub workflow management using conventional commits, atomic commits, gh CLI for all GitHub operations, and safe git practices. Use this skill for any git operation, commit creation, PR management, CI monitoring, or GitHub interaction. Also triggers when working with .git files, GitHub Actions workflows (.yml, .yaml in .github/workflows/), or when performing git operations. Example triggers: "Create a commit", "Make a pull request", "Check CI status", "Watch GitHub Actions", "Create PR", "Fix commit message", "Monitor CI run", "Get PR comments"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-kubernetes</name>
-<description>Comprehensive Kubernetes, Helm, and OpenShift operations skill. Use for creating production-ready K8s manifests, Helm charts, security policies, RBAC configurations, and OpenShift-specific resources. Automatically triggered when working with .yaml/.yml K8s files, Helm charts, or mentioning Kubernetes/OpenShift/container orchestration.</description>
+<description>Comprehensive Kubernetes, Helm, and OpenShift operations skill. Use for creating production-ready K8s manifests, Helm charts, security policies, RBAC configurations, and OpenShift-specific resources. Also triggers when working with Kubernetes YAML files (.yaml, .yml), Helm chart files (Chart.yaml, values.yaml), or container orchestration configuration. Example triggers: "Create Kubernetes deployment", "Write Helm chart", "Set up RBAC", "Create K8s manifest", "Deploy to Kubernetes", "Configure OpenShift", "Add security policy"</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>rr-linear</name>
+<description>Linear issue tracking integration with on-demand MCP server loading. Use when working with Linear issues, projects, or workflows. Provides instructions to enable Linear MCP per-project and common issue CRUD operations. Example triggers: "Create Linear issue", "List my issues", "Update issue status", "Work on Linear ticket", "Enable Linear integration"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-nestjs</name>
-<description>Comprehensive NestJS framework skill for building scalable server-side applications. Use for TypeScript backend development with controllers, providers, modules, dependency injection, middleware, guards, interceptors, pipes, database integration (MikroORM + MongoDB), GraphQL, microservices, testing, and API documentation. Automatically triggered when working with NestJS projects.</description>
+<description>Comprehensive NestJS framework skill for building scalable server-side applications. Use for TypeScript backend development with controllers, providers, modules, dependency injection, middleware, guards, interceptors, pipes, database integration (MikroORM + MongoDB), GraphQL, microservices, testing, and API documentation. Also triggers when working with NestJS TypeScript files (.ts), NestJS module files, nest-cli.json, or NestJS project structure. Example triggers: "Create NestJS controller", "Set up dependency injection", "Add middleware", "Create GraphQL resolver", "Build microservice", "Write NestJS test", "Set up database module"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-orpc</name>
-<description>Use when implementing type-safe RPC APIs with oRPC framework. Covers procedures, routers, server setup, client usage, streaming, file handling, and framework integrations (Next.js, React Query, etc.).</description>
+<description>Guidance for implementing type-safe RPC APIs with oRPC framework. Use when implementing type-safe RPC APIs, building server procedures, setting up routers, or integrating oRPC with frameworks like Next.js or React Query. Also triggers when working with oRPC-related TypeScript files (.ts, .tsx), files importing from @orpc packages, or RPC server/client code. Example triggers: "Set up oRPC server", "Create RPC procedure", "Implement type-safe API", "Add oRPC router", "Integrate with Next.js", "Set up streaming", "Create RPC client"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-pulumi</name>
-<description>Comprehensive Pulumi infrastructure-as-code skill for AWS, Kubernetes, and multi-cloud deployments. Use for defining cloud infrastructure using TypeScript, Python, Go, or other languages. Covers projects, stacks, resources, configuration, state management, Automation API, and CI/CD integration. Automatically triggered when working with Pulumi projects or infrastructure-as-code tasks.</description>
+<description>Comprehensive Pulumi infrastructure-as-code skill for AWS, Kubernetes, and multi-cloud deployments. Use for defining cloud infrastructure using TypeScript, Python, Go, or other languages. Covers projects, stacks, resources, configuration, state management, Automation API, and CI/CD integration. Also triggers when working with Pulumi files (.ts, .py, .go), Pulumi.yaml, or infrastructure definition files. Example triggers: "Create Pulumi stack", "Define AWS resources", "Set up Kubernetes cluster", "Deploy infrastructure", "Create Pulumi project", "Manage cloud resources", "Update infrastructure"</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>rr-shadcn</name>
+<description>shadcn/ui component library integration with on-demand MCP server loading. Use when adding UI components, searching component registries, viewing component examples, or scaffolding new UI. Example triggers: "Add button component", "Search shadcn components", "View component examples", "Install shadcn", "Enable shadcn integration"</description>
 <location>global</location>
 </skill>
 
@@ -196,25 +215,31 @@ Usage notes:
 
 <skill>
 <name>rr-solidity</name>
-<description>Comprehensive Solidity smart contract development skill using Foundry framework. Use this skill for writing, testing, deploying, and auditing Solidity contracts with security-first practices. Automatically triggered when working with .sol files, smart contract development, Foundry projects, or blockchain/Web3 development tasks.</description>
+<description>Comprehensive Solidity smart contract development skill using Foundry framework. Use for writing, testing, deploying, and auditing Solidity contracts with security-first practices. Also triggers when working with .sol files, Foundry project files (foundry.toml), test files (.t.sol), or smart contract deployment scripts. Example triggers: "Write smart contract", "Create Solidity test", "Deploy contract", "Audit smart contract", "Fix security vulnerability", "Write Foundry test", "Set up Foundry project"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-system</name>
-<description>System setup, tool information, and AI configuration management for development environments. Use when setting up new machines, explaining available tools (shell-config, ai-rules, wt), managing AI assistant configurations (Claude/Codex/Gemini/OpenCode), checking system configuration, or troubleshooting environment issues. Provides installation scripts, configuration management workflows, and comprehensive tool references.</description>
+<description>System setup, tool information, and AI configuration management for development environments. Use when setting up new machines, explaining available tools (shell-config, ai-rules, wt), managing AI assistant configurations (Claude/Codex/Gemini/OpenCode), checking system configuration, or troubleshooting environment issues. Also triggers when working with configuration files (.json, .toml, .fish, .zsh, .bash), Brewfiles, or installation scripts. Example triggers: "Set up my development environment", "Install tools on new machine", "Configure AI assistant", "What tools do I have?", "Update my shell config", "Add MCP server to Claude", "Check system configuration"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-tanstack</name>
-<description>This skill provides comprehensive guidance for implementing TanStack libraries (Query, Table, Router, Form, Start, Virtual, Store, DB) in modern web applications. Use this skill when working with data fetching, state management, routing, forms, tables, virtualization, or full-stack React development. Triggers on mentions of TanStack libraries, TypeScript type-safe routing/forms/queries, headless UI components, server-side rendering with type safety, or when building data-heavy applications requiring caching, pagination, filtering, or real-time synchronization.</description>
+<description>Comprehensive guidance for implementing TanStack libraries (Query, Table, Router, Form, Start, Virtual, Store, DB) in modern web applications. Use when working with data fetching, state management, routing, forms, tables, virtualization, or full-stack React development. Also triggers when working with TanStack-related TypeScript files (.ts, .tsx), files importing from @tanstack packages, or React components using TanStack hooks. Example triggers: "Implement data fetching", "Create a data table", "Set up routing", "Build a form", "Add server-side rendering", "Implement virtual scrolling", "Set up state management", "Use TanStack Query"</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>rr-temporal</name>
+<description>Comprehensive guidance for building durable, fault-tolerant workflows with Temporal and TypeScript. Use when implementing workflow orchestration, distributed systems, long-running processes, saga patterns, or durable execution. Also triggers when working with Temporal TypeScript files (.ts), files importing from @temporalio packages, workflow/activity definitions, or worker configurations. Example triggers: "Create Temporal workflow", "Implement saga pattern", "Set up Temporal worker", "Add activity with retry", "Handle workflow signals", "Use continueAsNew for long-running workflow"</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>rr-typescript</name>
-<description>Guidance for writing TypeScript code following Ultracite code quality standards. Use when writing or reviewing TypeScript/JavaScript code, implementing type-safe patterns, working with advanced types (generics, conditional types, mapped types), or ensuring code quality and accessibility. Includes comprehensive standards for React, type safety, accessibility, and performance.</description>
+<description>Guidance for writing TypeScript code following Ultracite code quality standards. Use when writing or reviewing TypeScript/JavaScript code, implementing type-safe patterns, working with advanced types (generics, conditional types, mapped types), or ensuring code quality and accessibility. Also triggers when working with TypeScript files (.ts, .tsx), JavaScript files (.js, .jsx), tsconfig.json, or when reviewing code quality. Example triggers: "Write TypeScript code", "Fix type errors", "Review code quality", "Implement type-safe patterns", "Add type definitions", "Refactor to TypeScript", "Check accessibility", "Run Ultracite"</description>
 <location>global</location>
 </skill>
 
