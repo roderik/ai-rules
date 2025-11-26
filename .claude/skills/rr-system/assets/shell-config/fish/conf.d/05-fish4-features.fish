@@ -26,15 +26,18 @@ function fish_should_add_to_history
     # Trim for remaining checks
     set -l cmd (string trim -- $raw_cmd)
 
+    # Extract just the first word (command name) for checks that need it
+    set -l first_word (string split -m1 ' ' -- $cmd)[1]
+
     # Don't save very short commands (likely typos)
-    test (string length -- $cmd) -lt 2 && return 1
+    test (string length -- "$first_word") -lt 2 && return 1
 
     # Filter commands with sensitive patterns
     # Tokens, passwords, secrets in environment variables or arguments
     string match -qr '(TOKEN|PASSWORD|SECRET|KEY|CREDENTIAL|API_KEY)=' -- $cmd && return 1
 
     # Filter common sensitive commands
-    switch $cmd
+    switch "$cmd"
         case 'export *TOKEN=*' 'export *PASSWORD=*' 'export *SECRET=*' 'export *KEY=*'
             return 1
         case 'set -gx *TOKEN *' 'set -gx *PASSWORD *' 'set -gx *SECRET *' 'set -gx *KEY *'

@@ -15,25 +15,9 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bun x ccusage statusline --visual-burn-rate emoji",
-    "padding": 0
+    "command": "bun x ccusage statusline --visual-burn-rate emoji"
   },
   "enableAllProjectMcpServers": true,
-  "mcpServers": {
-    "context7": {
-      "type": "stdio",
-      "command": "bun",
-      "args": ["x", "-y", "@upstash/context7-mcp@latest"],
-      "env": {}
-    },
-    "octocode": {
-      "type": "stdio",
-      "command": "bun",
-      "args": ["x", "-y", "octocode-mcp@latest"],
-      "env": {}
-    }
-  },
-  "defaultMode": "plan",
   "permissions": {
     "allow": [
       "Read(*)",
@@ -45,7 +29,8 @@
       "Write(*)",
       "Edit(*)",
       "MultiEdit(*)"
-    ]
+    ],
+    "defaultMode": "plan"
   },
   "hooks": {
     "UserPromptSubmit": [
