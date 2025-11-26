@@ -18,20 +18,6 @@
     "command": "bun x ccusage statusline --visual-burn-rate emoji"
   },
   "enableAllProjectMcpServers": true,
-  "permissions": {
-    "allow": [
-      "Read(*)",
-      "Grep(*)",
-      "Bash(*)",
-      "MCP(*)"
-    ],
-    "deny": [
-      "Write(*)",
-      "Edit(*)",
-      "MultiEdit(*)"
-    ],
-    "defaultMode": "plan"
-  },
   "hooks": {
     "UserPromptSubmit": [
       {
