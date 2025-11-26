@@ -136,6 +136,7 @@ How to use skills:
 - Invoke: Bash("openskills read <skill-name>")
 - The skill content will load with detailed instructions on how to complete the task
 - Base directory provided in output for resolving bundled resources (references/, scripts/, assets/)
+- When you used a skill, tell the user in your final message
 
 Usage notes:
 - Only use skills listed in <available_skills> below
