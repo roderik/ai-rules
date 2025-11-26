@@ -15,10 +15,21 @@ if command -v direnv &> /dev/null; then
   [[ -f "$cache_file" ]] && source "$cache_file"
 fi
 
-# zoxide - Smarter cd command
+# zoxide - Smarter cd command (cached)
 if command -v zoxide &> /dev/null; then
-  eval "$(zoxide init zsh)"
-  alias cd='z'
+  local cache_dir="${HOME}/.cache/zsh/hooks"
+  local cache_file="${cache_dir}/zoxide.zsh"
+  local zoxide_path="$(command -v zoxide)"
+
+  if [[ ! -f "$cache_file" ]] || [[ "$zoxide_path" -nt "$cache_file" ]]; then
+    mkdir -p "$cache_dir"
+    zoxide init zsh > "$cache_file" 2>/dev/null
+  fi
+
+  [[ -f "$cache_file" ]] && source "$cache_file"
+  
+  # Use z directly (zoxide provides 'z' function)
+  # For interactive selection, use 'zi'
   alias cdi='zi'
 fi
 
