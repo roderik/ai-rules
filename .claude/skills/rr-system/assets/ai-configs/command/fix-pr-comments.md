@@ -1,6 +1,6 @@
 ---
 description: Handle and resolve every PR review thread
-allowed-tools: Bash(gh pr view:*), Bash(gh api graphql:*), Bash(gh repo view:*), Bash(git log:*), Bash(git diff:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(bash -c:*), Bash(jq:*), Bash(grep:*), Bash(mktemp:*), Bash(head:*), Bash(sort:*)
+allowed-tools: Bash, Read, Edit, Write, Glob, Grep, Task, WebFetch, WebSearch, TodoWrite
 ---
 
 # PR Review Resolution
@@ -50,7 +50,7 @@ Execute these steps for each unresolved thread (process newest→oldest):
 7. **Reply**: Post reply to thread with fix description + commit SHA + test results (see Reply command below)
 8. **Resolve in GitHub**: Execute the Resolve command after replying
    - Copy the thread ID from the thread info (it's the `Thread: PRRT_...` value from the unresolved threads list)
-   - Run: `gh api graphql --field threadId="<threadId>" --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'`
+   - Run: `gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<threadId>"}) { thread { id isResolved } } }'`
    - Verify the response shows `"isResolved": true` - if not, the thread is not resolved
 9. **Verify**: Re-run unresolved threads check to confirm thread is resolved before moving to next thread
 
@@ -65,8 +65,8 @@ Fixed in commit <SHA>.
 - <description of fix>
 
 **Tests:**
-- ✓ All tests passing
-- ✓ Lint/typecheck clean
+- All tests passing
+- Lint/typecheck clean
 
 <additional context if needed>
 ```
@@ -92,13 +92,13 @@ Resolve command (run after each fix):
 
 ```bash
 # Replace <threadId> with the actual thread ID (e.g., PRRT_kwDOQG7ygc5gMWuD)
-gh api graphql --field threadId="<threadId>" --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'
+gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<threadId>"}) { thread { id isResolved } } }'
 ```
 
 **Example:**
 
 ```bash
-gh api graphql --field threadId="PRRT_kwDOQG7ygc5gMWuD" --field query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id isResolved}}}'
+gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "PRRT_kwDOQG7ygc5gMWuD"}) { thread { id isResolved } } }'
 ```
 
 Execute this command for every thread you fix. The thread won't be resolved automatically - you need to explicitly run this command.
@@ -112,16 +112,16 @@ Execute before completing:
 git push
 
 # Verify no unresolved threads remain
-gh pr view --comments | grep -i "outstanding\|pending\|unresolved" || echo "✓ All threads resolved"
+gh pr view --comments | grep -i "outstanding\|pending\|unresolved" || echo "All threads resolved"
 ```
 
 Verify before completion:
 
-- ✓ All threads have been fixed
-- ✓ All threads have been replied to
-- ✓ All threads have been resolved in GitHub (gh api command executed for each)
-- ✓ All commits have been pushed
-- ✓ No unresolved threads remain (verified with the gh pr view command above)
+- All threads have been fixed
+- All threads have been replied to
+- All threads have been resolved in GitHub (gh api command executed for each)
+- All commits have been pushed
+- No unresolved threads remain (verified with the gh pr view command above)
 
 If any threads remain unresolved: go back and execute the Resolve command for each one.
 
@@ -139,8 +139,5 @@ Files changed:
 PR timeline + comments:
 !`gh pr view --comments 2>&1`
 
-Unresolved review threads count:
-!`bash -c 'GH_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null) && PR_NUMBER=$(gh pr view --json number -q .number 2>/dev/null | grep -E "^[0-9]+$") && if [ -z "$GH_REPO" ] || [ -z "$PR_NUMBER" ]; then echo "ERROR: Could not fetch PR info"; else TMP=$(mktemp) && printf '\''query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:100){nodes{isResolved}}}}}\n'\'' > "$TMP" && gh api graphql --field owner="${GH_REPO%/*}" --field name="${GH_REPO#*/}" --field pr="$PR_NUMBER" --field query=@"$TMP" 2>/dev/null | jq -r '\''if .data.repository.pullRequest then ([.data.repository.pullRequest.reviewThreads.nodes[]? | select(.isResolved == false)] | length | "Total unresolved: \(.)") else "No PR found" end'\''; rm -f "$TMP"; fi'`
-
-Unresolved review threads (newest first):
-!`bash -c 'GH_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null) && PR_NUMBER=$(gh pr view --json number -q .number 2>/dev/null | grep -E "^[0-9]+$") && if [ -z "$GH_REPO" ] || [ -z "$PR_NUMBER" ]; then echo "ERROR: Could not fetch PR info"; else TMP=$(mktemp) && printf '\''query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:100){nodes{id isResolved isOutdated path line startLine comments(first:20){nodes{id databaseId body author{login} createdAt}}}}}}}\n'\'' > "$TMP" && gh api graphql --field owner="${GH_REPO%/*}" --field name="${GH_REPO#*/}" --field pr="$PR_NUMBER" --field query=@"$TMP" 2>/dev/null | jq -r '\''.data.repository.pullRequest.reviewThreads.nodes[]? | select(.isResolved == false) | select(.comments.nodes | length > 0) | "\(.comments.nodes[0].createdAt)|\(.id)|\(.path // "general")|\(.line // .startLine // "?")|\(.comments.nodes[0].author.login)|\(.comments.nodes[0].body | gsub("\\n"; "\u0001"))"'\'' | sort -t"|" -k1 -r | while IFS="|" read -r date id path line author body; do printf "Thread: %s\nFile: %s:%s\nAuthor: %s\nMessage:\n%s\n---\n" "$id" "$path" "$line" "$author" "${body//$'\''\u0001'\''/$'\''\n'\''}"; done; rm -f "$TMP"; fi'`
+Unresolved review threads:
+!`bash -c 'OWNER=$(gh repo view --json owner -q .owner.login) && NAME=$(gh repo view --json name -q .name) && PR=$(gh pr view --json number -q .number) && gh api graphql -f query="query { repository(owner: \"$OWNER\", name: \"$NAME\") { pullRequest(number: $PR) { reviewThreads(first: 100) { nodes { id isResolved isOutdated path line startLine comments(first: 20) { nodes { id body author { login } createdAt } } } } } } }" | jq -r ".data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false) | \"---\", \"Thread: \\(.id)\", \"File: \\(.path):\\(.line // .startLine // \"?\")\", \"Outdated: \\(.isOutdated)\", \"Author: \\(.comments.nodes[0].author.login)\", \"Comment:\", .comments.nodes[0].body, \"\""'`
