@@ -14,42 +14,6 @@ end
 # Filter commands from history - they remain as temporary last entry but won't persist
 # Useful for filtering sensitive commands or typos
 
-function fish_should_add_to_history
-    set -l raw_cmd $argv[1]
-
-    # Don't save empty commands
-    test -z "$raw_cmd" && return 1
-
-    # Don't save commands starting with space (like bash HISTCONTROL=ignorespace)
-    string match -q ' *' -- $raw_cmd && return 1
-
-    # Trim for remaining checks
-    set -l cmd (string trim -- $raw_cmd)
-
-    # Extract just the first word (command name) for checks that need it
-    set -l first_word (string split -m1 ' ' -- $cmd)[1]
-
-    # Don't save very short commands (likely typos)
-    test (string length -- "$first_word") -lt 2 && return 1
-
-    # Filter commands with sensitive patterns
-    # Tokens, passwords, secrets in environment variables or arguments
-    string match -qr '(TOKEN|PASSWORD|SECRET|KEY|CREDENTIAL|API_KEY)=' -- $cmd && return 1
-
-    # Filter common sensitive commands
-    switch "$cmd"
-        case 'export *TOKEN=*' 'export *PASSWORD=*' 'export *SECRET=*' 'export *KEY=*'
-            return 1
-        case 'set -gx *TOKEN *' 'set -gx *PASSWORD *' 'set -gx *SECRET *' 'set -gx *KEY *'
-            return 1
-        case 'op signin*' 'op item get*'
-            # 1Password commands that might expose secrets
-            return 1
-    end
-
-    # Allow everything else
-    return 0
-end
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Transient Prompt (Fish 4.1+ / Starship)

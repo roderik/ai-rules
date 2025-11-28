@@ -565,6 +565,24 @@ main() {
 
   printf "\n"
 
+  # Install Claude plugin
+  log_info "Installing Claude plugin"
+  printf "\n"
+  log_step "Installing: compounding-engineering plugin"
+  if command -v npx &>/dev/null; then
+    if npx --yes claude-plugins install @EveryInc/every-marketplace/compounding-engineering; then
+      log_success "Installed: compounding-engineering plugin"
+    else
+      log_error "Failed to install: compounding-engineering plugin"
+      ((failed++))
+    fi
+  else
+    log_error "npx not found, cannot install plugin"
+    ((failed++))
+  fi
+
+  printf "\n"
+
   # Verify installation
   if ! verify_installation; then
     failed=1
