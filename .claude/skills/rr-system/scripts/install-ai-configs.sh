@@ -565,19 +565,30 @@ main() {
 
   printf "\n"
 
-  # Install Claude plugin
-  log_info "Installing Claude plugin"
+  # Install Claude plugins
+  log_info "Installing Claude plugins"
   printf "\n"
-  log_step "Installing: compounding-engineering plugin"
+
   if command -v npx &>/dev/null; then
+    # Install compounding-engineering plugin
+    log_step "Installing: compounding-engineering plugin"
     if npx --yes claude-plugins install @EveryInc/every-marketplace/compounding-engineering; then
       log_success "Installed: compounding-engineering plugin"
     else
       log_error "Failed to install: compounding-engineering plugin"
       ((failed++))
     fi
+
+    # Install frontend-design plugin
+    log_step "Installing: frontend-design plugin"
+    if npx --yes claude-plugins install @anthropics/claude-code-plugins/frontend-design; then
+      log_success "Installed: frontend-design plugin"
+    else
+      log_error "Failed to install: frontend-design plugin"
+      ((failed++))
+    fi
   else
-    log_error "npx not found, cannot install plugin"
+    log_error "npx not found, cannot install plugins"
     ((failed++))
   fi
 
