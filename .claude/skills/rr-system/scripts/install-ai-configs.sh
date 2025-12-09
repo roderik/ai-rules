@@ -569,27 +569,33 @@ main() {
   log_info "Installing Claude plugins"
   printf "\n"
 
-  if command -v npx &>/dev/null; then
-    # Install compounding-engineering plugin
-    log_step "Installing: compounding-engineering plugin"
-    if npx --yes claude-plugins install @EveryInc/every-marketplace/compounding-engineering; then
-      log_success "Installed: compounding-engineering plugin"
+  if command -v claude &>/dev/null; then
+    # Add compound-engineering marketplace
+    log_step "Adding: compound-engineering marketplace"
+    if claude plugin marketplace add https://github.com/roderik/compound-engineering-plugin 2>/dev/null; then
+      log_success "Added: compound-engineering marketplace"
     else
-      log_error "Failed to install: compounding-engineering plugin"
-      ((failed++))
+      log_warn "Marketplace may already be added or failed to add"
     fi
 
-    # Install frontend-design plugin
-    log_step "Installing: frontend-design plugin"
-    if npx --yes claude-plugins install @anthropics/claude-code-plugins/frontend-design; then
-      log_success "Installed: frontend-design plugin"
+    # Install compound-engineering plugin
+    log_step "Installing: compound-engineering plugin"
+    if claude plugin install compound-engineering 2>/dev/null; then
+      log_success "Installed: compound-engineering plugin"
     else
-      log_error "Failed to install: frontend-design plugin"
-      ((failed++))
+      log_warn "Plugin may already be installed or failed to install"
+    fi
+
+    # Install commit-commands plugin from claude-code-plugins
+    log_step "Installing: commit-commands plugin"
+    if claude plugin install commit-commands 2>/dev/null; then
+      log_success "Installed: commit-commands plugin"
+    else
+      log_warn "Plugin may already be installed or failed to install"
     fi
   else
-    log_error "npx not found, cannot install plugins"
-    ((failed++))
+    log_warn "claude CLI not found, skipping plugin installation"
+    log_info "Install Claude Code CLI and run this script again to install plugins"
   fi
 
   printf "\n"
