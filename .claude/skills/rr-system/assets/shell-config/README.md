@@ -17,6 +17,7 @@ bash scripts/install-shell-config.sh
 ## Configuration Files
 
 ### Fish Shell
+
 - **Files:** `fish/config.fish` + `fish/conf.d/*.fish` + `fish/functions/wt.fish`
 - **Target:** `~/.config/fish/`
 - **Features:**
@@ -28,6 +29,7 @@ bash scripts/install-shell-config.sh
   - **wt (git worktree manager)** - Included as a Fish function for parallel development workflows
 
 ### Zsh
+
 - **Files:** `zsh/.zshrc` + `zsh/conf.d/*.zsh`
 - **Target:** `~/.zshrc` + `~/.config/zsh/conf.d/`
 - **Features:**
@@ -38,6 +40,7 @@ bash scripts/install-shell-config.sh
   - Extensive completion system
 
 ### Bash
+
 - **Files:** `bash/.bashrc`, `bash/.bash_profile` + `bash/conf.d/*.bash`
 - **Target:** `~/.bashrc`, `~/.bash_profile` + `~/.config/bash/conf.d/`
 - **Features:**
@@ -47,6 +50,7 @@ bash scripts/install-shell-config.sh
   - Cloud CLI integrations
 
 ### Starship Prompt
+
 - **File:** `starship/starship.toml`
 - **Target:** `~/.config/starship.toml`
 - **Features:**
@@ -56,6 +60,7 @@ bash scripts/install-shell-config.sh
   - Cloud context indicators
 
 ### Ghostty Terminal
+
 - **File:** `ghostty/config`
 - **Target:** `~/Library/Application Support/com.mitchellh.ghostty/config`
 - **Platform:** macOS only
@@ -69,6 +74,7 @@ bash scripts/install-shell-config.sh
 If you prefer manual installation:
 
 ### Fish Shell
+
 ```bash
 mkdir -p ~/.config/fish/conf.d ~/.config/fish/functions
 cp fish/config.fish ~/.config/fish/
@@ -77,6 +83,7 @@ cp fish/functions/*.fish ~/.config/fish/functions/
 ```
 
 ### Zsh
+
 ```bash
 mkdir -p ~/.config/zsh/conf.d
 cp zsh/.zshrc ~/.zshrc
@@ -84,6 +91,7 @@ cp zsh/conf.d/*.zsh ~/.config/zsh/conf.d/
 ```
 
 ### Bash
+
 ```bash
 mkdir -p ~/.config/bash/conf.d
 cp bash/.bashrc ~/.bashrc
@@ -92,12 +100,14 @@ cp bash/conf.d/*.bash ~/.config/bash/conf.d/
 ```
 
 ### Starship
+
 ```bash
 mkdir -p ~/.config
 cp starship/starship.toml ~/.config/
 ```
 
 ### Ghostty (macOS)
+
 ```bash
 mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
 cp ghostty/config "$HOME/Library/Application Support/com.mitchellh.ghostty/"
@@ -129,6 +139,7 @@ After installation, you can customize:
 ## Modern Tools Referenced
 
 These configurations integrate with:
+
 - `bat` - Cat with syntax highlighting
 - `eza` - Modern ls replacement
 - `fd` - Fast file finder
@@ -139,6 +150,7 @@ These configurations integrate with:
 - `direnv` - Per-project environments
 - `starship` - Cross-shell prompt
 - `wt` - Git worktree manager (Fish function, included in Fish configuration)
+- `grc` - Generic colourizer for CLI output (ping, df, dig, netstat, etc.)
 
 ## Post-Installation
 
@@ -157,15 +169,18 @@ After running the installation script:
 ## Troubleshooting
 
 **Shell not loading config:**
+
 - Verify files exist: `ls ~/.config/fish/config.fish`
 - Check for syntax errors: `fish --debug` or `zsh -x` or `bash -x`
 
 **Tools not working:**
+
 - Ensure Homebrew tools are installed
 - Check PATH configuration in conf.d files
 - Source the config manually: `source ~/.config/fish/config.fish`
 
 **Permission issues:**
+
 - Check file ownership: `ls -la ~/.config/fish/`
 - Fix if needed: `chmod 644 ~/.config/fish/config.fish`
 
