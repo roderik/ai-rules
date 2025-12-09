@@ -74,9 +74,6 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias mkdir='mkdir -p'
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
 
 # System
 alias reload='source ~/.zshrc'
