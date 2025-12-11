@@ -587,6 +587,13 @@ main() {
       log_warn "  compound-engineering marketplace may already be added"
     fi
 
+    # Add sawyerhood marketplace (dev-browser)
+    if claude plugin marketplace add sawyerhood/dev-browser 2>/dev/null; then
+      log_success "  Added: sawyerhood/dev-browser marketplace"
+    else
+      log_warn "  sawyerhood/dev-browser marketplace may already be added"
+    fi
+
     printf "\n"
     log_step "Installing plugins"
 
@@ -609,6 +616,13 @@ main() {
       log_success "  Installed: frontend-design"
     else
       log_warn "  frontend-design may already be installed"
+    fi
+
+    # Install dev-browser plugin from sawyerhood
+    if claude plugin install dev-browser 2>/dev/null; then
+      log_success "  Installed: dev-browser"
+    else
+      log_warn "  dev-browser may already be installed"
     fi
   else
     log_warn "claude CLI not found, skipping plugin installation"
