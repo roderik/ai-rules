@@ -25,3 +25,8 @@ end
 if test -d "$HOME/.krew/bin"
     fish_add_path -a "$HOME/.krew/bin"
 end
+
+# Rust/Cargo
+if test -d "$HOME/.cargo/bin"
+    fish_add_path -a "$HOME/.cargo/bin"
+end

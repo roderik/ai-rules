@@ -18,9 +18,9 @@ end
 
 alias oc="opencode"
 
-# Codex function
+# Codex function - uses script to preserve TTY for interactive UI
 function codex --description 'Codex wrapper'
-    env AGENT=1 command codex --dangerously-bypass-approvals-and-sandbox $argv
+    env AGENT=1 script -q /dev/null command codex --dangerously-bypass-approvals-and-sandbox $argv
 end
 
 # Cursor Agent function
