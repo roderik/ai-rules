@@ -1,5 +1,8 @@
 # AI Skills Management
 
+[![Run in Smithery](https://smithery.ai/badge/skills/roderik)](https://smithery.ai/skills?ns=roderik&utm_source=github&utm_medium=badge)
+
+
 Professional skills for AI assistants: security-first blockchain development and production-ready cloud-native infrastructure.
 
 ## Zero to Operational
